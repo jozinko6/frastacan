@@ -24,7 +24,11 @@ export async function PATCH(
     const body = await request.json()
     const { status } = body
 
-    const validStatuses = ['pending', 'confirmed', 'preparing', 'ready', 'delivering', 'delivered', 'cancelled']
+    const validStatuses = [
+      'pending', 'confirmed', 'preparing', 'ready',
+      'picking_up', 'delivering', 'delivered',
+      'cancelled', 'refunded', 'failed',
+    ]
     if (!status || !validStatuses.includes(status)) {
       return NextResponse.json(
         { error: `Neplatný stav. Povolené: ${validStatuses.join(', ')}` },
@@ -49,16 +53,26 @@ export async function PATCH(
       if (!existingOrder.confirmedAt) updateData.confirmedAt = new Date()
     } else if (status === 'ready') {
       updateData.preparedAt = new Date()
+    } else if (status === 'picking_up') {
+      // Rider is on their way to pick up the order
+      if (user.role === 'rider') {
+        updateData.riderId = user.id
+      }
+    } else if (status === 'delivering') {
+      // Rider has picked up and is delivering
+      if (user.role === 'rider') {
+        updateData.riderId = user.id
+      }
     } else if (status === 'delivered') {
       updateData.deliveredAt = new Date()
-      updateData.paymentStatus = existingOrder.paymentMethod === 'cash' ? 'paid' : existingOrder.paymentStatus
+      // Mark cash payments as paid on delivery
+      if (existingOrder.paymentMethod === 'cash' && existingOrder.paymentStatus === 'pending') {
+        updateData.paymentStatus = 'paid'
+      }
     } else if (status === 'cancelled') {
       updateData.cancelledAt = new Date()
-    }
-
-    // Assign rider if status is delivering and user is a rider
-    if (status === 'delivering' && user.role === 'rider') {
-      updateData.riderId = user.id
+    } else if (status === 'refunded') {
+      updateData.paymentStatus = 'failed'
     }
 
     const order = await db.order.update({

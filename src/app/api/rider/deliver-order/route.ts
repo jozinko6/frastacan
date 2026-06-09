@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify order is currently in 'delivering' status
-    if (order.status !== 'delivering') {
+    // Verify order is currently in 'delivering' or 'picking_up' status
+    if (!['delivering', 'picking_up'].includes(order.status)) {
       return NextResponse.json(
         { error: 'Objednávka nie je v stave doručovania' },
         { status: 400 }

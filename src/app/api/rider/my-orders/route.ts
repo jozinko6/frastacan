@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     if (status) {
       if (status === 'active') {
-        where.status = { in: ['delivering'] }
+        where.status = { in: ['picking_up', 'delivering'] }
       } else if (status === 'delivered') {
         where.status = 'delivered'
       }

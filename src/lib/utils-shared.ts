@@ -21,21 +21,29 @@ export function formatDateShort(dateStr: string): string {
 }
 
 export const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: string }> = {
-  pending:    { label: 'Objednávka prijatá',        color: 'text-yellow-700', bgColor: 'bg-yellow-100',  icon: '⏳' },
-  confirmed:  { label: 'Potvrdené',                 color: 'text-blue-700',   bgColor: 'bg-blue-100',    icon: '✅' },
-  preparing:  { label: 'Pripravuje sa',             color: 'text-primary', bgColor: 'bg-primary/10',  icon: '👨‍🍳' },
-  ready:      { label: 'Pripravené na vyzdvihnutie', color: 'text-indigo-700', bgColor: 'bg-indigo-100',  icon: '📦' },
-  delivering: { label: 'Kuriér je na ceste',        color: 'text-purple-700', bgColor: 'bg-purple-100',  icon: '🛵' },
-  delivered:  { label: 'Doručené',                  color: 'text-green-700',  bgColor: 'bg-green-100',   icon: '✓' },
-  cancelled:  { label: 'Zrušené',                   color: 'text-red-700',    bgColor: 'bg-red-100',     icon: '✗' },
+  pending:     { label: 'Objednávka prijatá',        color: 'text-yellow-700', bgColor: 'bg-yellow-100',  icon: '⏳' },
+  confirmed:   { label: 'Potvrdené',                 color: 'text-blue-700',   bgColor: 'bg-blue-100',    icon: '✅' },
+  preparing:   { label: 'Pripravuje sa',             color: 'text-primary',    bgColor: 'bg-primary/10',  icon: '👨‍🍳' },
+  ready:       { label: 'Pripravené na vyzdvihnutie', color: 'text-indigo-700', bgColor: 'bg-indigo-100',  icon: '📦' },
+  picking_up:  { label: 'Kuriér ide po objednávku',  color: 'text-orange-700', bgColor: 'bg-orange-100',  icon: '🛵' },
+  delivering:  { label: 'Kuriér doručuje',           color: 'text-purple-700', bgColor: 'bg-purple-100',  icon: '🚗' },
+  delivered:   { label: 'Doručené',                  color: 'text-green-700',  bgColor: 'bg-green-100',   icon: '✓' },
+  cancelled:   { label: 'Zrušené',                   color: 'text-red-700',    bgColor: 'bg-red-100',     icon: '✗' },
+  refunded:    { label: 'Vrátené',                   color: 'text-teal-700',   bgColor: 'bg-teal-100',    icon: '💰' },
+  failed:      { label: 'Zlyhalo',                   color: 'text-gray-700',   bgColor: 'bg-gray-200',    icon: '⚠' },
 }
 
 export const nextStatuses: Record<string, string[]> = {
-  pending: ['confirmed', 'cancelled'],
-  confirmed: ['preparing', 'cancelled'],
-  preparing: ['ready', 'cancelled'],
-  ready: ['delivering', 'cancelled'],
-  delivering: ['delivered'],
+  pending:    ['confirmed', 'cancelled'],
+  confirmed:  ['preparing', 'cancelled'],
+  preparing:  ['ready', 'cancelled'],
+  ready:      ['picking_up', 'cancelled'],
+  picking_up: ['delivering', 'cancelled'],
+  delivering: ['delivered', 'failed'],
+  delivered:  ['refunded'],
+  cancelled:  [],
+  refunded:   [],
+  failed:     ['refunded'],
 }
 
 export const paymentStatusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
@@ -53,6 +61,11 @@ export const cuisineOptions = [
   { name: 'Darčeky', emoji: '🎁' },
   { name: 'Street food', emoji: '🌮' },
   { name: 'Pekárne', emoji: '🥐' },
+  { name: 'Burgery', emoji: '🍔' },
+  { name: 'Kebab', emoji: '🥙' },
+  { name: 'Drogéria', emoji: '🧴' },
+  { name: 'Chovateľstvo', emoji: '🐾' },
+  { name: 'Služby', emoji: '🔧' },
   { name: 'Slovenská', emoji: '🇸🇰' },
   { name: 'Talianska', emoji: '🇮🇹' },
   { name: 'Japonská', emoji: '🇯🇵' },

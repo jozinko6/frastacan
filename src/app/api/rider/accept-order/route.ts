@@ -71,12 +71,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Assign rider to order and update status to 'delivering'
+    // Assign rider to order and update status to 'picking_up'
+    // Rider is on their way to pick up the order from the restaurant
     const updatedOrder = await db.order.update({
       where: { id: orderId },
       data: {
         riderId: user.id,
-        status: 'delivering',
+        status: 'picking_up',
       },
       include: {
         items: {

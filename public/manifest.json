@@ -1,29 +1,49 @@
 {
-  "name": "Fraštačan – lokálne doručenie",
+  "name": "Fraštačan – lokálne doručenie pre Hlohovec a okolie",
   "short_name": "Fraštačan",
-  "description": "Lokálne doručenie pre Hlohovec a okolie. Objednaj si jedlo, kávu, kvety alebo nákup z lokálnych prevádzok.",
+  "description": "Lokálne doručenie pre Hlohovec, Šulekovo, Leopoldov a Červeník. Jedlo, káva, kvety aj nákup z lokálnych prevádzok.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFF7ED",
+  "background_color": "#FFFFFF",
   "theme_color": "#B42318",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "scope": "/",
   "icons": [
     {
       "src": "/frastacan-logo.png",
-      "sizes": "1024x1024",
+      "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/logo.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/frastacan-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/frastacan-logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "categories": ["food", "business"],
+  "categories": ["food", "business", "shopping"],
   "lang": "sk",
   "dir": "ltr",
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Objednať",
+      "short_name": "Objednať",
+      "url": "/?view=home",
+      "icons": [{ "src": "/frastacan-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Moje objednávky",
+      "short_name": "Objednávky",
+      "url": "/?view=orders",
+      "icons": [{ "src": "/frastacan-logo.png", "sizes": "96x96" }]
+    }
+  ]
 }
