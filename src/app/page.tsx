@@ -11,6 +11,7 @@ import {
   LogIn,
   LayoutDashboard,
   Menu,
+  Bike,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -31,6 +32,10 @@ import ProfileView from '@/components/profile-view'
 import AdminDashboardView from '@/components/admin-dashboard-view'
 import AdminRestaurantsView from '@/components/admin-restaurants-view'
 import AdminOrdersView from '@/components/admin-orders-view'
+import RiderDashboardView from '@/components/rider-dashboard-view'
+import RiderOrdersView from '@/components/rider-orders-view'
+import RiderEarningsView from '@/components/rider-earnings-view'
+import RiderProfileView from '@/components/rider-profile-view'
 
 function ViewRenderer() {
   const { currentView } = useAppStore()
@@ -60,6 +65,14 @@ function ViewRenderer() {
       return <AdminRestaurantsView />
     case 'admin-orders':
       return <AdminOrdersView />
+    case 'rider-dashboard':
+      return <RiderDashboardView />
+    case 'rider-orders':
+      return <RiderOrdersView />
+    case 'rider-earnings':
+      return <RiderEarningsView />
+    case 'rider-profile':
+      return <RiderProfileView />
     default:
       return <HomeView />
   }
@@ -124,14 +137,50 @@ function Header() {
           )}
 
           {user?.role === 'admin' && (
+            <>
+              <Button
+                variant={currentView === 'admin-dashboard' ? 'secondary' : 'ghost'}
+                size="sm"
+                className={currentView === 'admin-dashboard' ? 'bg-orange-100 text-orange-700' : ''}
+                onClick={() => setView('admin-dashboard')}
+              >
+                <LayoutDashboard className="h-4 w-4 mr-1.5" />
+                Admin
+              </Button>
+              {(currentView === 'admin-dashboard' || currentView === 'admin-restaurants' || currentView === 'admin-orders') && (
+                <>
+                  <Button
+                    variant={currentView === 'admin-restaurants' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className={currentView === 'admin-restaurants' ? 'bg-orange-100 text-orange-700' : 'text-xs'}
+                    onClick={() => setView('admin-restaurants')}
+                  >
+                    <UtensilsCrossed className="h-3.5 w-3.5 mr-1" />
+                    Reštaurácie
+                  </Button>
+                  <Button
+                    variant={currentView === 'admin-orders' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className={currentView === 'admin-orders' ? 'bg-orange-100 text-orange-700' : 'text-xs'}
+                    onClick={() => setView('admin-orders')}
+                  >
+                    <Package className="h-3.5 w-3.5 mr-1" />
+                    Objednávky
+                  </Button>
+                </>
+              )}
+            </>
+          )}
+
+          {user?.role === 'rider' && (
             <Button
-              variant={currentView === 'admin-dashboard' ? 'secondary' : 'ghost'}
+              variant={currentView === 'rider-dashboard' ? 'secondary' : 'ghost'}
               size="sm"
-              className={currentView === 'admin-dashboard' ? 'bg-orange-100 text-orange-700' : ''}
-              onClick={() => setView('admin-dashboard')}
+              className={currentView === 'rider-dashboard' ? 'bg-orange-100 text-orange-700' : ''}
+              onClick={() => setView('rider-dashboard')}
             >
-              <LayoutDashboard className="h-4 w-4 mr-1.5" />
-              Admin
+              <Bike className="h-4 w-4 mr-1.5" />
+              Kurier
             </Button>
           )}
         </nav>
@@ -193,6 +242,9 @@ function MobileMenu() {
   }
 
   async function handleLogout() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch {}
     setUser(null)
     setView('home')
     setOpen(false)
@@ -212,6 +264,11 @@ function MobileMenu() {
           { view: 'admin-dashboard' as const, icon: LayoutDashboard, label: 'Admin panel' },
           { view: 'admin-restaurants' as const, icon: UtensilsCrossed, label: 'Reštaurácie' },
           { view: 'admin-orders' as const, icon: Package, label: 'Objednávky (admin)' },
+        ]
+      : []),
+    ...(user?.role === 'rider'
+      ? [
+          { view: 'rider-dashboard' as const, icon: Bike, label: 'Kurier panel' },
         ]
       : []),
   ]
@@ -355,13 +412,20 @@ function Footer() {
   )
 }
 
+const riderViews = ['rider-dashboard', 'rider-orders', 'rider-earnings', 'rider-profile']
+
+function isRiderView(view: string): boolean {
+  return riderViews.includes(view)
+}
+
 export default function MainPage() {
   const currentView = useAppStore((s) => s.currentView)
+  const showRegularLayout = !isRiderView(currentView)
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1">
+      {showRegularLayout && <Header />}
+      <main className={showRegularLayout ? 'flex-1' : 'flex-1'}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentView}
@@ -374,7 +438,7 @@ export default function MainPage() {
           </motion.div>
         </AnimatePresence>
       </main>
-      <Footer />
+      {showRegularLayout && <Footer />}
     </div>
   )
 }

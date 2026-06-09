@@ -25,6 +25,7 @@ model User {
   reviews       Review[]
   favorites     Favorite[]
   restaurants   Restaurant[]
+  riderProfile  RiderProfile?
 }
 
 model Restaurant {
@@ -185,4 +186,22 @@ model Coupon {
   isActive      Boolean   @default(true)
   expiresAt     DateTime?
   createdAt     DateTime  @default(now())
+}
+
+model RiderProfile {
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  isAvailable         Boolean   @default(false)
+  currentLat          Float?
+  currentLng          Float?
+  vehicleType         String    @default("bicycle") // bicycle, motorcycle, car
+  totalDeliveries     Int       @default(0)
+  totalEarnings       Float     @default(0)
+  walletBalance       Float     @default(0)
+  rating              Float     @default(0)
+  reviewCount         Int       @default(0)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

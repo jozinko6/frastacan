@@ -1,24 +1,54 @@
 import { createHash } from 'crypto'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+const TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000 // 7 days in ms
+const TOKEN_SECRET = process.env.TOKEN_SECRET || 'frastacan-secret-key-2024'
+
 export function hashPassword(password: string): string {
-  return createHash('sha256').update(password).digest('hex')
+  // Salted hash for better security
+  const salt = 'frastacan-salt'
+  return createHash('sha256').update(salt + password + salt).digest('hex')
+}
+
+export function verifyPassword(password: string, storedHash: string): boolean {
+  // Check with current salted hash
+  const saltedHash = hashPassword(password)
+  if (storedHash === saltedHash) return true
+
+  // Fallback: check without salt (for legacy passwords seeded before salt was added)
+  const unsaltedHash = createHash('sha256').update(password).digest('hex')
+  if (storedHash === unsaltedHash) return true
+
+  return false
 }
 
 export function generateToken(userId: string): string {
-  // Simple base64 encoded token with userId and timestamp
-  const payload = JSON.stringify({ userId, ts: Date.now() })
-  return Buffer.from(payload).toString('base64')
+  const payload = { userId, ts: Date.now() }
+  const json = JSON.stringify(payload)
+  const signature = createHash('sha256').update(json + TOKEN_SECRET).digest('hex')
+  // Format: base64(payload).signature
+  return Buffer.from(json).toString('base64') + '.' + signature
 }
 
 export function verifyToken(token: string): { userId: string; ts: number } | null {
   try {
-    const payload = JSON.parse(Buffer.from(token, 'base64').toString('utf-8'))
-    if (payload.userId && payload.ts) {
-      return payload
-    }
-    return null
+    const [payloadB64, signature] = token.split('.')
+    if (!payloadB64 || !signature) return null
+
+    const json = Buffer.from(payloadB64, 'base64').toString('utf-8')
+    
+    // Verify signature
+    const expectedSig = createHash('sha256').update(json + TOKEN_SECRET).digest('hex')
+    if (signature !== expectedSig) return null
+
+    const payload = JSON.parse(json)
+    if (!payload.userId || !payload.ts) return null
+
+    // Check expiration
+    if (Date.now() - payload.ts > TOKEN_MAX_AGE) return null
+
+    return payload
   } catch {
     return null
   }
@@ -46,5 +76,18 @@ export async function getUserFromRequest(request: NextRequest) {
     },
   })
 
+  if (!user || !user.isActive) return null
+
   return user
+}
+
+export function clearAuthCookie(response: NextResponse) {
+  response.cookies.set('frastacan_token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 0,
+    path: '/',
+  })
+  return response
 }

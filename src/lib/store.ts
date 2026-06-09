@@ -101,6 +101,10 @@ export type View =
   | 'admin-dashboard'
   | 'admin-restaurants'
   | 'admin-orders'
+  | 'rider-dashboard'
+  | 'rider-orders'
+  | 'rider-earnings'
+  | 'rider-profile'
 
 // Store
 interface AppState {

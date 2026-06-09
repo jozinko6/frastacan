@@ -1,26 +1,28 @@
 ---
-Task ID: 1
+Task ID: 2
 Agent: Super Z (Main)
-Task: Build Fraštačan - Slovak Food Delivery System
+Task: Fix admin panel bugs and add Rider PWA application
 
 Work Log:
-- Researched GitHub repository enatega/food-delivery-multivendor architecture
-- Designed Prisma schema with 10 models: User, Restaurant, Category, FoodItem, Order, OrderItem, Address, Review, Favorite, Coupon
-- Pushed schema to SQLite database
-- Created seed script with 5 Slovak restaurants, 43 food items, 17 categories, demo users, sample orders, and coupons
-- Built 15+ API routes: auth (login/register/me), restaurants (list/detail), orders (create/list/status), admin (stats/restaurants/orders), coupons, addresses, reviews, favorites
-- Created auth utility with SHA256 password hashing and cookie-based sessions
-- Built complete SPA frontend with 12 views using Zustand for state management
-- Views: Home, Restaurant detail, Cart, Checkout, Orders, Order detail, Login, Register, Profile, Admin Dashboard, Admin Restaurants, Admin Orders
-- Generated Fraštačan logo using AI image generation
-- Integrated logo into header, mobile menu, and footer
-- Verified all functionality with Agent Browser testing (9/9 tests passed)
+- Identified 24 bugs/issues through comprehensive audit (auth, admin views, API)
+- Fixed auth system: added salted password hashing, signed tokens with HMAC, token expiration, logout API with cookie clearing
+- Created shared utility module (formatPrice, formatDate, statusConfig, paymentStatusConfig, cuisineOptions) to eliminate code duplication
+- Fixed admin dashboard: added 5th stat card (food items), empty states, refresh button, useCallback for fetch
+- Fixed admin restaurants: added search/filter, toggle isActive/isAvailable, null logo fix, broken image fallback, empty state
+- Fixed admin orders: added payment status badge, rider info display, pagination UI, status validation
+- Added PATCH /api/admin/restaurants/[id] route for toggling restaurant properties
+- Added RiderProfile model to Prisma schema (isAvailable, location, vehicle, earnings, wallet, rating)
+- Created 6 rider API routes: profile, availability, available-orders, earnings, accept-order, deliver-order
+- Created 4 rider PWA views: dashboard, orders, earnings, profile with bottom navigation
+- Added PWA manifest.json with Fraštačan branding
+- Updated layout.tsx with PWA meta tags (manifest, apple-touch-icon, theme-color)
+- Updated login view with rider demo account and role-based redirect
+- Added admin sub-navigation on desktop (restaurants, orders tabs appear when in admin section)
+- Rider views hide regular header/footer for PWA-like experience
+- All 6 browser test flows passed
 
 Stage Summary:
-- Full-stack food delivery web app "Fraštačan" built and functional
-- Backend: 15 REST API routes with Prisma + SQLite
-- Frontend: 12 views as single-page application with client-side routing
-- Database: 5 restaurants, 43 food items, demo accounts seeded
-- Brand: Orange (#F97316) color scheme, Slovak language UI
-- Demo accounts: admin@frastacan.sk/admin123, customer@test.sk/customer123
-- Coupons: FRASTACAN10, VITAJ20, PIZZA15
+- Admin panel fully functional with all fixes
+- Rider PWA application complete with 4 views and 6 API endpoints
+- Auth system secured with signed tokens, expiration, and proper logout
+- PWA-ready with manifest and meta tags

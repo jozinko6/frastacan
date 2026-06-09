@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { hashPassword, generateToken } from '@/lib/auth'
+import { hashPassword, verifyPassword, generateToken } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,8 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    const hashedPassword = hashPassword(password)
-    if (user.password !== hashedPassword) {
+    if (!verifyPassword(password, user.password)) {
       return NextResponse.json(
         { error: 'Neplatný email alebo heslo' },
         { status: 401 }

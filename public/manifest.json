@@ -1,0 +1,22 @@
+{
+  "name": "Fraštačan Kuriér",
+  "short_name": "Kuriér",
+  "description": "Kurierska aplikácia pre doručovanie jedla - Fraštačan",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#F97316",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/frastacan-logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "business"],
+  "lang": "sk",
+  "dir": "ltr"
+}

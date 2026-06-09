@@ -106,6 +106,24 @@ async function main() {
     },
   })
 
+  // Create rider profile
+  await prisma.riderProfile.upsert({
+    where: { userId: rider.id },
+    update: {},
+    create: {
+      userId: rider.id,
+      isAvailable: true,
+      currentLat: 48.7162,
+      currentLng: 21.2611,
+      vehicleType: 'motorcycle',
+      totalDeliveries: 47,
+      totalEarnings: 385.50,
+      walletBalance: 142.30,
+      rating: 4.6,
+      reviewCount: 35,
+    },
+  })
+
   // Create restaurants
   const restaurants = await Promise.all([
     prisma.restaurant.create({
@@ -415,7 +433,9 @@ async function main() {
 }
 
 function hashPassword(password: string): string {
-  return createHash('sha256').update(password).digest('hex')
+  // Must match the salt used in src/lib/auth.ts
+  const salt = 'frastacan-salt'
+  return createHash('sha256').update(salt + password + salt).digest('hex')
 }
 
 main()

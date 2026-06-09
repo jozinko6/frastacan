@@ -35,7 +35,14 @@ export default function LoginView() {
       if (res.ok) {
         setUser(data.user)
         toast.success(`Vitajte, ${data.user.name}!`)
-        setView('home')
+        // Redirect based on role
+        if (data.user.role === 'rider') {
+          setView('rider-dashboard')
+        } else if (data.user.role === 'admin') {
+          setView('admin-dashboard')
+        } else {
+          setView('home')
+        }
       } else {
         toast.error(data.error || 'Chyba pri prihlasovaní')
       }
@@ -46,10 +53,13 @@ export default function LoginView() {
     }
   }
 
-  function fillDemo(role: 'admin' | 'customer') {
+  function fillDemo(role: 'admin' | 'customer' | 'rider') {
     if (role === 'admin') {
       setEmail('admin@frastacan.sk')
       setPassword('admin123')
+    } else if (role === 'rider') {
+      setEmail('rider@frastacan.sk')
+      setPassword('rider123')
     } else {
       setEmail('customer@test.sk')
       setPassword('customer123')
@@ -164,6 +174,20 @@ export default function LoginView() {
                 size="sm"
                 className="text-xs border-orange-300 text-orange-700"
                 onClick={() => fillDemo('customer')}
+              >
+                Vyplniť
+              </Button>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <div>
+                <p className="font-medium">Kurier</p>
+                <p className="text-xs text-muted-foreground">rider@frastacan.sk / rider123</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs border-orange-300 text-orange-700"
+                onClick={() => fillDemo('rider')}
               >
                 Vyplniť
               </Button>

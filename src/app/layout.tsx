@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -13,13 +13,28 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#F97316",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
   title: "Fraštačan - Donáška jedla",
   description: "Objednajte si jedlo z najlepších reštaurácií. Rýchla donáška priamo k vám domov.",
   keywords: ["Fraštačan", "donáška jedla", "jedlo", "reštaurácie", "Košice", "food delivery"],
   authors: [{ name: "Fraštačan" }],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Fraštačan",
+  },
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>",
+    icon: "/frastacan-logo.png",
+    apple: "/frastacan-logo.png",
   },
 };
 
@@ -30,6 +45,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sk" suppressHydrationWarning>
+      <head>
+        <link rel="apple-touch-icon" href="/frastacan-logo.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
