@@ -10,6 +10,15 @@ export interface User {
   avatar?: string
 }
 
+export interface DeliveryZone {
+  id: string
+  name: string
+  baseFee: number
+  minimumOrder: number
+  estimatedMin: number
+  estimatedMax: number
+}
+
 export interface Restaurant {
   id: string
   name: string
@@ -18,6 +27,7 @@ export interface Restaurant {
   image: string
   logo?: string
   address: string
+  city?: string
   phone?: string
   cuisine: string
   rating: number
@@ -27,6 +37,8 @@ export interface Restaurant {
   deliveryFee: number
   isActive: boolean
   isAvailable: boolean
+  zoneId?: string
+  zone?: DeliveryZone
   categories?: Category[]
   reviews?: Review[]
 }
@@ -101,10 +113,24 @@ export type View =
   | 'admin-dashboard'
   | 'admin-restaurants'
   | 'admin-orders'
+  | 'admin-users'
+  | 'admin-coupons'
+  | 'admin-zones'
+  | 'admin-categories'
   | 'rider-dashboard'
   | 'rider-orders'
   | 'rider-earnings'
   | 'rider-profile'
+  | 'vendor-dashboard'
+  | 'vendor-orders'
+  | 'vendor-menu'
+  | 'vendor-settings'
+  | 'pre-prevadzky'
+  | 'pre-kurierov'
+  | 'terms'
+  | 'privacy'
+  | 'contact'
+  | 'complaints'
 
 // Store
 interface AppState {

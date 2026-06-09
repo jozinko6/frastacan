@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import ServiceWorkerRegistration from "@/components/sw-registration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#F97316",
+  themeColor: "#B42318",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -22,11 +23,27 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Fraštačan - Donáška jedla",
-  description: "Objednajte si jedlo z najlepších reštaurácií. Rýchla donáška priamo k vám domov.",
-  keywords: ["Fraštačan", "donáška jedla", "jedlo", "reštaurácie", "Košice", "food delivery"],
+  title: "Fraštačan – lokálne doručenie pre Hlohovec a okolie",
+  description: "Objednaj si jedlo, kávu, kvety alebo nákup z lokálnych prevádzok v Hlohovci, Šulekove, Leopoldove a Červeníku. Platba kartou vopred alebo hotovosťou pri prevzatí.",
+  keywords: [
+    "Fraštačan",
+    "Hlohovec doručenie",
+    "rozvoz Hlohovec",
+    "donáška Hlohovec",
+    "Šulekovo doručenie",
+    "Leopoldov doručenie",
+    "Červeník doručenie",
+    "lokálne prevádzky Hlohovec",
+  ],
   authors: [{ name: "Fraštačan" }],
   manifest: "/manifest.json",
+  openGraph: {
+    title: "Fraštačan – lokálne doručenie pre Hlohovec a okolie",
+    description: "Jedlo, káva, kvety a nákup z lokálnych prevádzok.",
+    siteName: "Fraštačan",
+    locale: "sk_SK",
+    type: "website",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -53,6 +70,7 @@ export default function RootLayout({
       >
         {children}
         <Toaster position="top-center" richColors closeButton />
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );

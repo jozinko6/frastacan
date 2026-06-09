@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Package, DollarSign, Users, Store, TrendingUp, Star, UtensilsCrossed, RefreshCw } from 'lucide-react'
+import { Package, DollarSign, Users, Store, TrendingUp, Star, UtensilsCrossed, RefreshCw, MapPin, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -17,6 +17,8 @@ interface AdminStats {
   totalUsers: number
   totalRestaurants: number
   totalFoodItems: number
+  totalZones: number
+  totalCoupons: number
   ordersByStatus: Record<string, number>
   revenueByDay: Record<string, number>
 }
@@ -85,13 +87,20 @@ export default function AdminDashboardView() {
     )
   }
 
+  const statCards = [
+    { label: 'Objednávky', value: stats?.totalOrders || 0, icon: Package, from: 'from-primary/5', to: 'to-primary/10', text: 'text-primary', iconColor: 'text-primary/80' },
+    { label: 'Tržby', value: formatPrice(stats?.totalRevenue || 0), icon: DollarSign, from: 'from-green-50', to: 'to-green-100', text: 'text-green-600', iconColor: 'text-green-400' },
+    { label: 'Používatelia', value: stats?.totalUsers || 0, icon: Users, from: 'from-blue-50', to: 'to-blue-100', text: 'text-blue-600', iconColor: 'text-blue-400' },
+    { label: 'Prevádzky', value: stats?.totalRestaurants || 0, icon: Store, from: 'from-purple-50', to: 'to-purple-100', text: 'text-purple-600', iconColor: 'text-purple-400' },
+    { label: 'Jedlá', value: stats?.totalFoodItems || 0, icon: UtensilsCrossed, from: 'from-rose-50', to: 'to-rose-100', text: 'text-rose-600', iconColor: 'text-rose-400' },
+    { label: 'Zóny', value: stats?.totalZones || 0, icon: MapPin, from: 'from-teal-50', to: 'to-teal-100', text: 'text-teal-600', iconColor: 'text-teal-400' },
+    { label: 'Kupóny', value: stats?.totalCoupons || 0, icon: Tag, from: 'from-amber-50', to: 'to-amber-100', text: 'text-amber-600', iconColor: 'text-amber-400' },
+  ]
+
   return (
-    <div className="view-transition max-w-6xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => setView('home')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-2xl font-bold">Administrácia</h1>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <h1 className="text-2xl font-bold">Prehľad</h1>
         <div className="flex-1" />
         <Button
           variant="outline"
@@ -106,109 +115,52 @@ export default function AdminDashboardView() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} className="h-28 rounded-xl" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
           ))}
         </div>
       ) : (
         <>
-          {/* Stats Cards - 5 cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-50 to-orange-100">
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Objednávky</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-orange-600">
-                        {stats?.totalOrders || 0}
-                      </p>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {statCards.map((card, i) => (
+              <motion.div
+                key={card.label}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.04 }}
+              >
+                <Card className={`border-0 shadow-sm bg-gradient-to-br ${card.from} ${card.to}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-muted-foreground">{card.label}</p>
+                        <p className={`text-xl sm:text-2xl font-bold ${card.text}`}>
+                          {card.value}
+                        </p>
+                      </div>
+                      <card.icon className={`h-7 w-7 ${card.iconColor}`} />
                     </div>
-                    <Package className="h-8 w-8 text-orange-400" />
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-green-50 to-green-100">
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Tržby</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-green-600">
-                        {formatPrice(stats?.totalRevenue || 0)}
-                      </p>
-                    </div>
-                    <DollarSign className="h-8 w-8 text-green-400" />
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-50 to-blue-100">
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Používatelia</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-blue-600">
-                        {stats?.totalUsers || 0}
-                      </p>
-                    </div>
-                    <Users className="h-8 w-8 text-blue-400" />
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-purple-100">
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Reštaurácie</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-purple-600">
-                        {stats?.totalRestaurants || 0}
-                      </p>
-                    </div>
-                    <Store className="h-8 w-8 text-purple-400" />
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <Card className="border-0 shadow-sm bg-gradient-to-br from-rose-50 to-rose-100">
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Jedlá</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-rose-600">
-                        {stats?.totalFoodItems || 0}
-                      </p>
-                    </div>
-                    <UtensilsCrossed className="h-8 w-8 text-rose-400" />
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
 
           {/* Orders by Status */}
           {stats?.ordersByStatus && (
-            <Card className="border-0 shadow-sm mb-6">
+            <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Objednávky podľa stavu</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2">
                   {Object.entries(stats.ordersByStatus).map(([status, count]) => {
                     const config = statusConfig[status] || { label: status, color: 'text-gray-700', bgColor: 'bg-gray-100' }
                     return (
-                      <div key={status} className={`px-4 py-2 rounded-lg ${config.bgColor}`}>
-                        <span className={`font-medium ${config.color}`}>
+                      <div key={status} className={`px-3 py-1.5 rounded-lg ${config.bgColor}`}>
+                        <span className={`font-medium text-sm ${config.color}`}>
                           {config.label}: {count}
                         </span>
                       </div>
@@ -225,13 +177,13 @@ export default function AdminDashboardView() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-orange-500" />
+                    <TrendingUp className="h-5 w-5 text-primary" />
                     Posledné objednávky
                   </CardTitle>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-orange-500"
+                    className="text-primary"
                     onClick={() => setView('admin-orders')}
                   >
                     Všetky
@@ -265,7 +217,7 @@ export default function AdminDashboardView() {
                             </p>
                           </div>
                           <div className="text-right shrink-0 ml-3">
-                            <p className="font-bold text-sm text-orange-600">{formatPrice(order.total)}</p>
+                            <p className="font-bold text-sm text-primary">{formatPrice(order.total)}</p>
                             <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
                           </div>
                         </div>
@@ -281,13 +233,13 @@ export default function AdminDashboardView() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Star className="h-5 w-5 text-orange-500" />
+                    <Star className="h-5 w-5 text-primary" />
                     Top reštaurácie
                   </CardTitle>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-orange-500"
+                    className="text-primary"
                     onClick={() => setView('admin-restaurants')}
                   >
                     Všetky
@@ -307,8 +259,8 @@ export default function AdminDashboardView() {
                         key={r.id}
                         className="flex items-center gap-3 p-3 rounded-lg border bg-white"
                       >
-                        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
-                          <span className="font-bold text-sm text-orange-600">{index + 1}</span>
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                          <span className="font-bold text-sm text-primary">{index + 1}</span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
@@ -325,7 +277,7 @@ export default function AdminDashboardView() {
                             <span className="font-medium text-sm truncate">{r.name}</span>
                           </div>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Star className="h-3 w-3 fill-orange-400 text-orange-400" />
+                            <Star className="h-3 w-3 fill-primary/80 text-primary/80" />
                             <span>{r.rating}</span>
                             <span>•</span>
                             <span>{r._count.orders} objednávok</span>

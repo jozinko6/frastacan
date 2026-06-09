@@ -1,26 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Clock, Star, MapPin } from 'lucide-react'
+import { Search, Clock, Star, MapPin, Store, Bike, ChevronRight } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore, type Restaurant } from '@/lib/store'
+import { formatPrice, cuisineOptions, deliveryZones } from '@/lib/utils-shared'
 
-const cuisines = [
-  { name: 'Slovenská', emoji: '🇸🇰' },
-  { name: 'Talianska', emoji: '🇮🇹' },
-  { name: 'Japonská', emoji: '🇯🇵' },
-  { name: 'Americká', emoji: '🇺🇸' },
-  { name: 'Mexická', emoji: '🇲🇽' },
-]
-
-function formatPrice(price: number) {
-  return price.toFixed(2).replace('.', ',') + ' €'
-}
+const mainCategories = cuisineOptions.slice(0, 8) // Pizza through Pekárne
 
 export default function HomeView() {
   const { setView, setSelectedRestaurant, searchQuery, setSearchQuery } = useAppStore()
@@ -28,6 +19,7 @@ export default function HomeView() {
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([])
   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const restaurantGridRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetchRestaurants()
@@ -71,10 +63,25 @@ export default function HomeView() {
     setView('restaurant')
   }
 
+  function scrollToRestaurants() {
+    restaurantGridRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  function getDeliveryFee(restaurant: Restaurant): number {
+    if (restaurant.zone) {
+      return restaurant.zone.baseFee
+    }
+    if (restaurant.city) {
+      const zone = deliveryZones.find((z) => z.name === restaurant.city)
+      if (zone) return zone.fee
+    }
+    return restaurant.deliveryFee
+  }
+
   return (
     <div className="view-transition">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 text-white">
+      <section className="relative bg-gradient-to-br from-[#B42318] via-[#9a1f16] to-[#7d1a12] text-white">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djZoLTZ2LTZoNnptMC0zMHY2aC02VjRoNnptMCAxMHY2aC02di02aDZ6bTAgMTB2NmgtNnYtNmg2em0tMTAgMHY2aC02di02aDZ6bS0xMCAwdjZoLTZ2LTZoNnptMzAgMHY2aC02di02aDZ6bS0xMCAxMHY2aC02di02aDZ6bTEwIDB2NmgtNnYtNmg2em0tMTAgMTB2NmgtNnYtNmg2em0xMCAwdjZoLTZ2LTZoNnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30" />
         <div className="relative max-w-6xl mx-auto px-4 py-12 sm:py-20">
           <motion.div
@@ -84,53 +91,109 @@ export default function HomeView() {
             className="text-center"
           >
             <h1 className="text-3xl sm:text-5xl font-bold mb-3">
-              Fraštačan 🍽️
+              Fraštačan doručí z Hlohovca a okolia
             </h1>
-            <p className="text-lg sm:text-xl mb-8 text-orange-100">
-              Najchutnejšie jedlo priamo pred vaše dvere
+            <p className="text-lg sm:text-xl mb-8 text-red-100">
+              Objednaj si jedlo, kávu, kvety alebo nákup z lokálnych prevádzok v Hlohovci, Šulekove, Leopoldove a Červeníku.
             </p>
-            <div className="max-w-xl mx-auto relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-orange-400" />
+            <div className="max-w-xl mx-auto relative mb-6">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-red-400" />
               <Input
-                placeholder="Hľadajte reštauráciu alebo jedlo..."
-                className="pl-12 h-12 sm:h-14 text-base sm:text-lg bg-white/95 border-0 shadow-lg focus-visible:ring-2 focus-visible:ring-orange-300"
+                placeholder="Zadaj adresu alebo vyber oblasť"
+                className="pl-12 h-12 sm:h-14 text-base sm:text-lg bg-white/95 border-0 shadow-lg focus-visible:ring-2 focus-visible:ring-red-300"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                size="lg"
+                className="bg-white text-[#B42318] hover:bg-red-50 font-semibold"
+                onClick={scrollToRestaurants}
+              >
+                Objednať teraz
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white/50 text-white hover:bg-white/10"
+                onClick={scrollToRestaurants}
+              >
+                Pozrieť prevádzky
+              </Button>
             </div>
           </motion.div>
         </div>
       </section>
 
       <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8 space-y-8 sm:space-y-10">
-        {/* Cuisine Categories */}
+        {/* Category Section */}
         <section>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">
+            Čo si chceš nechať doručiť?
+          </h2>
           <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
             <Button
               variant={selectedCuisine === null ? 'default' : 'outline'}
-              className={`shrink-0 rounded-full px-5 ${selectedCuisine === null ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}`}
+              className={`shrink-0 rounded-full px-5 ${selectedCuisine === null ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : ''}`}
               onClick={() => setSelectedCuisine(null)}
             >
               Všetky
             </Button>
-            {cuisines.map((c) => (
+            {mainCategories.map((c) => (
               <Button
                 key={c.name}
                 variant={selectedCuisine === c.name ? 'default' : 'outline'}
-                className={`shrink-0 rounded-full px-5 ${selectedCuisine === c.name ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}`}
+                className={`shrink-0 rounded-full px-5 ${selectedCuisine === c.name ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : ''}`}
                 onClick={() => setSelectedCuisine(selectedCuisine === c.name ? null : c.name)}
               >
                 <span className="mr-1.5">{c.emoji}</span> {c.name}
               </Button>
             ))}
           </div>
+          {/* Extended cuisine filters (cuisine types) */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3 scrollbar-hide">
+            {cuisineOptions.slice(8).map((c) => (
+              <Button
+                key={c.name}
+                variant={selectedCuisine === c.name ? 'default' : 'outline'}
+                size="sm"
+                className={`shrink-0 rounded-full px-4 ${selectedCuisine === c.name ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : ''}`}
+                onClick={() => setSelectedCuisine(selectedCuisine === c.name ? null : c.name)}
+              >
+                <span className="mr-1">{c.emoji}</span> {c.name}
+              </Button>
+            ))}
+          </div>
         </section>
 
-        {/* Featured Restaurants */}
-        <section>
+        {/* Locality Section */}
+        <section className="bg-red-50 rounded-2xl p-6 sm:p-8">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center">
+            📍 Lokálne prevádzky, lokálni kuriéri, rýchle doručenie
+          </h2>
+          <p className="text-muted-foreground text-center max-w-2xl mx-auto">
+            Fraštačan spája zákazníkov s prevádzkami v Hlohovci a okolí. Menej anonymnej platformy, viac lokálnej kontroly a férovejší prístup pre podniky aj kuriérov.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 mt-6">
+            {deliveryZones.map((zone) => (
+              <Badge
+                key={zone.name}
+                variant="secondary"
+                className="px-4 py-2 text-sm bg-white shadow-sm border border-red-100"
+              >
+                <MapPin className="h-3.5 w-3.5 mr-1.5 text-[#B42318]" />
+                {zone.name} · od {formatPrice(zone.fee)}
+              </Badge>
+            ))}
+          </div>
+        </section>
+
+        {/* Restaurant Grid */}
+        <section ref={restaurantGridRef}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl sm:text-2xl font-bold">
-              🔥 Populárne reštaurácie
+              🏪 Prevádzky v tvojom okolí
             </h2>
           </div>
 
@@ -150,7 +213,7 @@ export default function HomeView() {
           ) : filteredRestaurants.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg">
-                😔 Žiadne reštaurácie nenájdené
+                😔 Žiadne prevádzky nenájdené
               </p>
               <Button
                 variant="outline"
@@ -176,7 +239,7 @@ export default function HomeView() {
                     className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 group border-0 shadow-sm"
                     onClick={() => openRestaurant(restaurant.id)}
                   >
-                    <div className="relative h-40 sm:h-44 overflow-hidden bg-orange-50">
+                    <div className="relative h-40 sm:h-44 overflow-hidden bg-red-50">
                       <img
                         src={restaurant.image}
                         alt={restaurant.name}
@@ -191,7 +254,14 @@ export default function HomeView() {
                           Otvorené
                         </Badge>
                       )}
-                      <div className="absolute bottom-3 left-3 right-3 text-white">
+                      {/* City/Zone badge */}
+                      {(restaurant.city || restaurant.zone) && (
+                        <Badge className="absolute bottom-3 right-3 bg-[#B42318] text-white text-xs gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {restaurant.zone?.name || restaurant.city}
+                        </Badge>
+                      )}
+                      <div className="absolute bottom-3 left-3 right-16 text-white">
                         <h3 className="font-bold text-lg leading-tight">{restaurant.name}</h3>
                       </div>
                     </div>
@@ -201,7 +271,7 @@ export default function HomeView() {
                       </p>
                       <div className="flex items-center gap-3 text-sm">
                         <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
+                          <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                           <span className="font-medium">{restaurant.rating}</span>
                           <span className="text-muted-foreground">({restaurant.reviewCount})</span>
                         </div>
@@ -211,7 +281,7 @@ export default function HomeView() {
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground">
                           <MapPin className="h-4 w-4" />
-                          <span>{formatPrice(restaurant.deliveryFee)}</span>
+                          <span>{formatPrice(getDeliveryFee(restaurant))}</span>
                         </div>
                       </div>
                     </CardContent>
@@ -222,16 +292,70 @@ export default function HomeView() {
           )}
         </section>
 
+        {/* For Businesses Section */}
+        <section className="bg-amber-50 rounded-2xl p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="flex-shrink-0">
+              <div className="h-16 w-16 rounded-2xl bg-[#B42318] flex items-center justify-center">
+                <Store className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+                Máte prevádzku v Hlohovci alebo okolí?
+              </h2>
+              <p className="text-muted-foreground">
+                Zapojte sa do lokálnej doručovacej platformy Fraštačan a získajte objednávky z vášho okolia bez zbytočne komplikovaného systému.
+              </p>
+            </div>
+            <Button
+              size="lg"
+              className="bg-[#B42318] hover:bg-[#9a1f16] text-white shrink-0"
+              onClick={() => setView('pre-prevadzky')}
+            >
+              Chcem zapojiť prevádzku
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </section>
+
+        {/* For Couriers Section */}
+        <section className="bg-blue-50 rounded-2xl p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="flex-shrink-0">
+              <div className="h-16 w-16 rounded-2xl bg-[#B42318] flex items-center justify-center">
+                <Bike className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+                Staň sa kuriérom Fraštačana
+              </h2>
+              <p className="text-muted-foreground">
+                Rozvážaj v Hlohovci, Šulekove, Leopoldove alebo Červeníku. Vyber si dostupnosť a doručuj lokálne objednávky.
+              </p>
+            </div>
+            <Button
+              size="lg"
+              className="bg-[#B42318] hover:bg-[#9a1f16] text-white shrink-0"
+              onClick={() => setView('pre-kurierov')}
+            >
+              Chcem doručovať
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </section>
+
         {/* How It Works */}
-        <section className="bg-orange-50 rounded-2xl p-6 sm:p-8">
+        <section className="bg-red-50/50 rounded-2xl p-6 sm:p-8">
           <h2 className="text-xl sm:text-2xl font-bold mb-6 text-center">
             Ako to funguje?
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { emoji: '📱', title: 'Vyberte si', desc: 'Prechádzajte reštauráciami a pridávajte jedlá do košíka' },
+              { emoji: '📱', title: 'Vyberte si', desc: 'Prechádzajte prevádzkami a pridávajte položky do košíka' },
               { emoji: '💳', title: 'Objednajte', desc: 'Vyplňte doručovaciu adresu a zvoľte spôsob platby' },
-              { emoji: '🛵', title: 'Doručíme', desc: 'Vaše jedlo doručíme priamo k vám čo najskôr' },
+              { emoji: '🛵', title: 'Doručíme', desc: 'Lokálny kuriér vám doručí objednávku čo najskôr' },
             ].map((step, i) => (
               <div key={i} className="text-center">
                 <div className="text-4xl mb-3">{step.emoji}</div>

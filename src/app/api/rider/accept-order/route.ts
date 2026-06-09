@@ -94,6 +94,14 @@ export async function POST(request: NextRequest) {
             logo: true,
             address: true,
             phone: true,
+            city: true,
+            zone: {
+              select: {
+                id: true,
+                name: true,
+                baseFee: true,
+              },
+            },
           },
         },
         customer: {
@@ -102,7 +110,13 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ order: updatedOrder }, { status: 200 })
+    // Add cash collection info
+    const orderWithPaymentInfo = {
+      ...updatedOrder,
+      cashToCollect: updatedOrder.paymentMethod === 'cash' ? updatedOrder.total : 0,
+    }
+
+    return NextResponse.json({ order: orderWithPaymentInfo }, { status: 200 })
   } catch (error) {
     console.error('Accept order error:', error)
     return NextResponse.json(

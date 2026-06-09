@@ -101,7 +101,7 @@ export default function ProfileView() {
         <p className="text-muted-foreground mb-6">
           Pre zobrazenie profilu sa musíte prihlásiť
         </p>
-        <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setView('login')}>
+        <Button className="bg-primary hover:bg-primary/90 text-white" onClick={() => setView('login')}>
           Prihlásiť sa
         </Button>
       </div>
@@ -122,15 +122,15 @@ export default function ProfileView() {
         <div>
           <Card className="border-0 shadow-sm">
             <CardContent className="p-6 text-center">
-              <div className="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-4">
-                <User className="h-10 w-10 text-orange-500" />
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <User className="h-10 w-10 text-primary" />
               </div>
               <h2 className="text-xl font-bold">{user.name}</h2>
               <p className="text-muted-foreground text-sm">{user.email}</p>
               {user.phone && (
                 <p className="text-muted-foreground text-sm mt-1">{user.phone}</p>
               )}
-              <Badge className="mt-3 bg-orange-100 text-orange-700 border-0">
+              <Badge className="mt-3 bg-primary/10 text-primary border-0">
                 {user.role === 'admin' ? 'Administrátor' : user.role === 'restaurant' ? 'Reštaurácia' : 'Zákazník'}
               </Badge>
 
@@ -169,12 +169,12 @@ export default function ProfileView() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-orange-500" />
+                  <MapPin className="h-5 w-5 text-primary" />
                   Moje adresy
                 </CardTitle>
                 <Dialog open={showAddAddress} onOpenChange={setShowAddAddress}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-white">
                       <Plus className="h-4 w-4 mr-1" />
                       Pridať
                     </Button>
@@ -217,7 +217,7 @@ export default function ProfileView() {
                         />
                       </div>
                       <Button
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                        className="w-full bg-primary hover:bg-primary/90 text-white"
                         onClick={addAddress}
                         disabled={addingAddress}
                       >
@@ -247,12 +247,12 @@ export default function ProfileView() {
                       key={addr.id}
                       className="flex items-start gap-3 p-3 rounded-lg border bg-white"
                     >
-                      <MapPin className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
+                      <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{addr.label}</span>
                           {addr.isDefault && (
-                            <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-700">
+                            <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
                               Predvolená
                             </Badge>
                           )}

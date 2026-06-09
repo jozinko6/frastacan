@@ -5,9 +5,9 @@ import { useAppStore, type View } from '@/lib/store'
 import { cn } from '@/lib/utils'
 
 const navItems: { view: View; icon: typeof LayoutDashboard; label: string }[] = [
-  { view: 'rider-dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { view: 'rider-dashboard', icon: LayoutDashboard, label: 'Domov' },
   { view: 'rider-orders', icon: Package, label: 'Objednávky' },
-  { view: 'rider-earnings', icon: Wallet, label: 'Príjmy' },
+  { view: 'rider-earnings', icon: Wallet, label: 'Zárobky' },
   { view: 'rider-profile', icon: User, label: 'Profil' },
 ]
 
@@ -26,11 +26,11 @@ export default function RiderBottomNav() {
               onClick={() => setView(item.view)}
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 w-full h-full transition-colors relative',
-                isActive ? 'text-orange-500' : 'text-gray-400 hover:text-gray-600'
+                isActive ? 'text-[#B42318]' : 'text-gray-400 hover:text-gray-600'
               )}
             >
               {isActive && (
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-orange-500 rounded-b-full" />
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-[#B42318] rounded-b-full" />
               )}
               <Icon className={cn('h-5 w-5', isActive && 'stroke-[2.5px]')} />
               <span className={cn('text-[10px] font-medium', isActive && 'font-semibold')}>

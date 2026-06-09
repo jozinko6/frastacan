@@ -13,7 +13,9 @@ import {
   Loader2,
   CheckCircle2,
   ShoppingBag,
-  Filter,
+  Phone,
+  Navigation,
+  Banknote,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -45,6 +47,7 @@ interface Order {
   discount: number
   total: number
   notes: string | null
+  city: string | null
   deliveryAddress: string
   createdAt: string
   deliveredAt: string | null
@@ -55,6 +58,7 @@ interface Order {
     logo: string | null
     address: string
     phone: string | null
+    city?: string
   }
   customer?: {
     id: string
@@ -110,7 +114,7 @@ export default function RiderOrdersView() {
       })
       const data = await res.json()
       if (res.ok) {
-        toast.success('Objednávka označená ako doručená!')
+        toast.success('Objednávka doručená!')
         fetchOrders()
       } else {
         toast.error(data.error || 'Chyba pri označovaní objednávky')
@@ -126,11 +130,11 @@ export default function RiderOrdersView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-orange-500 px-4 pt-6 pb-4">
-          <Skeleton className="h-7 w-36 bg-orange-400/30 mb-3" />
+        <div className="bg-[#B42318] px-4 pt-6 pb-4 rounded-b-3xl">
+          <Skeleton className="h-7 w-36 bg-white/20 mb-3" />
           <div className="flex gap-2">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-9 w-20 bg-orange-400/30 rounded-full" />
+              <Skeleton key={i} className="h-9 w-20 bg-white/15 rounded-full" />
             ))}
           </div>
         </div>
@@ -147,13 +151,13 @@ export default function RiderOrdersView() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <div className="bg-orange-500 px-4 pt-6 pb-4 rounded-b-3xl">
+      <div className="bg-[#B42318] px-4 pt-6 pb-4 rounded-b-3xl">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-white text-xl font-bold">Objednávky</h1>
             <button
               onClick={() => fetchOrders(true)}
-              className="p-2 rounded-full bg-orange-400/30 text-white hover:bg-orange-400/50 transition-colors"
+              className="p-2 rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors"
               disabled={refreshing}
             >
               <RefreshCw className={cn('h-5 w-5', refreshing && 'animate-spin')} />
@@ -169,8 +173,8 @@ export default function RiderOrdersView() {
                 className={cn(
                   'px-4 py-2 rounded-full text-sm font-medium transition-all',
                   activeTab === tab.key
-                    ? 'bg-white text-orange-600 shadow-sm'
-                    : 'bg-orange-400/30 text-white hover:bg-orange-400/50'
+                    ? 'bg-white text-[#B42318] shadow-sm'
+                    : 'bg-white/15 text-white hover:bg-white/25'
                 )}
               >
                 {tab.label}
@@ -219,17 +223,18 @@ export default function RiderOrdersView() {
               </p>
               <p className="text-gray-400 text-xs mt-1">
                 {activeTab === 'active'
-                  ? 'Prijaťte objednávku z dashboardu'
+                  ? 'Prijaťte doručenie z domovskej obrazovky'
                   : 'Začnite doručovať a objednávky sa zobrazia tu'}
               </p>
             </motion.div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
               <AnimatePresence mode="popLayout">
                 {orders.map((order, index) => {
                   const sc = statusConfig[order.status]
                   const isDelivering = order.status === 'delivering'
                   const isExpanded = expandedOrder === order.id
+                  const isCashPayment = order.paymentMethod === 'cash'
 
                   return (
                     <motion.div
@@ -243,7 +248,7 @@ export default function RiderOrdersView() {
                       <Card
                         className={cn(
                           'border-0 shadow-md overflow-hidden',
-                          isDelivering && 'border-l-4 border-l-orange-500'
+                          isDelivering && 'border-l-4 border-l-[#B42318]'
                         )}
                       >
                         <CardContent className="p-4">
@@ -275,6 +280,14 @@ export default function RiderOrdersView() {
                             </div>
                           </div>
 
+                          {/* City/Zone info */}
+                          {(order.city || order.restaurant?.city) && (
+                            <div className="flex items-center gap-1 text-xs text-[#B42318] font-medium mb-1">
+                              <MapPin className="h-3 w-3" />
+                              <span>{order.city || order.restaurant?.city}</span>
+                            </div>
+                          )}
+
                           {/* Address */}
                           <div className="flex items-start gap-1.5 text-xs text-gray-500 mb-1">
                             <MapPin className="h-3 w-3 mt-0.5 shrink-0" />
@@ -301,7 +314,7 @@ export default function RiderOrdersView() {
 
                           {/* Expand toggle */}
                           <button
-                            className="flex items-center gap-1 text-xs text-orange-500 mt-2"
+                            className="flex items-center gap-1 text-xs text-[#B42318] mt-2"
                             onClick={() =>
                               setExpandedOrder(isExpanded ? null : order.id)
                             }
@@ -342,6 +355,21 @@ export default function RiderOrdersView() {
                                     </div>
                                   ))}
 
+                                  {/* Cash payment info */}
+                                  {isCashPayment && isDelivering && (
+                                    <div className="pt-2 mt-2 border-t border-gray-200">
+                                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-2">
+                                        <div className="flex items-center gap-1.5 mb-1">
+                                          <Banknote className="h-3.5 w-3.5 text-amber-600" />
+                                          <span className="text-xs font-semibold text-amber-700">Vybrať hotovosť pri prevzatí</span>
+                                        </div>
+                                        <p className="text-xs text-amber-700">
+                                          Zákazník platí hotovosťou. Vyberte sumu <strong>{formatPrice(order.total)}</strong> pri odovzdaní objednávky.
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
+
                                   {order.customer && (
                                     <div className="pt-2 mt-2 border-t border-gray-200">
                                       <p className="text-xs text-gray-500">
@@ -351,7 +379,7 @@ export default function RiderOrdersView() {
                                         </span>
                                       </p>
                                       {order.customer.phone && (
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-xs text-gray-500 mt-0.5">
                                           Tel:{' '}
                                           <span className="font-medium text-gray-700">
                                             {order.customer.phone}
@@ -373,20 +401,58 @@ export default function RiderOrdersView() {
                                   )}
                                 </div>
 
-                                {/* Deliver button for active orders */}
+                                {/* Contact and deliver buttons for active orders */}
                                 {isDelivering && (
-                                  <Button
-                                    className="w-full bg-green-500 hover:bg-green-600 text-white h-11 text-sm font-semibold mt-3"
-                                    onClick={() => deliverOrder(order.id)}
-                                    disabled={deliveringOrderId === order.id}
-                                  >
-                                    {deliveringOrderId === order.id ? (
-                                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                    ) : (
-                                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                                  <div className="mt-3 space-y-2">
+                                    {/* Contact buttons */}
+                                    <div className="flex gap-2">
+                                      {order.restaurant?.phone && (
+                                        <a
+                                          href={`tel:${order.restaurant.phone}`}
+                                          className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg px-3 py-2 text-xs font-medium transition-colors"
+                                        >
+                                          <Phone className="h-3 w-3" />
+                                          Zavolať prevádzke
+                                        </a>
+                                      )}
+                                      {order.customer?.phone && (
+                                        <a
+                                          href={`tel:${order.customer.phone}`}
+                                          className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg px-3 py-2 text-xs font-medium transition-colors"
+                                        >
+                                          <Phone className="h-3 w-3" />
+                                          Zavolať zákazníkovi
+                                        </a>
+                                      )}
+                                    </div>
+
+                                    {/* Navigate to customer */}
+                                    {order.deliveryAddress && (
+                                      <a
+                                        href={`https://maps.google.com/?q=${encodeURIComponent(order.deliveryAddress)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors"
+                                      >
+                                        <Navigation className="h-4 w-4" />
+                                        Navigovať k zákazníkovi
+                                      </a>
                                     )}
-                                    Doručené
-                                  </Button>
+
+                                    {/* Deliver button */}
+                                    <Button
+                                      className="w-full bg-green-500 hover:bg-green-600 text-white h-11 text-sm font-semibold"
+                                      onClick={() => deliverOrder(order.id)}
+                                      disabled={deliveringOrderId === order.id}
+                                    >
+                                      {deliveringOrderId === order.id ? (
+                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                      ) : (
+                                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                                      )}
+                                      Doručené
+                                    </Button>
+                                  </div>
                                 )}
                               </motion.div>
                             )}

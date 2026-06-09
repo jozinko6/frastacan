@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
         orderNumber: true,
         deliveryFee: true,
         total: true,
+        paymentMethod: true,
         deliveredAt: true,
         restaurant: {
           select: { id: true, name: true, logo: true },

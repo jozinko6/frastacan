@@ -134,7 +134,7 @@ export default function RegisterView() {
 
               <Button
                 type="submit"
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11"
+                className="w-full bg-primary hover:bg-primary/90 text-white h-11"
                 disabled={loading}
               >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Zaregistrovať sa'}
@@ -145,7 +145,7 @@ export default function RegisterView() {
               <p className="text-sm text-muted-foreground">
                 Už máte účet?{' '}
                 <button
-                  className="text-orange-500 hover:underline font-medium"
+                  className="text-primary hover:underline font-medium"
                   onClick={() => setView('login')}
                 >
                   Prihláste sa

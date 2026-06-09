@@ -31,6 +31,14 @@ export async function GET(request: NextRequest) {
             logo: true,
             address: true,
             phone: true,
+            city: true,
+            zone: {
+              select: {
+                id: true,
+                name: true,
+                baseFee: true,
+              },
+            },
           },
         },
         customer: {
@@ -51,7 +59,13 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'asc' },
     })
 
-    return NextResponse.json({ orders: availableOrders }, { status: 200 })
+    // Add payment info for each order
+    const ordersWithPaymentInfo = availableOrders.map((order) => ({
+      ...order,
+      cashToCollect: order.paymentMethod === 'cash' ? order.total : 0,
+    }))
+
+    return NextResponse.json({ orders: ordersWithPaymentInfo }, { status: 200 })
   } catch (error) {
     console.error('Get available orders error:', error)
     return NextResponse.json(

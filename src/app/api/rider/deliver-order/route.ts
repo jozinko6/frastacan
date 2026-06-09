@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
               logo: true,
               address: true,
               phone: true,
+              city: true,
             },
           },
           customer: {

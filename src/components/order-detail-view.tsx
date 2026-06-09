@@ -37,7 +37,7 @@ const statusSteps = [
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   pending: { label: 'Čakajúca', color: 'text-yellow-700', bgColor: 'bg-yellow-100' },
   confirmed: { label: 'Potvrdená', color: 'text-blue-700', bgColor: 'bg-blue-100' },
-  preparing: { label: 'Pripravuje sa', color: 'text-orange-700', bgColor: 'bg-orange-100' },
+  preparing: { label: 'Pripravuje sa', color: 'text-primary', bgColor: 'bg-primary/10' },
   ready: { label: 'Pripravená', color: 'text-indigo-700', bgColor: 'bg-indigo-100' },
   delivering: { label: 'Na ceste', color: 'text-purple-700', bgColor: 'bg-purple-100' },
   delivered: { label: 'Doručená', color: 'text-green-700', bgColor: 'bg-green-100' },
@@ -179,16 +179,16 @@ export default function OrderDetailView() {
                           <div
                             className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full shrink-0 transition-colors ${
                               isCompleted
-                                ? 'bg-orange-500 text-white'
+                                ? 'bg-primary text-white'
                                 : 'bg-gray-100 text-gray-400'
-                            } ${isCurrent ? 'ring-4 ring-orange-200' : ''}`}
+                            } ${isCurrent ? 'ring-4 ring-primary/20' : ''}`}
                           >
                             <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                           </div>
                           {index < statusSteps.length - 1 && (
                             <div
                               className={`h-0.5 flex-1 mx-1 ${
-                                index < currentStep ? 'bg-orange-500' : 'bg-gray-200'
+                                index < currentStep ? 'bg-primary' : 'bg-gray-200'
                               }`}
                             />
                           )}
@@ -213,7 +213,7 @@ export default function OrderDetailView() {
               {order.items?.map((item) => (
                 <div key={item.id} className="flex items-center gap-3">
                   {item.foodItem?.image && (
-                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-orange-50 shrink-0">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-primary/5 shrink-0">
                       <img
                         src={item.foodItem.image}
                         alt={item.foodItem.name}
@@ -236,7 +236,7 @@ export default function OrderDetailView() {
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5 text-orange-500" />
+                  <MessageSquare className="h-5 w-5 text-primary" />
                   Ohodnoťte objednávku
                 </CardTitle>
               </CardHeader>
@@ -253,7 +253,7 @@ export default function OrderDetailView() {
                         <Star
                           className={`h-7 w-7 ${
                             star <= reviewRating
-                              ? 'fill-orange-400 text-orange-400'
+                              ? 'fill-primary/80 text-primary/80'
                               : 'text-gray-300'
                           }`}
                         />
@@ -270,7 +270,7 @@ export default function OrderDetailView() {
                   />
                 </div>
                 <Button
-                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                  className="bg-primary hover:bg-primary/90 text-white"
                   onClick={submitReview}
                   disabled={submittingReview || reviewRating === 0}
                 >
@@ -291,7 +291,7 @@ export default function OrderDetailView() {
                       <Star
                         key={star}
                         className={`h-4 w-4 ${
-                          star <= reviewRating ? 'fill-orange-400 text-orange-400' : 'text-gray-300'
+                          star <= reviewRating ? 'fill-primary/80 text-primary/80' : 'text-gray-300'
                         }`}
                       />
                     ))}
@@ -331,7 +331,7 @@ export default function OrderDetailView() {
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Celkom</span>
-                <span className="text-orange-600">{formatPrice(order.total)}</span>
+                <span className="text-primary">{formatPrice(order.total)}</span>
               </div>
 
               <Separator />

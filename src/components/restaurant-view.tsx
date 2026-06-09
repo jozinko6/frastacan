@@ -136,7 +136,7 @@ export default function RestaurantView() {
             </p>
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <div className="flex items-center gap-1 bg-white/20 rounded-full px-3 py-1">
-                <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
+                <Star className="h-4 w-4 fill-primary/80 text-primary/80" />
                 <span className="font-medium">{restaurant.rating}</span>
                 <span className="text-white/70">({restaurant.reviewCount})</span>
               </div>
@@ -148,7 +148,7 @@ export default function RestaurantView() {
                 <MapPin className="h-4 w-4" />
                 <span>{restaurant.address}</span>
               </div>
-              <Badge variant="secondary" className="bg-orange-500 text-white">
+              <Badge variant="secondary" className="bg-primary text-white">
                 {restaurant.cuisine}
               </Badge>
             </div>
@@ -169,13 +169,13 @@ export default function RestaurantView() {
                 return (
                   <Card key={item.id} className="shrink-0 w-56 border-0 shadow-sm overflow-hidden">
                     {item.image && (
-                      <div className="h-28 overflow-hidden bg-orange-50">
+                      <div className="h-28 overflow-hidden bg-primary/5">
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
                     )}
                     <CardContent className="p-3">
                       <h4 className="font-medium text-sm line-clamp-1">{item.name}</h4>
-                      <p className="text-orange-600 font-bold text-sm mt-1">
+                      <p className="text-primary font-bold text-sm mt-1">
                         {item.discountPrice
                           ? <>
                               <span className="line-through text-muted-foreground text-xs mr-1">
@@ -190,7 +190,7 @@ export default function RestaurantView() {
                         {qty === 0 ? (
                           <Button
                             size="sm"
-                            className="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs h-8"
+                            className="w-full bg-primary hover:bg-primary/90 text-white text-xs h-8"
                             onClick={() => handleAdd(item)}
                           >
                             <Plus className="h-3 w-3 mr-1" /> Pridať
@@ -200,7 +200,7 @@ export default function RestaurantView() {
                             <Button
                               size="icon"
                               variant="outline"
-                              className="h-8 w-8 border-orange-300"
+                              className="h-8 w-8 border-primary/60"
                               onClick={() => handleDecrease(item)}
                             >
                               <Minus className="h-3 w-3" />
@@ -208,7 +208,7 @@ export default function RestaurantView() {
                             <span className="font-bold text-sm w-6 text-center">{qty}</span>
                             <Button
                               size="icon"
-                              className="h-8 w-8 bg-orange-500 hover:bg-orange-600 text-white"
+                              className="h-8 w-8 bg-primary hover:bg-primary/90 text-white"
                               onClick={() => handleIncrease(item)}
                             >
                               <Plus className="h-3 w-3" />
@@ -235,7 +235,7 @@ export default function RestaurantView() {
                 <Button
                   key={cat.id}
                   variant={activeCategory === cat.id ? 'default' : 'outline'}
-                  className={`shrink-0 rounded-full text-sm ${activeCategory === cat.id ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}`}
+                  className={`shrink-0 rounded-full text-sm ${activeCategory === cat.id ? 'bg-primary hover:bg-primary/90 text-white' : ''}`}
                   onClick={() => setActiveCategory(cat.id)}
                 >
                   {cat.icon && <span className="mr-1">{cat.icon}</span>}
@@ -268,7 +268,7 @@ export default function RestaurantView() {
                                     <div className="flex items-center gap-2">
                                       <h4 className="font-semibold">{item.name}</h4>
                                       {item.isPopular && (
-                                        <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-700">
+                                        <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
                                           Populárne
                                         </Badge>
                                       )}
@@ -281,7 +281,7 @@ export default function RestaurantView() {
                                     <div className="mt-2">
                                       {item.discountPrice ? (
                                         <div className="flex items-center gap-2">
-                                          <span className="font-bold text-orange-600">
+                                          <span className="font-bold text-primary">
                                             {formatPrice(item.discountPrice)}
                                           </span>
                                           <span className="text-sm text-muted-foreground line-through">
@@ -289,7 +289,7 @@ export default function RestaurantView() {
                                           </span>
                                         </div>
                                       ) : (
-                                        <span className="font-bold text-orange-600">
+                                        <span className="font-bold text-primary">
                                           {formatPrice(item.price)}
                                         </span>
                                       )}
@@ -300,7 +300,7 @@ export default function RestaurantView() {
                                   {qty === 0 ? (
                                     <Button
                                       size="sm"
-                                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                                      className="bg-primary hover:bg-primary/90 text-white"
                                       onClick={() => handleAdd(item)}
                                     >
                                       <Plus className="h-4 w-4 mr-1" /> Pridať
@@ -310,7 +310,7 @@ export default function RestaurantView() {
                                       <Button
                                         size="icon"
                                         variant="outline"
-                                        className="h-9 w-9 border-orange-300"
+                                        className="h-9 w-9 border-primary/60"
                                         onClick={() => handleDecrease(item)}
                                       >
                                         <Minus className="h-4 w-4" />
@@ -318,7 +318,7 @@ export default function RestaurantView() {
                                       <span className="font-bold w-8 text-center">{qty}</span>
                                       <Button
                                         size="icon"
-                                        className="h-9 w-9 bg-orange-500 hover:bg-orange-600 text-white"
+                                        className="h-9 w-9 bg-primary hover:bg-primary/90 text-white"
                                         onClick={() => handleIncrease(item)}
                                       >
                                         <Plus className="h-4 w-4" />
@@ -328,7 +328,7 @@ export default function RestaurantView() {
                                 </div>
                               </div>
                               {item.image && (
-                                <div className="w-28 sm:w-36 shrink-0 bg-orange-50">
+                                <div className="w-28 sm:w-36 shrink-0 bg-primary/5">
                                   <img
                                     src={item.image}
                                     alt={item.name}
@@ -362,7 +362,7 @@ export default function RestaurantView() {
         >
           <div className="max-w-6xl mx-auto">
             <Button
-              className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-base shadow-xl rounded-xl"
+              className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-semibold text-base shadow-xl rounded-xl"
               onClick={() => setView('cart')}
             >
               <ShoppingCart className="h-5 w-5 mr-2" />

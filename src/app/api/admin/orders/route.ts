@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
             select: { id: true, name: true, email: true, phone: true },
           },
           restaurant: {
-            select: { id: true, name: true, logo: true, phone: true },
+            select: { id: true, name: true, logo: true, phone: true, city: true },
           },
           rider: {
             select: { id: true, name: true, phone: true },

@@ -44,6 +44,14 @@ export async function GET(request: NextRequest) {
             logo: true,
             address: true,
             phone: true,
+            city: true,
+            zone: {
+              select: {
+                id: true,
+                name: true,
+                baseFee: true,
+              },
+            },
           },
         },
         customer: {
@@ -64,7 +72,13 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    return NextResponse.json({ orders }, { status: 200 })
+    // Add payment info for each order
+    const ordersWithPaymentInfo = orders.map((order) => ({
+      ...order,
+      cashToCollect: order.paymentMethod === 'cash' ? order.total : 0,
+    }))
+
+    return NextResponse.json({ orders: ordersWithPaymentInfo }, { status: 200 })
   } catch (error) {
     console.error('Get rider orders error:', error)
     return NextResponse.json(

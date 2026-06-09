@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PATCH /api/rider - Update rider availability and location
+// PATCH /api/rider - Update rider availability, location, and vehicle type
 export async function PATCH(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request)
@@ -93,7 +93,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { isAvailable, currentLat, currentLng } = body
+    const { isAvailable, currentLat, currentLng, vehicleType } = body
 
     // Ensure rider profile exists
     let riderProfile = await db.riderProfile.findUnique({
@@ -116,6 +116,9 @@ export async function PATCH(request: NextRequest) {
     }
     if (typeof currentLng === 'number') {
       updateData.currentLng = currentLng
+    }
+    if (typeof vehicleType === 'string' && ['bicycle', 'scooter', 'car', 'foot'].includes(vehicleType)) {
+      updateData.vehicleType = vehicleType
     }
 
     if (Object.keys(updateData).length === 0) {

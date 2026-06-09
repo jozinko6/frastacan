@@ -16,6 +16,11 @@ import {
   Loader2,
   Bike,
   ShoppingBag,
+  Phone,
+  Navigation,
+  Footprints,
+  Car,
+  Banknote,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -69,6 +74,7 @@ interface Order {
   discount: number
   total: number
   notes: string | null
+  city: string | null
   deliveryAddress: string
   createdAt: string
   deliveredAt: string | null
@@ -79,6 +85,7 @@ interface Order {
     logo: string | null
     address: string
     phone: string | null
+    city?: string
   }
   customer?: {
     id: string
@@ -86,6 +93,18 @@ interface Order {
     phone: string | null
   }
   items?: OrderItem[]
+}
+
+const vehicleOptions: { key: string; label: string; icon: typeof Bike }[] = [
+  { key: 'bicycle', label: 'Bicykel', icon: Bike },
+  { key: 'scooter', label: 'Skúter', icon: Bike },
+  { key: 'car', label: 'Auto', icon: Car },
+  { key: 'foot', label: 'Pešo', icon: Footprints },
+]
+
+function getVehicleIcon(type: string) {
+  const v = vehicleOptions.find((o) => o.key === type)
+  return v || vehicleOptions[0]
 }
 
 export default function RiderDashboardView() {
@@ -102,6 +121,7 @@ export default function RiderDashboardView() {
   const [acceptingOrderId, setAcceptingOrderId] = useState<string | null>(null)
   const [deliveringOrderId, setDeliveringOrderId] = useState<string | null>(null)
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null)
+  const [pickupConfirmed, setPickupConfirmed] = useState<Set<string>>(new Set())
   const [error, setError] = useState<string | null>(null)
 
   const fetchData = useCallback(async (showRefresh = false) => {
@@ -160,7 +180,7 @@ export default function RiderDashboardView() {
       })
       if (res.ok) {
         setIsAvailable(!isAvailable)
-        toast.success(isAvailable ? 'Ste teraz nedostupný' : 'Ste teraz dostupný')
+        toast.success(isAvailable ? 'Som nedostupný' : 'Som dostupný')
       } else {
         toast.error('Chyba pri zmene dostupnosti')
       }
@@ -179,13 +199,13 @@ export default function RiderDashboardView() {
       })
       const data = await res.json()
       if (res.ok) {
-        toast.success('Objednávka prijatá!')
+        toast.success('Doručenie prijaté!')
         fetchData()
       } else {
-        toast.error(data.error || 'Chyba pri prijímaní objednávky')
+        toast.error(data.error || 'Chyba pri prijímaní doručenia')
       }
     } catch {
-      toast.error('Chyba pri prijímaní objednávky')
+      toast.error('Chyba pri prijímaní doručenia')
     } finally {
       setAcceptingOrderId(null)
     }
@@ -201,7 +221,7 @@ export default function RiderDashboardView() {
       })
       const data = await res.json()
       if (res.ok) {
-        toast.success('Objednávka označená ako doručená!')
+        toast.success('Objednávka doručená!')
         fetchData()
       } else {
         toast.error(data.error || 'Chyba pri označovaní objednávky')
@@ -213,6 +233,11 @@ export default function RiderDashboardView() {
     }
   }
 
+  function handlePickup(orderId: string) {
+    setPickupConfirmed((prev) => new Set(prev).add(orderId))
+    toast.success('Objednávka prevzatá!')
+  }
+
   function handleRefresh() {
     fetchData(true)
   }
@@ -221,9 +246,9 @@ export default function RiderDashboardView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-orange-500 px-4 pt-6 pb-8 rounded-b-3xl">
-          <Skeleton className="h-6 w-40 bg-orange-400/30 mb-4" />
-          <Skeleton className="h-12 w-full bg-orange-400/30 rounded-xl" />
+        <div className="bg-[#B42318] px-4 pt-6 pb-8 rounded-b-3xl">
+          <Skeleton className="h-6 w-40 bg-white/20 mb-4" />
+          <Skeleton className="h-12 w-full bg-white/15 rounded-xl" />
         </div>
         <div className="px-4 -mt-4 grid grid-cols-2 gap-3">
           {[1, 2, 3, 4].map((i) => (
@@ -262,30 +287,40 @@ export default function RiderDashboardView() {
   }
 
   const firstName = riderUser?.name?.split(' ')[0] || 'Kurier'
+  const currentVehicle = getVehicleIcon(profile?.vehicleType || 'bicycle')
+  const VehicleIcon = currentVehicle.icon
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header with greeting and availability toggle */}
-      <div className="bg-orange-500 px-4 pt-6 pb-8 rounded-b-3xl">
+      <div className="bg-[#B42318] px-4 pt-6 pb-8 rounded-b-3xl">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-1">
             <div>
-              <p className="text-orange-100 text-sm">Vitajte späť,</p>
+              <p className="text-red-200 text-sm">Vitajte späť,</p>
               <h1 className="text-white text-xl font-bold">{firstName} 👋</h1>
             </div>
             <button
               onClick={handleRefresh}
-              className="p-2 rounded-full bg-orange-400/30 text-white hover:bg-orange-400/50 transition-colors"
+              className="p-2 rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors"
               disabled={refreshing}
             >
               <RefreshCw className={cn('h-5 w-5', refreshing && 'animate-spin')} />
             </button>
           </div>
 
+          {/* Vehicle type badge */}
+          <div className="mt-3 flex items-center gap-2">
+            <div className="bg-white/15 rounded-lg px-3 py-1.5 flex items-center gap-1.5">
+              <VehicleIcon className="h-4 w-4 text-white" />
+              <span className="text-white text-xs font-medium">{currentVehicle.label}</span>
+            </div>
+          </div>
+
           {/* Availability Toggle */}
           <motion.div
             layout
-            className="mt-4 bg-white/15 backdrop-blur-sm rounded-xl p-4 flex items-center justify-between"
+            className="mt-3 bg-white/15 backdrop-blur-sm rounded-xl p-4 flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
               <div
@@ -296,10 +331,10 @@ export default function RiderDashboardView() {
               />
               <div>
                 <p className="text-white font-medium text-sm">
-                  {isAvailable ? 'Dostupný' : 'Nedostupný'}
+                  {isAvailable ? 'Som dostupný' : 'Som nedostupný'}
                 </p>
-                <p className="text-orange-100 text-xs">
-                  {isAvailable ? 'Dostávate nové objednávky' : 'Zapnite si dostupnosť'}
+                <p className="text-red-200 text-xs">
+                  {isAvailable ? 'Dostávate nové doručovacie úlohy' : 'Zapnite si dostupnosť'}
                 </p>
               </div>
             </div>
@@ -333,8 +368,8 @@ export default function RiderDashboardView() {
             <Card className="border-0 shadow-md">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 bg-orange-100 rounded-lg">
-                    <Bike className="h-4 w-4 text-orange-600" />
+                  <div className="p-1.5 bg-[#B42318]/10 rounded-lg">
+                    <Bike className="h-4 w-4 text-[#B42318]" />
                   </div>
                   <span className="text-xs text-muted-foreground">Aktívne doruč.</span>
                 </div>
@@ -377,98 +412,185 @@ export default function RiderDashboardView() {
       {activeOrders.length > 0 && (
         <div className="max-w-lg mx-auto px-4 mt-6">
           <h2 className="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <Bike className="h-4 w-4 text-orange-500" />
+            <Bike className="h-4 w-4 text-[#B42318]" />
             Aktívne doručenia ({activeOrders.length})
           </h2>
           <div className="space-y-3">
             <AnimatePresence>
-              {activeOrders.map((order, index) => (
-                <motion.div
-                  key={order.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Card className="border-l-4 border-l-orange-500 border-0 shadow-md overflow-hidden">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{order.restaurant?.logo || '🏪'}</span>
-                          <div>
-                            <p className="font-semibold text-sm">{order.restaurant?.name}</p>
-                            <p className="text-xs text-muted-foreground">#{order.orderNumber}</p>
-                          </div>
-                        </div>
-                        <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 text-xs">
-                          Na ceste
-                        </Badge>
-                      </div>
+              {activeOrders.map((order, index) => {
+                const isPickedUp = pickupConfirmed.has(order.id)
+                const isCashPayment = order.paymentMethod === 'cash'
 
-                      <div className="flex items-start gap-1.5 text-xs text-gray-500 mb-2">
-                        <MapPin className="h-3 w-3 mt-0.5 shrink-0" />
-                        <span>{order.deliveryAddress}</span>
-                      </div>
-
-                      {/* Expandable items */}
-                      <button
-                        className="flex items-center gap-1 text-xs text-orange-500 mb-3"
-                        onClick={() =>
-                          setExpandedOrder(expandedOrder === order.id ? null : order.id)
-                        }
-                      >
-                        <ShoppingBag className="h-3 w-3" />
-                        {order.items?.length || 0} položiek
-                        {expandedOrder === order.id ? (
-                          <ChevronUp className="h-3 w-3" />
-                        ) : (
-                          <ChevronDown className="h-3 w-3" />
-                        )}
-                      </button>
-
-                      <AnimatePresence>
-                        {expandedOrder === order.id && order.items && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden mb-3"
-                          >
-                            <div className="bg-gray-50 rounded-lg p-2 space-y-1">
-                              {order.items.map((item) => (
-                                <div
-                                  key={item.id}
-                                  className="flex justify-between text-xs"
-                                >
-                                  <span className="text-gray-600">
-                                    {item.quantity}x {item.foodItem?.name}
-                                  </span>
-                                  <span className="text-gray-500">
-                                    {formatPrice(item.price * item.quantity)}
-                                  </span>
-                                </div>
-                              ))}
+                return (
+                  <motion.div
+                    key={order.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Card className="border-l-4 border-l-[#B42318] border-0 shadow-md overflow-hidden">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{order.restaurant?.logo || '🏪'}</span>
+                            <div>
+                              <p className="font-semibold text-sm">{order.restaurant?.name}</p>
+                              <p className="text-xs text-muted-foreground">#{order.orderNumber}</p>
                             </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                          </div>
+                          <Badge className="bg-[#B42318]/10 text-[#B42318] hover:bg-[#B42318]/10 text-xs">
+                            {isPickedUp ? 'Na ceste k zákazníkovi' : 'Čaká na prevzatie'}
+                          </Badge>
+                        </div>
 
-                      <Button
-                        className="w-full bg-green-500 hover:bg-green-600 text-white h-11 text-sm font-semibold"
-                        onClick={() => deliverOrder(order.id)}
-                        disabled={deliveringOrderId === order.id}
-                      >
-                        {deliveringOrderId === order.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        ) : (
-                          <CheckCircle2 className="h-4 w-4 mr-2" />
+                        {/* City/Zone info */}
+                        {(order.city || order.restaurant?.city) && (
+                          <div className="flex items-center gap-1 text-xs text-[#B42318] font-medium mb-1">
+                            <MapPin className="h-3 w-3" />
+                            <span>{order.city || order.restaurant?.city}</span>
+                          </div>
                         )}
-                        Doručené
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+
+                        <div className="flex items-start gap-1.5 text-xs text-gray-500 mb-2">
+                          <MapPin className="h-3 w-3 mt-0.5 shrink-0" />
+                          <span>{order.deliveryAddress}</span>
+                        </div>
+
+                        {/* Cash payment info */}
+                        {isCashPayment && (
+                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 mb-2">
+                            <div className="flex items-center gap-1.5 mb-1">
+                              <Banknote className="h-3.5 w-3.5 text-amber-600" />
+                              <span className="text-xs font-semibold text-amber-700">Platba hotovosťou</span>
+                            </div>
+                            <p className="text-xs text-amber-700">
+                              Zákazník platí hotovosťou. Vyberte sumu <strong>{formatPrice(order.total)}</strong> pri odovzdaní objednávky.
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Contact buttons */}
+                        <div className="flex gap-2 mb-3">
+                          {order.restaurant?.phone && (
+                            <a
+                              href={`tel:${order.restaurant.phone}`}
+                              className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+                            >
+                              <Phone className="h-3 w-3" />
+                              Zavolať prevádzke
+                            </a>
+                          )}
+                          {order.customer?.phone && (
+                            <a
+                              href={`tel:${order.customer.phone}`}
+                              className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+                            >
+                              <Phone className="h-3 w-3" />
+                              Zavolať zákazníkovi
+                            </a>
+                          )}
+                        </div>
+
+                        {/* Expandable items */}
+                        <button
+                          className="flex items-center gap-1 text-xs text-[#B42318] mb-3"
+                          onClick={() =>
+                            setExpandedOrder(expandedOrder === order.id ? null : order.id)
+                          }
+                        >
+                          <ShoppingBag className="h-3 w-3" />
+                          {order.items?.length || 0} položiek
+                          {expandedOrder === order.id ? (
+                            <ChevronUp className="h-3 w-3" />
+                          ) : (
+                            <ChevronDown className="h-3 w-3" />
+                          )}
+                        </button>
+
+                        <AnimatePresence>
+                          {expandedOrder === order.id && order.items && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden mb-3"
+                            >
+                              <div className="bg-gray-50 rounded-lg p-2 space-y-1">
+                                {order.items.map((item) => (
+                                  <div
+                                    key={item.id}
+                                    className="flex justify-between text-xs"
+                                  >
+                                    <span className="text-gray-600">
+                                      {item.quantity}x {item.foodItem?.name}
+                                    </span>
+                                    <span className="text-gray-500">
+                                      {formatPrice(item.price * item.quantity)}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        {/* Action buttons */}
+                        {!isPickedUp ? (
+                          <div className="space-y-2">
+                            {/* Navigate to restaurant */}
+                            {order.restaurant?.address && (
+                              <a
+                                href={`https://maps.google.com/?q=${encodeURIComponent(order.restaurant.address)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg h-11 text-sm font-semibold transition-colors"
+                              >
+                                <Navigation className="h-4 w-4" />
+                                Navigovať do prevádzky
+                              </a>
+                            )}
+                            {/* Pickup confirmation */}
+                            <Button
+                              className="w-full bg-amber-500 hover:bg-amber-600 text-white h-11 text-sm font-semibold"
+                              onClick={() => handlePickup(order.id)}
+                            >
+                              <Package className="h-4 w-4 mr-2" />
+                              Prevzal som objednávku
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {/* Navigate to customer */}
+                            <a
+                              href={`https://maps.google.com/?q=${encodeURIComponent(order.deliveryAddress)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg h-11 text-sm font-semibold transition-colors"
+                            >
+                              <Navigation className="h-4 w-4" />
+                              Navigovať k zákazníkovi
+                            </a>
+                            {/* Deliver button */}
+                            <Button
+                              className="w-full bg-green-500 hover:bg-green-600 text-white h-11 text-sm font-semibold"
+                              onClick={() => deliverOrder(order.id)}
+                              disabled={deliveringOrderId === order.id}
+                            >
+                              {deliveringOrderId === order.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              ) : (
+                                <CheckCircle2 className="h-4 w-4 mr-2" />
+                              )}
+                              Doručené
+                            </Button>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })}
             </AnimatePresence>
           </div>
         </div>
@@ -477,10 +599,10 @@ export default function RiderDashboardView() {
       {/* Available Orders Section */}
       <div className="max-w-lg mx-auto px-4 mt-6">
         <h2 className="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
-          <Package className="h-4 w-4 text-orange-500" />
-          Dostupné objednávky
+          <Package className="h-4 w-4 text-[#B42318]" />
+          Nová doručovacia úloha
           {availableOrders.length > 0 && (
-            <Badge className="bg-orange-500 text-white text-xs ml-1">
+            <Badge className="bg-[#B42318] text-white text-xs ml-1">
               {availableOrders.length}
             </Badge>
           )}
@@ -495,8 +617,8 @@ export default function RiderDashboardView() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <Package className="h-8 w-8 text-gray-300" />
             </div>
-            <p className="text-gray-500 text-sm font-medium">Žiadne dostupné objednávky</p>
-            <p className="text-gray-400 text-xs mt-1">Nové objednávky sa zobrazia automaticky</p>
+            <p className="text-gray-500 text-sm font-medium">Žiadne dostupné doručovacie úlohy</p>
+            <p className="text-gray-400 text-xs mt-1">Nové úlohy sa zobrazia automaticky</p>
           </motion.div>
         ) : (
           <div className="space-y-3">
@@ -527,19 +649,43 @@ export default function RiderDashboardView() {
                         </div>
                       </div>
 
+                      {/* City/Zone info */}
+                      {(order.city || order.restaurant?.city) && (
+                        <div className="flex items-center gap-1 text-xs text-[#B42318] font-medium mb-1">
+                          <MapPin className="h-3 w-3" />
+                          <span>{order.city || order.restaurant?.city}</span>
+                        </div>
+                      )}
+
                       <div className="flex items-start gap-1.5 text-xs text-gray-500 mb-1">
                         <MapPin className="h-3 w-3 mt-0.5 shrink-0" />
                         <span>{order.deliveryAddress}</span>
                       </div>
 
-                      <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
+                      <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-2">
                         <Clock className="h-3 w-3" />
                         <span>{order.items?.length || 0} položiek</span>
+                        {order.paymentMethod === 'cash' && (
+                          <>
+                            <span className="text-gray-300">·</span>
+                            <Banknote className="h-3 w-3 text-amber-500" />
+                            <span className="text-amber-600">Hotovosť</span>
+                          </>
+                        )}
                       </div>
+
+                      {/* Cash payment note */}
+                      {order.paymentMethod === 'cash' && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 mb-3">
+                          <p className="text-xs text-amber-700">
+                            Vybrať hotovosť pri prevzatí: <strong>{formatPrice(order.total)}</strong>
+                          </p>
+                        </div>
+                      )}
 
                       {/* Expandable items */}
                       <button
-                        className="flex items-center gap-1 text-xs text-orange-500 mb-3"
+                        className="flex items-center gap-1 text-xs text-[#B42318] mb-3"
                         onClick={() =>
                           setExpandedOrder(expandedOrder === order.id ? null : order.id)
                         }
@@ -581,7 +727,7 @@ export default function RiderDashboardView() {
                       </AnimatePresence>
 
                       <Button
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11 text-sm font-semibold"
+                        className="w-full bg-[#B42318] hover:bg-[#8B1B12] text-white h-11 text-sm font-semibold"
                         onClick={() => acceptOrder(order.id)}
                         disabled={acceptingOrderId === order.id || !isAvailable}
                       >
@@ -590,11 +736,11 @@ export default function RiderDashboardView() {
                         ) : (
                           <Package className="h-4 w-4 mr-2" />
                         )}
-                        Prijať objednávku
+                        Prijať doručenie
                       </Button>
                       {!isAvailable && acceptingOrderId !== order.id && (
                         <p className="text-xs text-center text-red-400 mt-1">
-                          Zapnite dostupnosť na prijatie objednávky
+                          Zapnite dostupnosť na prijatie doručenia
                         </p>
                       )}
                     </CardContent>

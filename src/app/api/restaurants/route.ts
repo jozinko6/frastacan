@@ -27,6 +27,16 @@ export async function GET(request: NextRequest) {
     const restaurants = await db.restaurant.findMany({
       where,
       include: {
+        zone: {
+          select: {
+            id: true,
+            name: true,
+            baseFee: true,
+            minimumOrder: true,
+            estimatedMin: true,
+            estimatedMax: true,
+          },
+        },
         categories: {
           orderBy: { sortOrder: 'asc' },
         },

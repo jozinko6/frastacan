@@ -61,7 +61,7 @@ export default function CartView() {
             Pridajte si niečo chutné z našich reštaurácií
           </p>
           <Button
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            className="bg-primary hover:bg-primary/90 text-white"
             onClick={() => setView('home')}
           >
             <ShoppingBag className="h-4 w-4 mr-2" />
@@ -107,7 +107,7 @@ export default function CartView() {
                   <CardContent className="p-4">
                     <div className="flex gap-3">
                       {item.foodItem.image && (
-                        <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-orange-50">
+                        <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-primary/5">
                           <img
                             src={item.foodItem.image}
                             alt={item.foodItem.name}
@@ -119,7 +119,7 @@ export default function CartView() {
                         <h3 className="font-semibold text-sm sm:text-base line-clamp-1">
                           {item.foodItem.name}
                         </h3>
-                        <p className="text-orange-600 font-bold mt-1">
+                        <p className="text-primary font-bold mt-1">
                           {formatPrice((item.foodItem.discountPrice ?? item.foodItem.price) * item.quantity)}
                         </p>
                         {item.foodItem.discountPrice && (
@@ -144,7 +144,7 @@ export default function CartView() {
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 border-orange-300"
+                            className="h-8 w-8 border-primary/60"
                             onClick={() => updateQuantity(item.foodItem.id, item.quantity - 1)}
                           >
                             <Minus className="h-3 w-3" />
@@ -152,7 +152,7 @@ export default function CartView() {
                           <span className="font-bold w-6 text-center text-sm">{item.quantity}</span>
                           <Button
                             size="icon"
-                            className="h-8 w-8 bg-orange-500 hover:bg-orange-600 text-white"
+                            className="h-8 w-8 bg-primary hover:bg-primary/90 text-white"
                             onClick={() => updateQuantity(item.foodItem.id, item.quantity + 1)}
                           >
                             <Plus className="h-3 w-3" />
@@ -205,7 +205,7 @@ export default function CartView() {
                 <Separator />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Celkom</span>
-                  <span className="text-orange-600">{formatPrice(total)}</span>
+                  <span className="text-primary">{formatPrice(total)}</span>
                 </div>
               </div>
 
@@ -232,7 +232,7 @@ export default function CartView() {
               </div>
 
               <Button
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white h-12 text-base font-semibold"
+                className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold"
                 onClick={() => setView('checkout')}
               >
                 Pokračovať k objednávke

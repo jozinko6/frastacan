@@ -17,6 +17,9 @@ export async function GET(request: NextRequest) {
         owner: {
           select: { id: true, name: true, email: true, phone: true },
         },
+        zone: {
+          select: { id: true, name: true, type: true },
+        },
         categories: {
           include: {
             _count: { select: { foodItems: true } },

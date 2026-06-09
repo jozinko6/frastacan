@@ -6,7 +6,8 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Seeding database...')
 
-  // Create admin user
+  // ── Users ──────────────────────────────────────────────────────────────
+
   const admin = await prisma.user.upsert({
     where: { email: 'admin@frastacan.sk' },
     update: {},
@@ -19,7 +20,7 @@ async function main() {
     },
   })
 
-  // Create restaurant owners
+  // Existing restaurant owners (updated to Hlohovec area)
   const owner1 = await prisma.user.upsert({
     where: { email: 'slovenska@frastacan.sk' },
     update: {},
@@ -80,7 +81,56 @@ async function main() {
     },
   })
 
-  // Create customer
+  // New demo restaurant owners
+  const ownerPizza = await prisma.user.upsert({
+    where: { email: 'pizza@frastacan.sk' },
+    update: {},
+    create: {
+      email: 'pizza@frastacan.sk',
+      name: 'Pizza Demo Majiteľ',
+      password: hashPassword('owner123'),
+      phone: '+421900000020',
+      role: 'restaurant',
+    },
+  })
+
+  const ownerKaviaren = await prisma.user.upsert({
+    where: { email: 'kaviaren@frastacan.sk' },
+    update: {},
+    create: {
+      email: 'kaviaren@frastacan.sk',
+      name: 'Kaviareň Demo Majiteľ',
+      password: hashPassword('owner123'),
+      phone: '+421900000021',
+      role: 'restaurant',
+    },
+  })
+
+  const ownerPotraviny = await prisma.user.upsert({
+    where: { email: 'potraviny@frastacan.sk' },
+    update: {},
+    create: {
+      email: 'potraviny@frastacan.sk',
+      name: 'Potraviny Demo Majiteľ',
+      password: hashPassword('owner123'),
+      phone: '+421900000022',
+      role: 'restaurant',
+    },
+  })
+
+  const ownerKvety = await prisma.user.upsert({
+    where: { email: 'kvety@frastacan.sk' },
+    update: {},
+    create: {
+      email: 'kvety@frastacan.sk',
+      name: 'Kvety Demo Majiteľ',
+      password: hashPassword('owner123'),
+      phone: '+421900000023',
+      role: 'restaurant',
+    },
+  })
+
+  // Customer
   const customer = await prisma.user.upsert({
     where: { email: 'customer@test.sk' },
     update: {},
@@ -93,38 +143,237 @@ async function main() {
     },
   })
 
-  // Create rider
-  const rider = await prisma.user.upsert({
+  // Demo riders
+  const rider1 = await prisma.user.upsert({
     where: { email: 'rider@frastacan.sk' },
     update: {},
     create: {
       email: 'rider@frastacan.sk',
-      name: 'Miro Kuriér',
+      name: 'Demo Kuriér Hlohovec',
       password: hashPassword('rider123'),
       phone: '+421900000011',
       role: 'rider',
     },
   })
 
-  // Create rider profile
-  await prisma.riderProfile.upsert({
-    where: { userId: rider.id },
+  const rider2 = await prisma.user.upsert({
+    where: { email: 'rider-okolie@frastacan.sk' },
     update: {},
     create: {
-      userId: rider.id,
+      email: 'rider-okolie@frastacan.sk',
+      name: 'Demo Kuriér Okolie',
+      password: hashPassword('rider123'),
+      phone: '+421900000012',
+      role: 'rider',
+    },
+  })
+
+  // ── Delivery Zones ─────────────────────────────────────────────────────
+
+  const zoneHlohovec = await prisma.deliveryZone.create({
+    data: {
+      name: 'Hlohovec centrum',
+      type: 'municipal',
+      baseFee: 1.90,
+      minimumOrder: 6.00,
+      estimatedMin: 25,
+      estimatedMax: 45,
+      radiusKm: 3,
+      centerLat: 48.4317,
+      centerLng: 17.8031,
+      isActive: true,
+    },
+  })
+
+  const zoneSulekovo = await prisma.deliveryZone.create({
+    data: {
+      name: 'Šulekovo',
+      type: 'suburban',
+      baseFee: 2.40,
+      minimumOrder: 8.00,
+      estimatedMin: 30,
+      estimatedMax: 50,
+      radiusKm: 3,
+      centerLat: 48.4215,
+      centerLng: 17.7900,
+      isActive: true,
+    },
+  })
+
+  const zoneLeopoldov = await prisma.deliveryZone.create({
+    data: {
+      name: 'Leopoldov',
+      type: 'suburban',
+      baseFee: 2.90,
+      minimumOrder: 10.00,
+      estimatedMin: 35,
+      estimatedMax: 60,
+      radiusKm: 5,
+      centerLat: 48.4456,
+      centerLng: 17.7647,
+      isActive: true,
+    },
+  })
+
+  const zoneCervenik = await prisma.deliveryZone.create({
+    data: {
+      name: 'Červeník',
+      type: 'village',
+      baseFee: 3.50,
+      minimumOrder: 12.00,
+      estimatedMin: 40,
+      estimatedMax: 70,
+      radiusKm: 6,
+      centerLat: 48.4586,
+      centerLng: 17.7996,
+      isActive: true,
+    },
+  })
+
+  // ── Rider Profiles ────────────────────────────────────────────────────
+
+  await prisma.riderProfile.upsert({
+    where: { userId: rider1.id },
+    update: {},
+    create: {
+      userId: rider1.id,
       isAvailable: true,
-      currentLat: 48.7162,
-      currentLng: 21.2611,
-      vehicleType: 'motorcycle',
+      currentLat: 48.4317,
+      currentLng: 17.8031,
+      vehicleType: 'bicycle',
       totalDeliveries: 47,
-      totalEarnings: 385.50,
-      walletBalance: 142.30,
+      totalEarnings: 285.50,
+      walletBalance: 112.30,
       rating: 4.6,
       reviewCount: 35,
     },
   })
 
-  // Create restaurants
+  await prisma.riderProfile.upsert({
+    where: { userId: rider2.id },
+    update: {},
+    create: {
+      userId: rider2.id,
+      isAvailable: true,
+      currentLat: 48.4456,
+      currentLng: 17.7647,
+      vehicleType: 'car',
+      totalDeliveries: 92,
+      totalEarnings: 520.00,
+      walletBalance: 198.50,
+      rating: 4.8,
+      reviewCount: 67,
+    },
+  })
+
+  // ── Demo Restaurants (Fraštačan) ──────────────────────────────────────
+
+  const demoPizza = await prisma.restaurant.create({
+    data: {
+      name: 'Fraštačan Pizza Demo',
+      slug: 'frastacan-pizza-demo',
+      description: 'Najlepšia pizza v Hlohovci a okolí. Pečieme v tradičnej peci z čerstvých surovín.',
+      image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800',
+      logo: '🍕',
+      address: 'Námestie sv. Michala 5, 920 01 Hlohovec',
+      city: 'Hlohovec',
+      phone: '+421905123456',
+      email: 'pizza@frastacan.sk',
+      cuisine: 'Pizza',
+      rating: 4.6,
+      reviewCount: 89,
+      deliveryTime: '25-45 min',
+      minimumOrder: 6.00,
+      deliveryFee: 1.90,
+      deliveryType: 'delivery',
+      openingHours: '{"mon":"10:00-22:00","tue":"10:00-22:00","wed":"10:00-22:00","thu":"10:00-22:00","fri":"10:00-23:00","sat":"11:00-23:00","sun":"11:00-21:00"}',
+      isActive: true,
+      isAvailable: true,
+      ownerId: ownerPizza.id,
+      zoneId: zoneHlohovec.id,
+    },
+  })
+
+  const demoKaviaren = await prisma.restaurant.create({
+    data: {
+      name: 'Fraštačan Kaviareň Demo',
+      slug: 'frastacan-kaviaren-demo',
+      description: 'Útulná kaviareň v centre Hlohovca. Výborná káva, domáce dezerty a príjemná atmosféra.',
+      image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800',
+      logo: '☕',
+      address: 'Štúrova 18, 920 01 Hlohovec',
+      city: 'Hlohovec',
+      phone: '+421905654321',
+      email: 'kaviaren@frastacan.sk',
+      cuisine: 'Kaviarne',
+      rating: 4.8,
+      reviewCount: 56,
+      deliveryTime: '15-30 min',
+      minimumOrder: 4.00,
+      deliveryFee: 1.90,
+      deliveryType: 'both',
+      openingHours: '{"mon":"07:00-19:00","tue":"07:00-19:00","wed":"07:00-19:00","thu":"07:00-19:00","fri":"07:00-20:00","sat":"08:00-20:00","sun":"08:00-18:00"}',
+      isActive: true,
+      isAvailable: true,
+      ownerId: ownerKaviaren.id,
+      zoneId: zoneHlohovec.id,
+    },
+  })
+
+  const demoPotraviny = await prisma.restaurant.create({
+    data: {
+      name: 'Fraštačan Potraviny Demo',
+      slug: 'frastacan-potraviny-demo',
+      description: 'Rýchle dodanie čerstvých potravín do vášho domova. Chlieb, mlieko, maslo a ďalšie každodenné potreby.',
+      image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800',
+      logo: '🛒',
+      address: 'Hlavná 32, 920 01 Leopoldov',
+      city: 'Leopoldov',
+      phone: '+421905789012',
+      email: 'potraviny@frastacan.sk',
+      cuisine: 'Potraviny',
+      rating: 4.3,
+      reviewCount: 34,
+      deliveryTime: '35-60 min',
+      minimumOrder: 10.00,
+      deliveryFee: 2.90,
+      deliveryType: 'delivery',
+      openingHours: '{"mon":"06:00-20:00","tue":"06:00-20:00","wed":"06:00-20:00","thu":"06:00-20:00","fri":"06:00-20:00","sat":"07:00-18:00","sun":"07:00-14:00"}',
+      isActive: true,
+      isAvailable: true,
+      ownerId: ownerPotraviny.id,
+      zoneId: zoneLeopoldov.id,
+    },
+  })
+
+  const demoKvety = await prisma.restaurant.create({
+    data: {
+      name: 'Fraštačan Kvety Demo',
+      slug: 'frastacan-kvety-demo',
+      description: 'Krásne kytice a kvetinové dekorácie pre každú príležitosť. Doručujeme po okolí s láskou.',
+      image: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=800',
+      logo: '💐',
+      address: 'Hlavná 7, 920 01 Červeník',
+      city: 'Červeník',
+      phone: '+421905345678',
+      email: 'kvety@frastacan.sk',
+      cuisine: 'Kvety',
+      rating: 4.9,
+      reviewCount: 21,
+      deliveryTime: '40-70 min',
+      minimumOrder: 12.00,
+      deliveryFee: 3.50,
+      deliveryType: 'delivery',
+      openingHours: '{"mon":"08:00-17:00","tue":"08:00-17:00","wed":"08:00-17:00","thu":"08:00-17:00","fri":"08:00-17:00","sat":"08:00-14:00","sun":"closed"}',
+      isActive: true,
+      isAvailable: true,
+      ownerId: ownerKvety.id,
+      zoneId: zoneCervenik.id,
+    },
+  })
+
+  // ── Existing Restaurants (updated to Hlohovec area) ───────────────────
+
   const restaurants = await Promise.all([
     prisma.restaurant.create({
       data: {
@@ -133,18 +382,22 @@ async function main() {
         description: 'Tradičná slovenská kuchyňa s domácou atmosférou. Bryndzové halušky, kapustnica, vyprážaný syr a ďalšie slovenské špeciality pripravené z čerstvých miestnych surovín.',
         image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800',
         logo: '🇸🇰',
-        address: 'Hlavná 15, 040 01 Košice',
-        phone: '+42155123456',
+        address: 'Námestie sv. Michala 15, 920 01 Hlohovec',
+        city: 'Hlohovec',
+        phone: '+421905123456',
         email: 'info@slovenska-koliba.sk',
         cuisine: 'Slovenská',
         rating: 4.7,
         reviewCount: 234,
         deliveryTime: '25-40 min',
         minimumOrder: 8,
-        deliveryFee: 2.5,
+        deliveryFee: 1.90,
+        deliveryType: 'both',
+        openingHours: '{"mon":"10:00-21:00","tue":"10:00-21:00","wed":"10:00-21:00","thu":"10:00-21:00","fri":"10:00-22:00","sat":"11:00-22:00","sun":"11:00-20:00"}',
         isActive: true,
         isAvailable: true,
         ownerId: owner1.id,
+        zoneId: zoneHlohovec.id,
       },
     }),
     prisma.restaurant.create({
@@ -154,18 +407,22 @@ async function main() {
         description: 'Autentická talianska pizza z drevenej pece a čerstvé cestoviny. Naše ingredience dovážame priamo z Talianska pre dokonalý chuťový zážitok.',
         image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800',
         logo: '🍕',
-        address: 'Hlavná 42, 040 01 Košice',
-        phone: '+42155654321',
+        address: 'Štúrova 42, 920 01 Hlohovec',
+        city: 'Hlohovec',
+        phone: '+421905654321',
         email: 'info@pizzeria-roma.sk',
         cuisine: 'Talianska',
         rating: 4.5,
         reviewCount: 189,
         deliveryTime: '30-45 min',
         minimumOrder: 10,
-        deliveryFee: 3.0,
+        deliveryFee: 1.90,
+        deliveryType: 'delivery',
+        openingHours: '{"mon":"11:00-22:00","tue":"11:00-22:00","wed":"11:00-22:00","thu":"11:00-22:00","fri":"11:00-23:00","sat":"12:00-23:00","sun":"12:00-21:00"}',
         isActive: true,
         isAvailable: true,
         ownerId: owner2.id,
+        zoneId: zoneHlohovec.id,
       },
     }),
     prisma.restaurant.create({
@@ -175,18 +432,22 @@ async function main() {
         description: 'Japonské špeciality - sushi, sashimi, ramen a ďalšie tradičné jedlá. Čerstvé ryby dodávané denne pre najvyššiu kvalitu.',
         image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800',
         logo: '🍣',
-        address: 'Mlynská 8, 040 01 Košice',
-        phone: '+42155789012',
+        address: 'Mlynská 8, 920 01 Hlohovec',
+        city: 'Hlohovec',
+        phone: '+421905789012',
         email: 'info@sushi-master.sk',
         cuisine: 'Japonská',
         rating: 4.8,
         reviewCount: 156,
         deliveryTime: '35-50 min',
         minimumOrder: 12,
-        deliveryFee: 3.5,
+        deliveryFee: 2.40,
+        deliveryType: 'delivery',
+        openingHours: '{"mon":"11:00-21:00","tue":"11:00-21:00","wed":"11:00-21:00","thu":"11:00-21:00","fri":"11:00-22:00","sat":"12:00-22:00","sun":"12:00-20:00"}',
         isActive: true,
         isAvailable: true,
         ownerId: owner3.id,
+        zoneId: zoneSulekovo.id,
       },
     }),
     prisma.restaurant.create({
@@ -196,18 +457,22 @@ async function main() {
         description: 'Šťavnaté burgery z hovädzieho mäsa, domáce hranolky a craftové limonády. Každý burger pripravujeme z čerstvého mäsa miestnych farmárov.',
         image: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800',
         logo: '🍔',
-        address: 'Námestie osloboditeľov 3, 040 01 Košice',
-        phone: '+42155345678',
+        address: 'Námestie sv. Michala 3, 920 01 Hlohovec',
+        city: 'Hlohovec',
+        phone: '+421905345678',
         email: 'info@burger-house.sk',
         cuisine: 'Americká',
         rating: 4.3,
         reviewCount: 312,
         deliveryTime: '20-35 min',
         minimumOrder: 6,
-        deliveryFee: 2.0,
+        deliveryFee: 1.90,
+        deliveryType: 'both',
+        openingHours: '{"mon":"10:00-22:00","tue":"10:00-22:00","wed":"10:00-22:00","thu":"10:00-22:00","fri":"10:00-23:00","sat":"11:00-23:00","sun":"11:00-21:00"}',
         isActive: true,
         isAvailable: true,
         ownerId: owner4.id,
+        zoneId: zoneHlohovec.id,
       },
     }),
     prisma.restaurant.create({
@@ -217,23 +482,86 @@ async function main() {
         description: 'Mexické tacos, burritos, nachos a ďalšie pikantné špeciality. Ostré omáčky a čerstvé guacamole pripravené pred vašimi očami.',
         image: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=800',
         logo: '🌮',
-        address: 'Alžbetina 22, 040 01 Košice',
-        phone: '+42155987654',
+        address: 'Alžbetina 22, 920 01 Hlohovec',
+        city: 'Hlohovec',
+        phone: '+421905987654',
         email: 'info@el-taco-loco.sk',
         cuisine: 'Mexická',
         rating: 4.4,
         reviewCount: 98,
         deliveryTime: '25-40 min',
         minimumOrder: 8,
-        deliveryFee: 2.5,
+        deliveryFee: 2.40,
+        deliveryType: 'delivery',
+        openingHours: '{"mon":"11:00-21:00","tue":"11:00-21:00","wed":"11:00-21:00","thu":"11:00-21:00","fri":"11:00-22:00","sat":"12:00-22:00","sun":"12:00-20:00"}',
         isActive: true,
         isAvailable: true,
         ownerId: owner5.id,
+        zoneId: zoneSulekovo.id,
       },
     }),
   ])
 
-  // Create categories and food items for each restaurant
+  // ── Categories & Food Items for Demo Restaurants ──────────────────────
+
+  // Fraštačan Pizza Demo
+  const dPizzaCat = await prisma.category.create({ data: { name: 'Pizza', icon: '🍕', restaurantId: demoPizza.id, sortOrder: 1 } })
+
+  await prisma.foodItem.createMany({
+    data: [
+      { name: 'Margherita', description: 'Klasická pizza s paradajkovým základom, mozzarellou a bazalkou', price: 6.90, categoryId: dPizzaCat.id, restaurantId: demoPizza.id, isPopular: true },
+      { name: 'Šunková', description: 'Pizza so šunkou, syrom a paradajkovým základom', price: 7.90, categoryId: dPizzaCat.id, restaurantId: demoPizza.id, isPopular: true },
+      { name: 'Salámová', description: 'Pizza s salámou, syrom a bylinkami', price: 8.20, categoryId: dPizzaCat.id, restaurantId: demoPizza.id },
+      { name: 'Quattro Formaggi', description: 'Pizza so štyrmi syrmi - mozzarella, gorgonzola, parmezán, stracciatella', price: 8.90, categoryId: dPizzaCat.id, restaurantId: demoPizza.id, isPopular: true },
+      { name: 'Gazdovská', description: 'Pizza s bravčovým mäsom, hubami, paprikou a syrom', price: 9.50, categoryId: dPizzaCat.id, restaurantId: demoPizza.id },
+    ]
+  })
+
+  // Fraštačan Kaviareň Demo
+  const dKavKava = await prisma.category.create({ data: { name: 'Káva', icon: '☕', restaurantId: demoKaviaren.id, sortOrder: 1 } })
+  const dKavDezert = await prisma.category.create({ data: { name: 'Dezerty', icon: '🍰', restaurantId: demoKaviaren.id, sortOrder: 2 } })
+
+  await prisma.foodItem.createMany({
+    data: [
+      { name: 'Espresso', description: 'Jeden shot výbornej talianskej kávy', price: 1.80, categoryId: dKavKava.id, restaurantId: demoKaviaren.id, isPopular: true },
+      { name: 'Cappuccino', description: 'Espresso s krémovou penou z mlieka', price: 2.40, categoryId: dKavKava.id, restaurantId: demoKaviaren.id, isPopular: true },
+      { name: 'Latte', description: 'Espresso s veľkým množstvom ohriateho mlieka', price: 2.80, categoryId: dKavKava.id, restaurantId: demoKaviaren.id },
+      { name: 'Cheesecake', description: 'Krémový cheesecake s ovocným toppingom', price: 3.20, categoryId: dKavDezert.id, restaurantId: demoKaviaren.id, isPopular: true },
+      { name: 'Croissant', description: 'Chrumkavý francúzsky croissant s maslom', price: 2.20, categoryId: dKavDezert.id, restaurantId: demoKaviaren.id },
+    ]
+  })
+
+  // Fraštačan Potraviny Demo
+  const dPotPečivo = await prisma.category.create({ data: { name: 'Pečivo', icon: '🍞', restaurantId: demoPotraviny.id, sortOrder: 1 } })
+  const dPotMliečne = await prisma.category.create({ data: { name: 'Mliečne', icon: '🥛', restaurantId: demoPotraviny.id, sortOrder: 2 } })
+  const dPotNapoje = await prisma.category.create({ data: { name: 'Nápoje', icon: '💧', restaurantId: demoPotraviny.id, sortOrder: 3 } })
+
+  await prisma.foodItem.createMany({
+    data: [
+      { name: 'Chlieb', description: 'Čerstvý biely chlieb', price: 1.80, categoryId: dPotPečivo.id, restaurantId: demoPotraviny.id, isPopular: true },
+      { name: 'Rožok', description: 'Čerstvý rožok', price: 0.15, categoryId: dPotPečivo.id, restaurantId: demoPotraviny.id },
+      { name: 'Mlieko 1l', description: 'Čerstvé plnotučné mlieko', price: 1.20, categoryId: dPotMliečne.id, restaurantId: demoPotraviny.id, isPopular: true },
+      { name: 'Maslo', description: 'Maslo 250g', price: 2.40, categoryId: dPotMliečne.id, restaurantId: demoPotraviny.id },
+      { name: 'Minerálka', description: 'Minerálna voda 1.5l', price: 0.90, categoryId: dPotNapoje.id, restaurantId: demoPotraviny.id },
+    ]
+  })
+
+  // Fraštačan Kvety Demo
+  const dKvetyKytice = await prisma.category.create({ data: { name: 'Kytice', icon: '💐', restaurantId: demoKvety.id, sortOrder: 1 } })
+  const dKvetyDoplnky = await prisma.category.create({ data: { name: 'Doplnky', icon: '🎁', restaurantId: demoKvety.id, sortOrder: 2 } })
+
+  await prisma.foodItem.createMany({
+    data: [
+      { name: 'Kytica malá', description: 'Malá kytica sezónnych kvetov', price: 15.00, categoryId: dKvetyKytice.id, restaurantId: demoKvety.id, isPopular: true },
+      { name: 'Kytica stredná', description: 'Stredná kytica s rozmanitými kvetmi', price: 25.00, categoryId: dKvetyKytice.id, restaurantId: demoKvety.id, isPopular: true },
+      { name: 'Kytica veľká', description: 'Veľkolepá kytica pre špeciálne príležitosti', price: 39.00, categoryId: dKvetyKytice.id, restaurantId: demoKvety.id },
+      { name: 'Ruža', description: 'Jedná červená ruža', price: 3.50, categoryId: dKvetyDoplnky.id, restaurantId: demoKvety.id },
+      { name: 'Blahoželanie', description: 'Pridanie blahoželacej kartičky k objednávke', price: 1.50, categoryId: dKvetyDoplnky.id, restaurantId: demoKvety.id },
+    ]
+  })
+
+  // ── Categories & Food Items for Existing Restaurants ──────────────────
+
   // Slovenská Koliba
   const sk = restaurants[0]
   const skPolievky = await prisma.category.create({ data: { name: 'Polievky', icon: '🍲', restaurantId: sk.id, sortOrder: 1 } })
@@ -334,15 +662,21 @@ async function main() {
     ]
   })
 
-  // Create addresses for customer
+  // ── Customer Addresses (Hlohovec area) ────────────────────────────────
+
   await prisma.address.createMany({
     data: [
-      { label: 'Domov', street: 'Hlavná 25', city: 'Košice', postalCode: '040 01', lat: 48.7162, lng: 21.2611, isDefault: true, userId: customer.id },
-      { label: 'Práca', street: 'Trieda SNP 48', city: 'Košice', postalCode: '040 01', lat: 48.7198, lng: 21.2558, userId: customer.id },
+      { label: 'Domov', street: 'Námestie sv. Michala 25', city: 'Hlohovec', postalCode: '920 01', lat: 48.4317, lng: 17.8031, isDefault: true, userId: customer.id },
+      { label: 'Práca', street: 'Štúrova 48', city: 'Hlohovec', postalCode: '920 01', lat: 48.4325, lng: 17.8005, userId: customer.id },
     ]
   })
 
-  // Create some orders
+  // ── Demo Orders (Hlohovec area) ──────────────────────────────────────
+
+  const halusky = await prisma.foodItem.findFirst({ where: { name: 'Bryndzové halušky', restaurantId: sk.id } })
+  const kapustnica = await prisma.foodItem.findFirst({ where: { name: 'Kapustnica', restaurantId: sk.id } })
+  const strudla = await prisma.foodItem.findFirst({ where: { name: 'Štrúdľa', restaurantId: sk.id } })
+
   const order1 = await prisma.order.create({
     data: {
       orderNumber: 'FR-001',
@@ -350,28 +684,35 @@ async function main() {
       paymentMethod: 'card',
       paymentStatus: 'paid',
       subtotal: 15.8,
-      deliveryFee: 2.5,
-      total: 18.3,
-      deliveryAddress: 'Hlavná 25, Košice',
-      deliveryLat: 48.7162,
-      deliveryLng: 21.2611,
+      deliveryFee: 1.90,
+      discount: 0,
+      total: 17.70,
+      deliveryType: 'delivery',
+      city: 'Hlohovec',
+      deliveryAddress: 'Námestie sv. Michala 25, Hlohovec',
+      deliveryLat: 48.4317,
+      deliveryLng: 17.8031,
+      estimatedTime: '25-40 min',
       customerId: customer.id,
       restaurantId: sk.id,
+      riderId: rider1.id,
       confirmedAt: new Date(Date.now() - 86400000 * 2),
       preparedAt: new Date(Date.now() - 86400000 * 2 + 1200000),
       deliveredAt: new Date(Date.now() - 86400000 * 2 + 3600000),
     }
   })
 
-  await prisma.orderItem.createMany({
-    data: [
-      { quantity: 1, price: 7.9, foodItemId: (await prisma.foodItem.findFirst({ where: { name: 'Bryndzové halušky', restaurantId: sk.id } }))!.id, orderId: order1.id },
-      { quantity: 1, price: 4.5, foodItemId: (await prisma.foodItem.findFirst({ where: { name: 'Kapustnica', restaurantId: sk.id } }))!.id, orderId: order1.id },
-      { quantity: 1, price: 3.4, foodItemId: (await prisma.foodItem.findFirst({ where: { name: 'Štrúdľa', restaurantId: sk.id } }))!.id, orderId: order1.id },
-    ]
-  })
+  if (halusky && kapustnica && strudla) {
+    await prisma.orderItem.createMany({
+      data: [
+        { quantity: 1, price: 7.9, foodItemId: halusky.id, orderId: order1.id },
+        { quantity: 1, price: 4.5, foodItemId: kapustnica.id, orderId: order1.id },
+        { quantity: 1, price: 3.4, foodItemId: strudla.id, orderId: order1.id },
+      ]
+    })
+  }
 
-  // Create review for the order
+  // Review for order 1
   await prisma.review.create({
     data: {
       rating: 5,
@@ -383,6 +724,9 @@ async function main() {
   })
 
   // Second order (in progress)
+  const pizzaQuattro = await prisma.foodItem.findFirst({ where: { name: 'Quattro Formaggi', restaurantId: pr.id } })
+  const pizzaMargheritaPr = await prisma.foodItem.findFirst({ where: { name: 'Margherita', restaurantId: pr.id } })
+
   const order2 = await prisma.order.create({
     data: {
       orderNumber: 'FR-002',
@@ -390,29 +734,32 @@ async function main() {
       paymentMethod: 'cash',
       paymentStatus: 'pending',
       subtotal: 20.8,
-      deliveryFee: 3.0,
-      total: 23.8,
-      deliveryAddress: 'Trieda SNP 48, Košice',
-      deliveryLat: 48.7198,
-      deliveryLng: 21.2558,
+      deliveryFee: 1.90,
+      discount: 0,
+      total: 22.70,
+      deliveryType: 'delivery',
+      city: 'Hlohovec',
+      deliveryAddress: 'Štúrova 48, Hlohovec',
+      deliveryLat: 48.4325,
+      deliveryLng: 17.8005,
+      estimatedTime: '30-45 min',
       customerId: customer.id,
       restaurantId: pr.id,
       confirmedAt: new Date(),
     }
   })
 
-  const pizzaQuattro = await prisma.foodItem.findFirst({ where: { name: 'Quattro Formaggi', restaurantId: pr.id } })
-  const pizzaMargherita = await prisma.foodItem.findFirst({ where: { name: 'Margherita', restaurantId: pr.id } })
-  if (pizzaQuattro && pizzaMargherita) {
+  if (pizzaQuattro && pizzaMargheritaPr) {
     await prisma.orderItem.createMany({
       data: [
         { quantity: 1, price: 11.9, foodItemId: pizzaQuattro.id, orderId: order2.id },
-        { quantity: 1, price: 8.9, foodItemId: pizzaMargherita.id, orderId: order2.id },
+        { quantity: 1, price: 8.9, foodItemId: pizzaMargheritaPr.id, orderId: order2.id },
       ]
     })
   }
 
-  // Create coupons
+  // ── Coupons ───────────────────────────────────────────────────────────
+
   await prisma.coupon.createMany({
     data: [
       { code: 'FRASTACAN10', discount: 10, minOrder: 15, maxDiscount: 5, isActive: true },
@@ -424,6 +771,7 @@ async function main() {
   console.log('✅ Seeding completed!')
   console.log({
     users: await prisma.user.count(),
+    deliveryZones: await prisma.deliveryZone.count(),
     restaurants: await prisma.restaurant.count(),
     categories: await prisma.category.count(),
     foodItems: await prisma.foodItem.count(),

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ArrowLeft, Store, Star, MapPin, Phone, RefreshCw, Search, ImageOff } from 'lucide-react'
+import { Store, Star, MapPin, Phone, RefreshCw, Search, ImageOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -19,6 +19,7 @@ interface AdminRestaurant {
   image: string
   logo?: string | null
   address: string
+  city: string
   phone?: string | null
   cuisine: string
   rating: number
@@ -29,6 +30,7 @@ interface AdminRestaurant {
   isActive: boolean
   isAvailable: boolean
   owner: { name: string; email: string; phone?: string | null }
+  zone?: { id: string; name: string; type: string } | null
   categories: { name: string; _count: { foodItems: number } }[]
   _count: { foodItems: number; orders: number; reviews: number; favorites: number }
 }
@@ -99,7 +101,8 @@ export default function AdminRestaurantsView() {
     const matchesSearch = searchQuery === '' ||
       r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.cuisine.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.address.toLowerCase().includes(searchQuery.toLowerCase())
+      r.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.city.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesCuisine = !cuisineFilter ||
       r.cuisine.toLowerCase().includes(cuisineFilter.toLowerCase())
@@ -117,12 +120,12 @@ export default function AdminRestaurantsView() {
   }
 
   return (
-    <div className="view-transition max-w-6xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => setView('admin-dashboard')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-2xl font-bold">Správa reštaurácií</h1>
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <Store className="h-6 w-6 text-primary" />
+          Správa prevádzok
+        </h1>
         <div className="flex-1" />
         <Button
           variant="outline"
@@ -137,11 +140,11 @@ export default function AdminRestaurantsView() {
       </div>
 
       {/* Search and Filter */}
-      <div className="mb-4 space-y-3">
+      <div className="space-y-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Hľadať podľa názvu, kuchyne alebo adresy..."
+            placeholder="Hľadať podľa názvu, kuchyne, adresy alebo mesta..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -151,7 +154,7 @@ export default function AdminRestaurantsView() {
           <Button
             variant={cuisineFilter === null ? 'default' : 'outline'}
             size="sm"
-            className={`shrink-0 rounded-full ${cuisineFilter === null ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}`}
+            className={`shrink-0 rounded-full ${cuisineFilter === null ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : ''}`}
             onClick={() => setCuisineFilter(null)}
           >
             Všetky
@@ -161,7 +164,7 @@ export default function AdminRestaurantsView() {
               key={c.name}
               variant={cuisineFilter === c.name ? 'default' : 'outline'}
               size="sm"
-              className={`shrink-0 rounded-full ${cuisineFilter === c.name ? 'bg-orange-500 hover:bg-orange-600 text-white' : ''}`}
+              className={`shrink-0 rounded-full ${cuisineFilter === c.name ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : ''}`}
               onClick={() => setCuisineFilter(cuisineFilter === c.name ? null : c.name)}
             >
               {c.emoji} {c.name}
@@ -177,35 +180,37 @@ export default function AdminRestaurantsView() {
           ))}
         </div>
       ) : filteredRestaurants.length === 0 ? (
-        <div className="text-center py-12">
-          <Store className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
-          <p className="text-muted-foreground">
-            {searchQuery || cuisineFilter
-              ? 'Žiadne reštaurácie nezodpovedajú filtrom'
-              : 'Zatiaľ žiadne reštaurácie'}
-          </p>
-          {(searchQuery || cuisineFilter) && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-3"
-              onClick={() => {
-                setSearchQuery('')
-                setCuisineFilter(null)
-              }}
-            >
-              Zrušiť filtre
-            </Button>
-          )}
-        </div>
+        <Card className="border-0 shadow-sm">
+          <CardContent className="py-12 text-center">
+            <Store className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
+            <p className="text-muted-foreground">
+              {searchQuery || cuisineFilter
+                ? 'Žiadne prevádzky nezodpovedajú filtrom'
+                : 'Zatiaľ žiadne prevádzky'}
+            </p>
+            {(searchQuery || cuisineFilter) && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                onClick={() => {
+                  setSearchQuery('')
+                  setCuisineFilter(null)
+                }}
+              >
+                Zrušiť filtre
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[calc(100vh-320px)] overflow-y-auto custom-scrollbar pr-1">
           {filteredRestaurants.map((r) => (
             <Card key={r.id} className="border-0 shadow-sm overflow-hidden">
               <CardContent className="p-0">
                 <div className="flex flex-col sm:flex-row">
                   {/* Image */}
-                  <div className="w-full sm:w-48 h-36 sm:h-auto shrink-0 bg-orange-50 relative group">
+                  <div className="w-full sm:w-40 h-32 sm:h-auto shrink-0 bg-primary/5 relative">
                     <img
                       src={r.image}
                       alt={r.name}
@@ -218,13 +223,13 @@ export default function AdminRestaurantsView() {
                       }}
                     />
                     <div
-                      className="absolute inset-0 bg-orange-50 items-center justify-center hidden"
+                      className="absolute inset-0 bg-primary/5 items-center justify-center hidden"
                     >
-                      <ImageOff className="h-8 w-8 text-orange-300" />
+                      <ImageOff className="h-8 w-8 text-primary/60" />
                     </div>
                   </div>
                   {/* Details */}
-                  <div className="flex-1 p-4 sm:p-5">
+                  <div className="flex-1 p-4">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2">
@@ -242,14 +247,14 @@ export default function AdminRestaurantsView() {
                           )}
                           <h3 className="font-bold text-lg">{r.name}</h3>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{r.description}</p>
+                        <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">{r.description}</p>
                       </div>
                       <div className="flex gap-2 shrink-0">
                         <button
                           onClick={() => toggleField(r.id, 'isActive', !r.isActive)}
                           disabled={togglingId === r.id}
                           className="focus:outline-none transition-opacity hover:opacity-80 disabled:opacity-50"
-                          title={r.isActive ? 'Deaktivovať reštauráciu' : 'Aktivovať reštauráciu'}
+                          title={r.isActive ? 'Deaktivovať' : 'Aktivovať'}
                         >
                           {r.isActive ? (
                             <Badge className="bg-green-100 text-green-700 border-0 cursor-pointer">Aktívna</Badge>
@@ -261,7 +266,7 @@ export default function AdminRestaurantsView() {
                           onClick={() => toggleField(r.id, 'isAvailable', !r.isAvailable)}
                           disabled={togglingId === r.id}
                           className="focus:outline-none transition-opacity hover:opacity-80 disabled:opacity-50"
-                          title={r.isAvailable ? 'Skryť reštauráciu' : 'Zverejniť reštauráciu'}
+                          title={r.isAvailable ? 'Skryť' : 'Zverejniť'}
                         >
                           {r.isAvailable ? (
                             <Badge className="bg-blue-100 text-blue-700 border-0 cursor-pointer">Dostupná</Badge>
@@ -272,33 +277,41 @@ export default function AdminRestaurantsView() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 text-sm">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3 text-sm">
                       <div>
-                        <p className="text-muted-foreground">Kuchyňa</p>
+                        <p className="text-muted-foreground text-xs">Kuchyňa</p>
                         <p className="font-medium">{r.cuisine}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Hodnotenie</p>
+                        <p className="text-muted-foreground text-xs">Hodnotenie</p>
                         <div className="flex items-center gap-1">
-                          <Star className="h-3.5 w-3.5 fill-orange-400 text-orange-400" />
+                          <Star className="h-3.5 w-3.5 fill-primary/80 text-primary/80" />
                           <span className="font-medium">{r.rating} ({r.reviewCount})</span>
                         </div>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Doručovné</p>
+                        <p className="text-muted-foreground text-xs">Doručovné</p>
                         <p className="font-medium">{formatPrice(r.deliveryFee)}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Min. objednávka</p>
+                        <p className="text-muted-foreground text-xs">Min. objednávka</p>
                         <p className="font-medium">{formatPrice(r.minimumOrder)}</p>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <MapPin className="h-3.5 w-3.5" />
                         {r.address}
                       </div>
+                      <Badge variant="secondary" className="text-xs">
+                        {r.city}
+                      </Badge>
+                      {r.zone && (
+                        <Badge variant="outline" className="text-xs">
+                          {r.zone.name}
+                        </Badge>
+                      )}
                       {r.phone && (
                         <div className="flex items-center gap-1">
                           <Phone className="h-3.5 w-3.5" />
@@ -307,22 +320,22 @@ export default function AdminRestaurantsView() {
                       )}
                     </div>
 
-                    <div className="flex flex-wrap gap-2 mt-3">
+                    <div className="flex flex-wrap gap-2 mt-2">
                       <Badge variant="secondary" className="text-xs">
-                        📋 {r._count.foodItems} položiek
+                        {r._count.foodItems} položiek
                       </Badge>
                       <Badge variant="secondary" className="text-xs">
-                        📦 {r._count.orders} objednávok
+                        {r._count.orders} objednávok
                       </Badge>
                       <Badge variant="secondary" className="text-xs">
-                        ⭐ {r._count.reviews} recenzií
+                        {r._count.reviews} recenzií
                       </Badge>
                       <Badge variant="secondary" className="text-xs">
-                        ❤️ {r._count.favorites} obľúbení
+                        {r._count.favorites} obľúbení
                       </Badge>
                     </div>
 
-                    <div className="mt-3 text-xs text-muted-foreground">
+                    <div className="mt-2 text-xs text-muted-foreground">
                       Vlastník: {r.owner.name} ({r.owner.email})
                     </div>
                   </div>

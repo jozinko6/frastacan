@@ -121,7 +121,7 @@ export default function LoginView() {
 
               <Button
                 type="submit"
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11"
+                className="w-full bg-primary hover:bg-primary/90 text-white h-11"
                 disabled={loading}
               >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Prihlásiť sa'}
@@ -132,7 +132,7 @@ export default function LoginView() {
               <p className="text-sm text-muted-foreground">
                 Nemáte účet?{' '}
                 <button
-                  className="text-orange-500 hover:underline font-medium"
+                  className="text-primary hover:underline font-medium"
                   onClick={() => setView('register')}
                 >
                   Zaregistrujte sa
@@ -143,9 +143,9 @@ export default function LoginView() {
         </Card>
 
         {/* Demo Credentials */}
-        <Card className="border-0 shadow-sm mt-4 bg-orange-50">
+        <Card className="border-0 shadow-sm mt-4 bg-primary/5">
           <CardHeader className="pb-2 pt-4 px-4">
-            <CardTitle className="text-sm font-medium text-orange-700">
+            <CardTitle className="text-sm font-medium text-primary">
               Demo účty na vyskúšanie
             </CardTitle>
           </CardHeader>
@@ -158,7 +158,7 @@ export default function LoginView() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs border-orange-300 text-orange-700"
+                className="text-xs border-primary/60 text-primary"
                 onClick={() => fillDemo('admin')}
               >
                 Vyplniť
@@ -172,7 +172,7 @@ export default function LoginView() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs border-orange-300 text-orange-700"
+                className="text-xs border-primary/60 text-primary"
                 onClick={() => fillDemo('customer')}
               >
                 Vyplniť
@@ -186,7 +186,7 @@ export default function LoginView() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs border-orange-300 text-orange-700"
+                className="text-xs border-primary/60 text-primary"
                 onClick={() => fillDemo('rider')}
               >
                 Vyplniť

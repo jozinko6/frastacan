@@ -25,7 +25,7 @@ function formatDate(dateStr: string) {
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   pending: { label: 'Čakajúca', color: 'text-yellow-700', bgColor: 'bg-yellow-100' },
   confirmed: { label: 'Potvrdená', color: 'text-blue-700', bgColor: 'bg-blue-100' },
-  preparing: { label: 'Pripravuje sa', color: 'text-orange-700', bgColor: 'bg-orange-100' },
+  preparing: { label: 'Pripravuje sa', color: 'text-primary', bgColor: 'bg-primary/10' },
   ready: { label: 'Pripravená', color: 'text-indigo-700', bgColor: 'bg-indigo-100' },
   delivering: { label: 'Na ceste', color: 'text-purple-700', bgColor: 'bg-purple-100' },
   delivered: { label: 'Doručená', color: 'text-green-700', bgColor: 'bg-green-100' },
@@ -73,7 +73,7 @@ export default function OrdersView() {
         <p className="text-muted-foreground mb-6">
           Pre zobrazenie objednávok sa musíte prihlásiť
         </p>
-        <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setView('login')}>
+        <Button className="bg-primary hover:bg-primary/90 text-white" onClick={() => setView('login')}>
           Prihlásiť sa
         </Button>
       </div>
@@ -102,7 +102,7 @@ export default function OrdersView() {
           <p className="text-muted-foreground mb-6">
             Objednajte si niečo chutné a objednávka sa zobrazí tu
           </p>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setView('home')}>
+          <Button className="bg-primary hover:bg-primary/90 text-white" onClick={() => setView('home')}>
             Objednať si jedlo
           </Button>
         </div>
@@ -139,7 +139,7 @@ export default function OrdersView() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-orange-600">{formatPrice(order.total)}</p>
+                        <p className="font-bold text-primary">{formatPrice(order.total)}</p>
                         <p className="text-xs text-muted-foreground">
                           {order.items?.length || 0} položiek
                         </p>

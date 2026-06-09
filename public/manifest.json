@@ -1,11 +1,11 @@
 {
-  "name": "Fraštačan Kuriér",
-  "short_name": "Kuriér",
-  "description": "Kurierska aplikácia pre doručovanie jedla - Fraštačan",
+  "name": "Fraštačan – lokálne doručenie",
+  "short_name": "Fraštačan",
+  "description": "Lokálne doručenie pre Hlohovec a okolie. Objednaj si jedlo, kávu, kvety alebo nákup z lokálnych prevádzok.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#F97316",
+  "background_color": "#FFF7ED",
+  "theme_color": "#B42318",
   "orientation": "portrait",
   "scope": "/",
   "icons": [
@@ -14,9 +14,16 @@
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "categories": ["food", "business"],
   "lang": "sk",
-  "dir": "ltr"
+  "dir": "ltr",
+  "prefer_related_applications": false
 }

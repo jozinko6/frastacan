@@ -36,6 +36,7 @@ model Restaurant {
   image         String
   logo          String?
   address       String
+  city          String    @default("Hlohovec")
   phone         String?
   email         String?
   cuisine       String    // e.g. "Slovenská, Talianska"
@@ -44,13 +45,17 @@ model Restaurant {
   deliveryTime  String    @default("30-45 min")
   minimumOrder  Float     @default(0)
   deliveryFee   Float     @default(0)
+  deliveryType  String    @default("delivery") // delivery, pickup, both
+  openingHours  String?   // JSON string for opening hours
   isActive      Boolean   @default(true)
   isAvailable   Boolean   @default(true)
   ownerId       String
+  zoneId        String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   owner         User      @relation(fields: [ownerId], references: [id])
+  zone          DeliveryZone? @relation(fields: [zoneId], references: [id])
   categories    Category[]
   foodItems     FoodItem[]
   orders        Order[]
@@ -101,6 +106,10 @@ model Order {
   discount        Float     @default(0)
   total           Float
   notes           String?
+  deliveryType    String    @default("delivery") // delivery, pickup
+  city            String?
+  riderNote       String?   // note for rider
+  restaurantNote  String?   // note for restaurant
   deliveryAddress String
   deliveryLat     Float?
   deliveryLng     Float?
@@ -188,13 +197,31 @@ model Coupon {
   createdAt     DateTime  @default(now())
 }
 
+model DeliveryZone {
+  id            String    @id @default(cuid())
+  name          String    // e.g. "Hlohovec", "Šulekovo"
+  type          String    @default("municipal") // municipal, suburban, village
+  baseFee       Float     @default(0)  // delivery fee in EUR
+  minimumOrder  Float     @default(0)  // minimum order in EUR
+  estimatedMin  Int       @default(25) // minimum delivery time in minutes
+  estimatedMax  Int       @default(45) // maximum delivery time in minutes
+  radiusKm      Float     @default(3) // delivery radius in km
+  centerLat     Float     // approximate center latitude
+  centerLng     Float     // approximate center longitude
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  restaurants   Restaurant[]
+}
+
 model RiderProfile {
   id                  String    @id @default(cuid())
   userId              String    @unique
   isAvailable         Boolean   @default(false)
   currentLat          Float?
   currentLng          Float?
-  vehicleType         String    @default("bicycle") // bicycle, motorcycle, car
+  vehicleType         String    @default("bicycle") // bicycle, scooter, car, foot
   totalDeliveries     Int       @default(0)
   totalEarnings       Float     @default(0)
   walletBalance       Float     @default(0)

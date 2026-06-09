@@ -10,6 +10,7 @@ import {
   AlertCircle,
   Package,
   Calendar,
+  Banknote,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -32,6 +33,7 @@ interface EarningsData {
     orderNumber: string
     deliveryFee: number
     total: number
+    paymentMethod: string
     deliveredAt: string | null
     restaurant: {
       id: string
@@ -75,6 +77,11 @@ export default function RiderEarningsView() {
   const todayKey = new Date().toISOString().split('T')[0]
   const todaysEarnings = data?.earningsByDay?.[todayKey] ?? 0
 
+  // Calculate total cash to collect from recent cash deliveries
+  const cashToCollect = data?.recentDeliveries
+    ?.filter((d) => d.paymentMethod === 'cash')
+    .reduce((sum, d) => sum + d.total, 0) ?? 0
+
   // Get max earning for chart scaling
   const chartDays = data?.earningsByDay
     ? Object.entries(data.earningsByDay).sort(([a], [b]) => a.localeCompare(b))
@@ -87,11 +94,11 @@ export default function RiderEarningsView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-orange-500 px-4 pt-6 pb-8 rounded-b-3xl">
-          <Skeleton className="h-7 w-28 bg-orange-400/30 mb-4" />
+        <div className="bg-[#B42318] px-4 pt-6 pb-8 rounded-b-3xl">
+          <Skeleton className="h-7 w-28 bg-white/20 mb-4" />
           <div className="grid grid-cols-2 gap-3">
-            <Skeleton className="h-24 bg-orange-400/20 rounded-xl" />
-            <Skeleton className="h-24 bg-orange-400/20 rounded-xl" />
+            <Skeleton className="h-24 bg-white/10 rounded-xl" />
+            <Skeleton className="h-24 bg-white/10 rounded-xl" />
           </div>
         </div>
         <div className="px-4 mt-4 space-y-3">
@@ -130,13 +137,13 @@ export default function RiderEarningsView() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header with main earnings */}
-      <div className="bg-orange-500 px-4 pt-6 pb-8 rounded-b-3xl">
+      <div className="bg-[#B42318] px-4 pt-6 pb-8 rounded-b-3xl">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-white text-xl font-bold">Príjmy</h1>
+            <h1 className="text-white text-xl font-bold">Zárobky</h1>
             <button
               onClick={() => fetchData(true)}
-              className="p-2 rounded-full bg-orange-400/30 text-white hover:bg-orange-400/50 transition-colors"
+              className="p-2 rounded-full bg-white/15 text-white hover:bg-white/25 transition-colors"
               disabled={refreshing}
             >
               <RefreshCw className={cn('h-5 w-5', refreshing && 'animate-spin')} />
@@ -151,8 +158,8 @@ export default function RiderEarningsView() {
               className="bg-white/15 backdrop-blur-sm rounded-xl p-4"
             >
               <div className="flex items-center gap-2 mb-1">
-                <TrendingUp className="h-4 w-4 text-orange-200" />
-                <span className="text-orange-100 text-xs">Celkové zárobky</span>
+                <TrendingUp className="h-4 w-4 text-red-200" />
+                <span className="text-red-200 text-xs">Celkové zárobky</span>
               </div>
               <p className="text-white text-xl font-bold">
                 {formatPrice(data?.totalEarnings ?? 0)}
@@ -166,8 +173,8 @@ export default function RiderEarningsView() {
               className="bg-white/15 backdrop-blur-sm rounded-xl p-4"
             >
               <div className="flex items-center gap-2 mb-1">
-                <Wallet className="h-4 w-4 text-orange-200" />
-                <span className="text-orange-100 text-xs">Peňaženka</span>
+                <Wallet className="h-4 w-4 text-red-200" />
+                <span className="text-red-200 text-xs">Peňaženka</span>
               </div>
               <p className="text-white text-xl font-bold">
                 {formatPrice(data?.walletBalance ?? 0)}
@@ -184,14 +191,34 @@ export default function RiderEarningsView() {
           >
             <div>
               <p className="text-xs text-muted-foreground">Dnešné zárobky</p>
-              <p className="text-2xl font-bold text-orange-500">
+              <p className="text-2xl font-bold text-[#B42318]">
                 {formatPrice(todaysEarnings)}
               </p>
             </div>
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-orange-500" />
+            <div className="w-12 h-12 bg-[#B42318]/10 rounded-full flex items-center justify-center">
+              <TrendingUp className="h-6 w-6 text-[#B42318]" />
             </div>
           </motion.div>
+
+          {/* Cash to collect info */}
+          {cashToCollect > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18 }}
+              className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3"
+            >
+              <div className="flex items-center gap-2">
+                <Banknote className="h-5 w-5 text-amber-600" />
+                <div>
+                  <p className="text-xs font-semibold text-amber-800">Vybrať hotovosť pri prevzatí</p>
+                  <p className="text-xs text-amber-700">
+                    Zákazník platí hotovosťou. Vyberte sumu <strong>{formatPrice(cashToCollect)}</strong> pri odovzdaní objednávky.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
 
@@ -235,9 +262,9 @@ export default function RiderEarningsView() {
                           className={cn(
                             'w-full max-w-[28px] rounded-t-md transition-colors',
                             isToday
-                              ? 'bg-orange-500'
+                              ? 'bg-[#B42318]'
                               : earning > 0
-                              ? 'bg-orange-300'
+                              ? 'bg-[#B42318]/40'
                               : 'bg-gray-200'
                           )}
                           style={{ minHeight: earning > 0 ? 4 : 2 }}
@@ -247,7 +274,7 @@ export default function RiderEarningsView() {
                         className={cn(
                           'text-[10px]',
                           isToday
-                            ? 'text-orange-500 font-bold'
+                            ? 'text-[#B42318] font-bold'
                             : 'text-gray-400'
                         )}
                       >
@@ -268,7 +295,7 @@ export default function RiderEarningsView() {
           transition={{ delay: 0.25 }}
         >
           <Button
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white h-12 text-sm font-semibold gap-2"
+            className="w-full bg-[#B42318] hover:bg-[#8B1B12] text-white h-12 text-sm font-semibold gap-2"
             onClick={handleWithdraw}
           >
             <ArrowDownToLine className="h-4 w-4" />
@@ -295,7 +322,7 @@ export default function RiderEarningsView() {
               </p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
               {data.recentDeliveries.map((delivery, index) => (
                 <motion.div
                   key={delivery.id}
@@ -327,9 +354,12 @@ export default function RiderEarningsView() {
                         <p className="font-semibold text-sm text-green-600">
                           +{formatPrice(delivery.deliveryFee)}
                         </p>
-                        <p className="text-xs text-gray-400">
-                          #{delivery.orderNumber}
-                        </p>
+                        <div className="flex items-center gap-1 text-xs text-gray-400">
+                          <span>#{delivery.orderNumber}</span>
+                          {delivery.paymentMethod === 'cash' && (
+                            <Banknote className="h-3 w-3 text-amber-500" />
+                          )}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

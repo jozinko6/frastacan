@@ -12,11 +12,17 @@ import {
   LayoutDashboard,
   Menu,
   Bike,
+  Tag,
+  MapPin,
+  Grid3X3,
+  Users,
+  ArrowLeft,
+  Store,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { useAppStore } from '@/lib/store'
+import { useAppStore, View } from '@/lib/store'
 import { toast } from 'sonner'
 
 // Views
@@ -32,10 +38,50 @@ import ProfileView from '@/components/profile-view'
 import AdminDashboardView from '@/components/admin-dashboard-view'
 import AdminRestaurantsView from '@/components/admin-restaurants-view'
 import AdminOrdersView from '@/components/admin-orders-view'
+import AdminUsersView from '@/components/admin-users-view'
+import AdminCouponsView from '@/components/admin-coupons-view'
+import AdminZonesView from '@/components/admin-zones-view'
+import AdminCategoriesView from '@/components/admin-categories-view'
+import AdminSidebar, { adminNavItems } from '@/components/admin-sidebar'
 import RiderDashboardView from '@/components/rider-dashboard-view'
 import RiderOrdersView from '@/components/rider-orders-view'
 import RiderEarningsView from '@/components/rider-earnings-view'
 import RiderProfileView from '@/components/rider-profile-view'
+import VendorDashboardView from '@/components/vendor-dashboard-view'
+import VendorOrdersView from '@/components/vendor-orders-view'
+import VendorMenuView from '@/components/vendor-menu-view'
+import VendorSettingsView from '@/components/vendor-settings-view'
+import TermsView from '@/components/terms-view'
+import PrivacyView from '@/components/privacy-view'
+import ContactView from '@/components/contact-view'
+import ComplaintsView from '@/components/complaints-view'
+import PrePrevadzkyView from '@/components/pre-prevadzky-view'
+import PreKurierovView from '@/components/pre-kurierov-view'
+
+const adminViews: View[] = [
+  'admin-dashboard',
+  'admin-restaurants',
+  'admin-orders',
+  'admin-users',
+  'admin-coupons',
+  'admin-zones',
+  'admin-categories',
+]
+
+const riderViews: View[] = ['rider-dashboard', 'rider-orders', 'rider-earnings', 'rider-profile']
+const vendorViews: View[] = ['vendor-dashboard', 'vendor-orders', 'vendor-menu', 'vendor-settings']
+
+function isAdminView(view: string): boolean {
+  return adminViews.includes(view as View)
+}
+
+function isRiderView(view: string): boolean {
+  return riderViews.includes(view as View)
+}
+
+function isVendorView(view: string): boolean {
+  return vendorViews.includes(view as View)
+}
 
 function ViewRenderer() {
   const { currentView } = useAppStore()
@@ -65,6 +111,14 @@ function ViewRenderer() {
       return <AdminRestaurantsView />
     case 'admin-orders':
       return <AdminOrdersView />
+    case 'admin-users':
+      return <AdminUsersView />
+    case 'admin-coupons':
+      return <AdminCouponsView />
+    case 'admin-zones':
+      return <AdminZonesView />
+    case 'admin-categories':
+      return <AdminCategoriesView />
     case 'rider-dashboard':
       return <RiderDashboardView />
     case 'rider-orders':
@@ -73,14 +127,66 @@ function ViewRenderer() {
       return <RiderEarningsView />
     case 'rider-profile':
       return <RiderProfileView />
+    case 'vendor-dashboard':
+      return <VendorDashboardView />
+    case 'vendor-orders':
+      return <VendorOrdersView />
+    case 'vendor-menu':
+      return <VendorMenuView />
+    case 'vendor-settings':
+      return <VendorSettingsView />
+    case 'terms':
+      return <TermsView />
+    case 'privacy':
+      return <PrivacyView />
+    case 'contact':
+      return <ContactView />
+    case 'complaints':
+      return <ComplaintsView />
+    case 'pre-prevadzky':
+      return <PrePrevadzkyView />
+    case 'pre-kurierov':
+      return <PreKurierovView />
     default:
       return <HomeView />
   }
 }
 
+// Mobile admin bottom navigation
+function MobileAdminNav() {
+  const { currentView, setView } = useAppStore()
+
+  return (
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-white/95 backdrop-blur-md">
+      <div className="flex items-center justify-around py-1.5 px-2">
+        {adminNavItems.map((item) => {
+          const isActive = currentView === item.view
+          return (
+            <button
+              key={item.view}
+              onClick={() => setView(item.view)}
+              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors ${
+                isActive
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <item.icon className={`h-4 w-4 ${isActive ? 'text-primary' : ''}`} />
+              <span className={`text-[10px] leading-tight ${isActive ? 'font-semibold text-primary' : ''}`}>
+                {item.label}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </nav>
+  )
+}
+
 function Header() {
   const { user, cart, currentView, setView, setUser } = useAppStore()
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
+  const inAdmin = isAdminView(currentView)
 
   // Check for existing session on mount
   useEffect(() => {
@@ -102,129 +208,142 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur-md">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className={`mx-auto px-4 h-14 flex items-center justify-between ${inAdmin ? 'max-w-full' : 'max-w-6xl'}`}>
         {/* Logo */}
-        <button
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-          onClick={() => setView('home')}
-        >
-          <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg" />
-          <span className="text-xl font-bold text-orange-600 hidden sm:inline">Fraštačan</span>
-        </button>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
-          <Button
-            variant={currentView === 'home' ? 'secondary' : 'ghost'}
-            size="sm"
-            className={currentView === 'home' ? 'bg-orange-100 text-orange-700' : ''}
-            onClick={() => setView('home')}
-          >
-            <Home className="h-4 w-4 mr-1.5" />
-            Domov
-          </Button>
-
-          {user && (
-            <Button
-              variant={currentView === 'orders' ? 'secondary' : 'ghost'}
-              size="sm"
-              className={currentView === 'orders' ? 'bg-orange-100 text-orange-700' : ''}
-              onClick={() => setView('orders')}
-            >
-              <Package className="h-4 w-4 mr-1.5" />
-              Objednávky
-            </Button>
-          )}
-
-          {user?.role === 'admin' && (
+        <div className="flex items-center gap-2">
+          {inAdmin ? (
             <>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setView('home')}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <button
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                onClick={() => setView('admin-dashboard')}
+              >
+                <img src="/frastacan-logo.png" alt="Fraštačan" className="h-7 w-7 rounded-lg" />
+                <span className="text-lg font-bold text-primary">Admin</span>
+              </button>
+            </>
+          ) : (
+            <button
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              onClick={() => setView('home')}
+            >
+              <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg" />
+              <span className="text-xl font-bold text-primary hidden sm:inline">Fraštačan</span>
+            </button>
+          )}
+        </div>
+
+        {/* Desktop Navigation (non-admin) */}
+        {!inAdmin && (
+          <nav className="hidden md:flex items-center gap-1">
+            <Button
+              variant={currentView === 'home' ? 'secondary' : 'ghost'}
+              size="sm"
+              className={currentView === 'home' ? 'bg-primary/10 text-primary' : ''}
+              onClick={() => setView('home')}
+            >
+              <Home className="h-4 w-4 mr-1.5" />
+              Domov
+            </Button>
+
+            {user && (
               <Button
-                variant={currentView === 'admin-dashboard' ? 'secondary' : 'ghost'}
+                variant={currentView === 'orders' ? 'secondary' : 'ghost'}
                 size="sm"
-                className={currentView === 'admin-dashboard' ? 'bg-orange-100 text-orange-700' : ''}
+                className={currentView === 'orders' ? 'bg-primary/10 text-primary' : ''}
+                onClick={() => setView('orders')}
+              >
+                <Package className="h-4 w-4 mr-1.5" />
+                Objednávky
+              </Button>
+            )}
+
+            {user?.role === 'admin' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-primary"
                 onClick={() => setView('admin-dashboard')}
               >
                 <LayoutDashboard className="h-4 w-4 mr-1.5" />
                 Admin
               </Button>
-              {(currentView === 'admin-dashboard' || currentView === 'admin-restaurants' || currentView === 'admin-orders') && (
-                <>
-                  <Button
-                    variant={currentView === 'admin-restaurants' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className={currentView === 'admin-restaurants' ? 'bg-orange-100 text-orange-700' : 'text-xs'}
-                    onClick={() => setView('admin-restaurants')}
-                  >
-                    <UtensilsCrossed className="h-3.5 w-3.5 mr-1" />
-                    Reštaurácie
-                  </Button>
-                  <Button
-                    variant={currentView === 'admin-orders' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className={currentView === 'admin-orders' ? 'bg-orange-100 text-orange-700' : 'text-xs'}
-                    onClick={() => setView('admin-orders')}
-                  >
-                    <Package className="h-3.5 w-3.5 mr-1" />
-                    Objednávky
-                  </Button>
-                </>
-              )}
-            </>
-          )}
+            )}
 
-          {user?.role === 'rider' && (
-            <Button
-              variant={currentView === 'rider-dashboard' ? 'secondary' : 'ghost'}
-              size="sm"
-              className={currentView === 'rider-dashboard' ? 'bg-orange-100 text-orange-700' : ''}
-              onClick={() => setView('rider-dashboard')}
-            >
-              <Bike className="h-4 w-4 mr-1.5" />
-              Kurier
-            </Button>
-          )}
-        </nav>
+            {user?.role === 'rider' && (
+              <Button
+                variant={currentView === 'rider-dashboard' ? 'secondary' : 'ghost'}
+                size="sm"
+                className={currentView === 'rider-dashboard' ? 'bg-primary/10 text-primary' : ''}
+                onClick={() => setView('rider-dashboard')}
+              >
+                <Bike className="h-4 w-4 mr-1.5" />
+                Kurier
+              </Button>
+            )}
+
+            {user?.role === 'restaurant' && (
+              <Button
+                variant={currentView === 'vendor-dashboard' ? 'secondary' : 'ghost'}
+                size="sm"
+                className={currentView === 'vendor-dashboard' ? 'bg-emerald-50 text-emerald-700' : ''}
+                onClick={() => setView('vendor-dashboard')}
+              >
+                <Store className="h-4 w-4 mr-1.5" />
+                Prevádzka
+              </Button>
+            )}
+          </nav>
+        )}
+
+        {/* Admin desktop nav title */}
+        {inAdmin && (
+          <div className="hidden lg:block" />
+        )}
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          {/* Cart Button */}
-          <Button
-            variant={currentView === 'cart' ? 'secondary' : 'ghost'}
-            size="sm"
-            className={`relative ${currentView === 'cart' ? 'bg-orange-100 text-orange-700' : ''}`}
-            onClick={() => setView('cart')}
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {cartCount > 0 && (
-              <Badge className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-orange-500 text-white text-xs border-0">
-                {cartCount}
-              </Badge>
-            )}
-          </Button>
+          {!inAdmin && (
+            <Button
+              variant={currentView === 'cart' ? 'secondary' : 'ghost'}
+              size="sm"
+              className={`relative ${currentView === 'cart' ? 'bg-primary/10 text-primary' : ''}`}
+              onClick={() => setView('cart')}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <Badge className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary text-primary-foreground text-xs border-0">
+                  {cartCount}
+                </Badge>
+              )}
+            </Button>
+          )}
 
-          {/* User Menu / Login */}
           {user ? (
             <Button
               variant={currentView === 'profile' ? 'secondary' : 'ghost'}
               size="sm"
-              className={currentView === 'profile' ? 'bg-orange-100 text-orange-700' : ''}
+              className={currentView === 'profile' ? 'bg-primary/10 text-primary' : ''}
               onClick={() => setView('profile')}
             >
               <User className="h-4 w-4 mr-1.5" />
               <span className="hidden sm:inline max-w-24 truncate">{user.name.split(' ')[0]}</span>
             </Button>
           ) : (
-            <Button
-              size="sm"
-              className="bg-orange-500 hover:bg-orange-600 text-white"
-              onClick={() => setView('login')}
-            >
-              <LogIn className="h-4 w-4 mr-1.5" />
-              <span className="hidden sm:inline">Prihlásiť</span>
-            </Button>
+            !inAdmin && (
+              <Button
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={() => setView('login')}
+              >
+                <LogIn className="h-4 w-4 mr-1.5" />
+                <span className="hidden sm:inline">Prihlásiť</span>
+              </Button>
+            )
           )}
 
-          {/* Mobile Menu */}
           <MobileMenu />
         </div>
       </div>
@@ -235,6 +354,7 @@ function Header() {
 function MobileMenu() {
   const { user, currentView, setView, setUser } = useAppStore()
   const [open, setOpen] = useState(false)
+  const inAdmin = isAdminView(currentView)
 
   function navigate(view: Parameters<typeof setView>[0]) {
     setView(view)
@@ -251,27 +371,40 @@ function MobileMenu() {
     toast.info('Boli ste odhlásení')
   }
 
-  const menuItems = [
-    { view: 'home' as const, icon: Home, label: 'Domov' },
-    ...(user
-      ? [
-          { view: 'orders' as const, icon: Package, label: 'Objednávky' },
-          { view: 'profile' as const, icon: User, label: 'Profil' },
-        ]
-      : []),
-    ...(user?.role === 'admin'
-      ? [
-          { view: 'admin-dashboard' as const, icon: LayoutDashboard, label: 'Admin panel' },
-          { view: 'admin-restaurants' as const, icon: UtensilsCrossed, label: 'Reštaurácie' },
-          { view: 'admin-orders' as const, icon: Package, label: 'Objednávky (admin)' },
-        ]
-      : []),
-    ...(user?.role === 'rider'
-      ? [
-          { view: 'rider-dashboard' as const, icon: Bike, label: 'Kurier panel' },
-        ]
-      : []),
-  ]
+  const menuItems = inAdmin
+    ? [
+        { view: 'admin-dashboard' as const, icon: LayoutDashboard, label: 'Prehľad' },
+        { view: 'admin-orders' as const, icon: Package, label: 'Objednávky' },
+        { view: 'admin-restaurants' as const, icon: UtensilsCrossed, label: 'Prevádzky' },
+        { view: 'admin-users' as const, icon: Users, label: 'Zákazníci' },
+        { view: 'admin-coupons' as const, icon: Tag, label: 'Kupóny' },
+        { view: 'admin-zones' as const, icon: MapPin, label: 'Doručovacie zóny' },
+        { view: 'admin-categories' as const, icon: Grid3X3, label: 'Kategórie' },
+      ]
+    : [
+        { view: 'home' as const, icon: Home, label: 'Domov' },
+        ...(user
+          ? [
+              { view: 'orders' as const, icon: Package, label: 'Objednávky' },
+              { view: 'profile' as const, icon: User, label: 'Profil' },
+            ]
+          : []),
+        ...(user?.role === 'admin'
+          ? [
+              { view: 'admin-dashboard' as const, icon: LayoutDashboard, label: 'Admin panel' },
+            ]
+          : []),
+        ...(user?.role === 'rider'
+          ? [
+              { view: 'rider-dashboard' as const, icon: Bike, label: 'Kurier panel' },
+            ]
+          : []),
+        ...(user?.role === 'restaurant'
+          ? [
+              { view: 'vendor-dashboard' as const, icon: Store, label: 'Prevádzka panel' },
+            ]
+          : []),
+      ]
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -283,11 +416,11 @@ function MobileMenu() {
       <SheetContent side="right" className="w-72">
         <div className="flex items-center gap-2 mb-6 mt-2">
           <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg" />
-          <span className="text-xl font-bold text-orange-600">Fraštačan</span>
+          <span className="text-xl font-bold text-primary">Fraštačan</span>
         </div>
 
         {user && (
-          <div className="p-3 rounded-lg bg-orange-50 mb-4">
+          <div className="p-3 rounded-lg bg-primary/5 mb-4">
             <p className="font-medium text-sm">{user.name}</p>
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
@@ -299,7 +432,7 @@ function MobileMenu() {
               key={item.view}
               variant={currentView === item.view ? 'secondary' : 'ghost'}
               className={`w-full justify-start ${
-                currentView === item.view ? 'bg-orange-100 text-orange-700' : ''
+                currentView === item.view ? 'bg-primary/10 text-primary' : ''
               }`}
               onClick={() => navigate(item.view)}
             >
@@ -307,6 +440,17 @@ function MobileMenu() {
               {item.label}
             </Button>
           ))}
+
+          {inAdmin && (
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-muted-foreground"
+              onClick={() => navigate('home')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Späť na stránku
+            </Button>
+          )}
 
           <div className="pt-4 border-t mt-4">
             {user ? (
@@ -318,21 +462,23 @@ function MobileMenu() {
                 Odhlásiť sa
               </Button>
             ) : (
-              <>
-                <Button
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-                  onClick={() => navigate('login')}
-                >
-                  Prihlásiť sa
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full mt-2"
-                  onClick={() => navigate('register')}
-                >
-                  Zaregistrovať sa
-                </Button>
-              </>
+              !inAdmin && (
+                <>
+                  <Button
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                    onClick={() => navigate('login')}
+                  >
+                    Prihlásiť sa
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full mt-2"
+                    onClick={() => navigate('register')}
+                  >
+                    Zaregistrovať sa
+                  </Button>
+                </>
+              )
             )}
           </div>
         </nav>
@@ -351,10 +497,10 @@ function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg" />
-              <span className="text-xl font-bold text-orange-600">Fraštačan</span>
+              <span className="text-xl font-bold text-primary">Fraštačan</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Najchutnejšie jedlo priamo pred vaše dvere. Rýchla a spoľahlivá donáška z najlepších reštaurácií.
+              Lokálne doručenie pre Hlohovec, Šulekovo, Leopoldov a Červeník. Jedlo, káva, kvety aj nákup z okolia.
             </p>
           </div>
 
@@ -362,17 +508,17 @@ function Footer() {
             <h4 className="font-semibold mb-3">Navigácia</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <button className="hover:text-orange-500 transition-colors" onClick={() => setView('home')}>
-                  Reštaurácie
+                <button className="hover:text-primary transition-colors" onClick={() => setView('home')}>
+                  Prevádzky
                 </button>
               </li>
               <li>
-                <button className="hover:text-orange-500 transition-colors" onClick={() => setView('orders')}>
+                <button className="hover:text-primary transition-colors" onClick={() => setView('orders')}>
                   Moje objednávky
                 </button>
               </li>
               <li>
-                <button className="hover:text-orange-500 transition-colors" onClick={() => setView('profile')}>
+                <button className="hover:text-primary transition-colors" onClick={() => setView('profile')}>
                   Profil
                 </button>
               </li>
@@ -382,9 +528,13 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-3">Kontakt</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>📞 +421 900 123 456</li>
-              <li>📧 info@frastacan.sk</li>
-              <li>📍 Košice, Slovensko</li>
+              <li>
+                <button className="hover:text-primary transition-colors" onClick={() => setView('contact')}>
+                  Kontaktujte nás
+                </button>
+              </li>
+              <li>info@frastacan.sk</li>
+              <li>Hlohovec a okolie</li>
             </ul>
           </div>
 
@@ -400,11 +550,21 @@ function Footer() {
 
         <div className="border-t mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Fraštačan. Všetky práva vyhradené.
+            &copy; {new Date().getFullYear()} Fraštačan. Všetky práva vyhradené.
           </p>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span className="hover:text-orange-500 cursor-pointer transition-colors">Obchodné podmienky</span>
-            <span className="hover:text-orange-500 cursor-pointer transition-colors">Ochrana súkromia</span>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap justify-center sm:justify-end">
+            <button className="hover:text-primary transition-colors" onClick={() => setView('terms')}>
+              Obchodné podmienky
+            </button>
+            <button className="hover:text-primary transition-colors" onClick={() => setView('privacy')}>
+              Ochrana súkromia
+            </button>
+            <button className="hover:text-primary transition-colors" onClick={() => setView('contact')}>
+              Kontakt
+            </button>
+            <button className="hover:text-primary transition-colors" onClick={() => setView('complaints')}>
+              Reklamačný poriadok
+            </button>
           </div>
         </div>
       </div>
@@ -412,20 +572,17 @@ function Footer() {
   )
 }
 
-const riderViews = ['rider-dashboard', 'rider-orders', 'rider-earnings', 'rider-profile']
-
-function isRiderView(view: string): boolean {
-  return riderViews.includes(view)
-}
-
 export default function MainPage() {
   const currentView = useAppStore((s) => s.currentView)
-  const showRegularLayout = !isRiderView(currentView)
+  const inAdmin = isAdminView(currentView)
+  const inRider = isRiderView(currentView)
+  const inVendor = isVendorView(currentView)
+  const showRegularLayout = !inAdmin && !inRider && !inVendor
 
   return (
     <div className="min-h-screen flex flex-col">
-      {showRegularLayout && <Header />}
-      <main className={showRegularLayout ? 'flex-1' : 'flex-1'}>
+      <Header />
+      <main className="flex-1">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentView}
@@ -434,11 +591,23 @@ export default function MainPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            <ViewRenderer />
+            {inAdmin ? (
+              <div className="flex max-w-full">
+                <AdminSidebar />
+                <div className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6 overflow-x-hidden">
+                  <div className="max-w-5xl mx-auto">
+                    <ViewRenderer />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <ViewRenderer />
+            )}
           </motion.div>
         </AnimatePresence>
       </main>
       {showRegularLayout && <Footer />}
+      {inAdmin && <MobileAdminNav />}
     </div>
   )
 }

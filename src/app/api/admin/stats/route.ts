@@ -13,11 +13,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Total counts
-    const [totalOrders, totalUsers, totalRestaurants, totalFoodItems] = await Promise.all([
+    const [totalOrders, totalUsers, totalRestaurants, totalFoodItems, totalZones, totalCoupons] = await Promise.all([
       db.order.count(),
       db.user.count({ where: { role: 'customer' } }),
       db.restaurant.count(),
       db.foodItem.count(),
+      db.deliveryZone.count(),
+      db.coupon.count({ where: { isActive: true } }),
     ])
 
     // Total revenue (from delivered/paid orders)
@@ -96,6 +98,8 @@ export async function GET(request: NextRequest) {
         totalUsers,
         totalRestaurants,
         totalFoodItems,
+        totalZones,
+        totalCoupons,
         ordersByStatus: ordersByStatusMap,
         revenueByDay,
       },
