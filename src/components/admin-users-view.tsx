@@ -149,7 +149,7 @@ export default function AdminUsersView() {
           size="sm"
           onClick={() => fetchUsers(pagination.page)}
           disabled={refreshing}
-          className="gap-1.5"
+          className="gap-1.5 border-primary/40 text-primary hover:bg-primary/5"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
           Obnoviť
@@ -256,7 +256,7 @@ export default function AdminUsersView() {
                 size="sm"
                 disabled={pagination.page <= 1}
                 onClick={() => fetchUsers(pagination.page - 1)}
-                className="gap-1"
+                className="gap-1 border-primary/40 text-primary hover:bg-primary/5"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Predošlá
@@ -269,7 +269,7 @@ export default function AdminUsersView() {
                 size="sm"
                 disabled={pagination.page >= pagination.totalPages}
                 onClick={() => fetchUsers(pagination.page + 1)}
-                className="gap-1"
+                className="gap-1 border-primary/40 text-primary hover:bg-primary/5"
               >
                 Ďalšia
                 <ChevronRight className="h-4 w-4" />

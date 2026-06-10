@@ -107,7 +107,7 @@ export default function AdminDashboardView() {
           size="sm"
           onClick={fetchStats}
           disabled={refreshing}
-          className="gap-1.5"
+          className="gap-1.5 border-primary/40 text-primary hover:bg-primary/5"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
           Obnoviť
@@ -183,7 +183,7 @@ export default function AdminDashboardView() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-primary"
+                    className="text-primary hover:bg-primary/5"
                     onClick={() => setView('admin-orders')}
                   >
                     Všetky
@@ -239,7 +239,7 @@ export default function AdminDashboardView() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-primary"
+                    className="text-primary hover:bg-primary/5"
                     onClick={() => setView('admin-restaurants')}
                   >
                     Všetky

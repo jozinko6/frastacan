@@ -165,14 +165,14 @@ export default function CheckoutView() {
           </Button>
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full border-primary/40 text-primary hover:bg-primary/5"
             onClick={() => setView('orders')}
           >
             Moje objednávky
           </Button>
           <Button
             variant="ghost"
-            className="w-full"
+            className="w-full text-muted-foreground hover:text-foreground hover:bg-muted/60"
             onClick={() => setView('home')}
           >
             Pokračovať v nákupe

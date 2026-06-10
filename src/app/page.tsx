@@ -449,7 +449,7 @@ function MobileMenu() {
           {inAdmin && (
             <Button
               variant="ghost"
-              className="w-full justify-start text-muted-foreground"
+              className="w-full justify-start text-muted-foreground hover:bg-muted/60"
               onClick={() => navigate('home')}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -477,7 +477,7 @@ function MobileMenu() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full mt-2"
+                    className="w-full mt-2 border-primary/40 text-primary hover:bg-primary/5"
                     onClick={() => navigate('register')}
                   >
                     Zaregistrovať sa

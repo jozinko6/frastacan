@@ -333,7 +333,7 @@ export default function VendorMenuView() {
           <div className="text-center py-12">
             <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-3" />
             <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={() => fetchData(true)} variant="outline" className="gap-2">
+            <Button onClick={() => fetchData(true)} variant="outline" className="gap-2 border-primary/40 text-primary hover:bg-primary/5">
               <RefreshCw className="h-4 w-4" />
               Skúsiť znova
             </Button>
@@ -596,7 +596,7 @@ export default function VendorMenuView() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddItem(false)}>
+            <Button variant="outline" onClick={() => setShowAddItem(false)} className="border-primary/40 text-primary hover:bg-primary/5">
               Zrušiť
             </Button>
             <Button
@@ -695,7 +695,7 @@ export default function VendorMenuView() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setShowEditItem(false); setEditId(null); }}>
+            <Button variant="outline" onClick={() => { setShowEditItem(false); setEditId(null); }} className="border-primary/40 text-primary hover:bg-primary/5">
               Zrušiť
             </Button>
             <Button
@@ -727,7 +727,7 @@ export default function VendorMenuView() {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddCategory(false)}>
+            <Button variant="outline" onClick={() => setShowAddCategory(false)} className="border-primary/40 text-primary hover:bg-primary/5">
               Zrušiť
             </Button>
             <Button

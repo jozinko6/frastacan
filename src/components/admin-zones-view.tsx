@@ -169,7 +169,7 @@ export default function AdminZonesView() {
           size="sm"
           onClick={fetchZones}
           disabled={refreshing}
-          className="gap-1.5"
+          className="gap-1.5 border-primary/40 text-primary hover:bg-primary/5"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
           Obnoviť
@@ -249,7 +249,7 @@ export default function AdminZonesView() {
                             disabled={togglingId === zone.id}
                             onCheckedChange={() => toggleActive(zone.id, zone.isActive)}
                           />
-                          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEditing(zone)}>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/60" onClick={() => startEditing(zone)}>
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </>

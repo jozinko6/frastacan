@@ -132,7 +132,7 @@ export default function AdminRestaurantsView() {
           size="sm"
           onClick={fetchRestaurants}
           disabled={refreshing}
-          className="gap-1.5"
+          className="gap-1.5 border-primary/40 text-primary hover:bg-primary/5"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
           Obnoviť
@@ -154,7 +154,7 @@ export default function AdminRestaurantsView() {
           <Button
             variant={cuisineFilter === null ? 'default' : 'outline'}
             size="sm"
-            className={`shrink-0 rounded-full ${cuisineFilter === null ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : ''}`}
+            className={`shrink-0 rounded-full ${cuisineFilter === null ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'border-primary/40 text-primary hover:bg-primary/5'}`}
             onClick={() => setCuisineFilter(null)}
           >
             Všetky
@@ -164,7 +164,7 @@ export default function AdminRestaurantsView() {
               key={c.name}
               variant={cuisineFilter === c.name ? 'default' : 'outline'}
               size="sm"
-              className={`shrink-0 rounded-full ${cuisineFilter === c.name ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : ''}`}
+              className={`shrink-0 rounded-full ${cuisineFilter === c.name ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'border-primary/40 text-primary hover:bg-primary/5'}`}
               onClick={() => setCuisineFilter(cuisineFilter === c.name ? null : c.name)}
             >
               {c.emoji} {c.name}
@@ -192,7 +192,7 @@ export default function AdminRestaurantsView() {
               <Button
                 variant="outline"
                 size="sm"
-                className="mt-3"
+                className="mt-3 border-primary/40 text-primary hover:bg-primary/5"
                 onClick={() => {
                   setSearchQuery('')
                   setCuisineFilter(null)

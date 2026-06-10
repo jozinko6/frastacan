@@ -85,7 +85,7 @@ export default function AdminCategoriesView() {
           size="sm"
           onClick={fetchCategories}
           disabled={refreshing}
-          className="gap-1.5"
+          className="gap-1.5 border-primary/40 text-primary hover:bg-primary/5"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
           Obnoviť

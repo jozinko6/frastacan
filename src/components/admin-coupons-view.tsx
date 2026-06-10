@@ -238,7 +238,7 @@ export default function AdminCouponsView() {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setDialogOpen(false)} className="border-primary/40 text-primary hover:bg-primary/5">
                 Zrušiť
               </Button>
               <Button
@@ -256,7 +256,7 @@ export default function AdminCouponsView() {
           size="sm"
           onClick={fetchCoupons}
           disabled={refreshing}
-          className="gap-1.5"
+          className="gap-1.5 border-primary/40 text-primary hover:bg-primary/5"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
           Obnoviť

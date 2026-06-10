@@ -218,7 +218,7 @@ export default function VendorOrdersView() {
           >
             <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-3" />
             <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={handleRefresh} variant="outline" className="gap-2">
+            <Button onClick={handleRefresh} variant="outline" className="gap-2 border-primary/40 text-primary hover:bg-primary/5">
               <RefreshCw className="h-4 w-4" />
               Skúsiť znova
             </Button>

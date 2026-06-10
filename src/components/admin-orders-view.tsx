@@ -133,7 +133,7 @@ export default function AdminOrdersView() {
         <Button
           variant={statusFilter === null ? 'default' : 'outline'}
           size="sm"
-          className={`shrink-0 rounded-full ${statusFilter === null ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : ''}`}
+          className={`shrink-0 rounded-full ${statusFilter === null ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'border-primary/40 text-primary hover:bg-primary/5'}`}
           onClick={() => setStatusFilter(null)}
         >
           Všetky
@@ -143,7 +143,7 @@ export default function AdminOrdersView() {
             key={key}
             variant={statusFilter === key ? 'default' : 'outline'}
             size="sm"
-            className={`shrink-0 rounded-full ${statusFilter === key ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : ''}`}
+            className={`shrink-0 rounded-full ${statusFilter === key ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'border-primary/40 text-primary hover:bg-primary/5'}`}
             onClick={() => setStatusFilter(key)}
           >
             {config.label}
@@ -291,7 +291,7 @@ export default function AdminOrdersView() {
                 size="sm"
                 disabled={pagination.page <= 1}
                 onClick={() => fetchOrders(pagination.page - 1)}
-                className="gap-1"
+                className="gap-1 border-primary/40 text-primary hover:bg-primary/5"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Predošlá
@@ -304,7 +304,7 @@ export default function AdminOrdersView() {
                 size="sm"
                 disabled={pagination.page >= pagination.totalPages}
                 onClick={() => fetchOrders(pagination.page + 1)}
-                className="gap-1"
+                className="gap-1 border-primary/40 text-primary hover:bg-primary/5"
               >
                 Ďalšia
                 <ChevronRight className="h-4 w-4" />

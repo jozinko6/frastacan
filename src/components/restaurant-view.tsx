@@ -200,7 +200,7 @@ export default function RestaurantView() {
                             <Button
                               size="icon"
                               variant="outline"
-                              className="h-8 w-8 border-primary/60"
+                              className="h-8 w-8 border-primary/60 text-primary"
                               onClick={() => handleDecrease(item)}
                             >
                               <Minus className="h-3 w-3" />
@@ -235,7 +235,7 @@ export default function RestaurantView() {
                 <Button
                   key={cat.id}
                   variant={activeCategory === cat.id ? 'default' : 'outline'}
-                  className={`shrink-0 rounded-full text-sm ${activeCategory === cat.id ? 'bg-primary hover:bg-primary/90 text-white' : ''}`}
+                  className={`shrink-0 rounded-full text-sm ${activeCategory === cat.id ? 'bg-primary hover:bg-primary/90 text-white' : 'border-primary/40 text-primary hover:bg-primary/5'}`}
                   onClick={() => setActiveCategory(cat.id)}
                 >
                   {cat.icon && <span className="mr-1">{cat.icon}</span>}
@@ -310,7 +310,7 @@ export default function RestaurantView() {
                                       <Button
                                         size="icon"
                                         variant="outline"
-                                        className="h-9 w-9 border-primary/60"
+                                        className="h-9 w-9 border-primary/60 text-primary"
                                         onClick={() => handleDecrease(item)}
                                       >
                                         <Minus className="h-4 w-4" />

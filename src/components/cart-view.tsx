@@ -168,7 +168,7 @@ export default function CartView() {
 
           <Button
             variant="ghost"
-            className="text-destructive hover:text-destructive"
+            className="text-destructive hover:text-destructive hover:bg-destructive/5"
             onClick={() => {
               clearCart()
               setCouponDiscount(0)
@@ -225,7 +225,7 @@ export default function CartView() {
                   size="sm"
                   onClick={validateCoupon}
                   disabled={couponValidating}
-                  className="shrink-0"
+                  className="shrink-0 border-primary/40 text-primary hover:bg-primary/5"
                 >
                   <Tag className="h-4 w-4" />
                 </Button>

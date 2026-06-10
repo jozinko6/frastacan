@@ -116,7 +116,7 @@ export default function HomeView() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white/50 text-white hover:bg-white/10"
+                className="border-white/60 text-white bg-white/10 hover:bg-white/20 hover:text-white backdrop-blur-sm"
                 onClick={scrollToRestaurants}
               >
                 Pozrieť prevádzky
@@ -217,7 +217,7 @@ export default function HomeView() {
               </p>
               <Button
                 variant="outline"
-                className="mt-4"
+                className="mt-4 border-primary/40 text-primary hover:bg-primary/5"
                 onClick={() => {
                   setSelectedCuisine(null)
                   setSearchQuery('')
