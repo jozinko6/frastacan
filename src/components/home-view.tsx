@@ -108,15 +108,14 @@ export default function HomeView() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
                 size="lg"
-                className="bg-white text-[#B42318] hover:bg-red-50 font-semibold"
+                className="bg-white text-[#B42318] hover:bg-red-50 font-semibold h-12 sm:h-11"
                 onClick={scrollToRestaurants}
               >
                 Objednať teraz
               </Button>
               <Button
                 size="lg"
-                variant="outline"
-                className="border-white/60 text-white bg-white/10 hover:bg-white/20 hover:text-white backdrop-blur-sm"
+                className="border-2 border-white text-white bg-white/20 hover:bg-white/30 hover:text-white font-semibold h-12 sm:h-11"
                 onClick={scrollToRestaurants}
               >
                 Pozrieť prevádzky
@@ -132,10 +131,10 @@ export default function HomeView() {
           <h2 className="text-xl sm:text-2xl font-bold mb-4">
             Čo si chceš nechať doručiť?
           </h2>
-          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
             <Button
               variant={selectedCuisine === null ? 'default' : 'outline'}
-              className={`shrink-0 rounded-full px-5 ${selectedCuisine === null ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : ''}`}
+              className={`shrink-0 rounded-full px-4 py-2 h-9 ${selectedCuisine === null ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : 'border-primary/30 text-primary font-medium'}`}
               onClick={() => setSelectedCuisine(null)}
             >
               Všetky
@@ -144,21 +143,21 @@ export default function HomeView() {
               <Button
                 key={c.name}
                 variant={selectedCuisine === c.name ? 'default' : 'outline'}
-                className={`shrink-0 rounded-full px-5 ${selectedCuisine === c.name ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : ''}`}
+                className={`shrink-0 rounded-full px-4 py-2 h-9 ${selectedCuisine === c.name ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : 'border-primary/30 text-primary font-medium'}`}
                 onClick={() => setSelectedCuisine(selectedCuisine === c.name ? null : c.name)}
               >
-                <span className="mr-1.5">{c.emoji}</span> {c.name}
+                <span className="mr-1">{c.emoji}</span> {c.name}
               </Button>
             ))}
           </div>
           {/* Extended cuisine filters (cuisine types) */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-3 scrollbar-hide">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-2 scrollbar-hide -mx-4 px-4">
             {cuisineOptions.slice(8).map((c) => (
               <Button
                 key={c.name}
                 variant={selectedCuisine === c.name ? 'default' : 'outline'}
                 size="sm"
-                className={`shrink-0 rounded-full px-4 ${selectedCuisine === c.name ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : ''}`}
+                className={`shrink-0 rounded-full px-3.5 py-1.5 ${selectedCuisine === c.name ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : 'border-primary/30 text-primary font-medium'}`}
                 onClick={() => setSelectedCuisine(selectedCuisine === c.name ? null : c.name)}
               >
                 <span className="mr-1">{c.emoji}</span> {c.name}
@@ -293,24 +292,24 @@ export default function HomeView() {
         </section>
 
         {/* For Businesses Section */}
-        <section className="bg-amber-50 rounded-2xl p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row items-center gap-6">
+        <section className="bg-amber-50 rounded-2xl p-5 sm:p-8">
+          <div className="flex flex-col items-center text-center gap-4 sm:flex-row sm:text-left sm:gap-6">
             <div className="flex-shrink-0">
-              <div className="h-16 w-16 rounded-2xl bg-[#B42318] flex items-center justify-center">
-                <Store className="h-8 w-8 text-white" />
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-[#B42318] flex items-center justify-center">
+                <Store className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
               </div>
             </div>
-            <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+            <div className="flex-1">
+              <h2 className="text-lg sm:text-2xl font-bold mb-1.5">
                 Máte prevádzku v Hlohovci alebo okolí?
               </h2>
-              <p className="text-muted-foreground">
-                Zapojte sa do lokálnej doručovacej platformy Fraštačan a získajte objednávky z vášho okolia bez zbytočne komplikovaného systému.
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Zapojte sa do lokálnej doručovacej platformy Fraštačan a získajte objednávky z vášho okolia.
               </p>
             </div>
             <Button
               size="lg"
-              className="bg-[#B42318] hover:bg-[#9a1f16] text-white shrink-0"
+              className="bg-[#B42318] hover:bg-[#9a1f16] text-white shrink-0 w-full sm:w-auto h-12 font-semibold"
               onClick={() => setView('pre-prevadzky')}
             >
               Chcem zapojiť prevádzku
@@ -320,24 +319,24 @@ export default function HomeView() {
         </section>
 
         {/* For Couriers Section */}
-        <section className="bg-blue-50 rounded-2xl p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row items-center gap-6">
+        <section className="bg-blue-50 rounded-2xl p-5 sm:p-8">
+          <div className="flex flex-col items-center text-center gap-4 sm:flex-row sm:text-left sm:gap-6">
             <div className="flex-shrink-0">
-              <div className="h-16 w-16 rounded-2xl bg-[#B42318] flex items-center justify-center">
-                <Bike className="h-8 w-8 text-white" />
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-[#B42318] flex items-center justify-center">
+                <Bike className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
               </div>
             </div>
-            <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+            <div className="flex-1">
+              <h2 className="text-lg sm:text-2xl font-bold mb-1.5">
                 Staň sa kuriérom Fraštačana
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Rozvážaj v Hlohovci, Šulekove, Leopoldove alebo Červeníku. Vyber si dostupnosť a doručuj lokálne objednávky.
               </p>
             </div>
             <Button
               size="lg"
-              className="bg-[#B42318] hover:bg-[#9a1f16] text-white shrink-0"
+              className="bg-[#B42318] hover:bg-[#9a1f16] text-white shrink-0 w-full sm:w-auto h-12 font-semibold"
               onClick={() => setView('pre-kurierov')}
             >
               Chcem doručovať

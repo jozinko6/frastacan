@@ -197,7 +197,7 @@ export default function CheckoutView() {
     <div className="view-transition max-w-6xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => setView('cart')}>
+        <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setView('cart')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-2xl font-bold">Objednávka</h1>

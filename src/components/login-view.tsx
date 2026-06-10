@@ -69,7 +69,7 @@ export default function LoginView() {
 
   return (
     <div className="view-transition max-w-md mx-auto px-4 py-8 sm:py-12">
-      <Button variant="ghost" size="icon" className="mb-4" onClick={() => setView('home')}>
+      <Button variant="ghost" size="icon" className="h-10 w-10 mb-4" onClick={() => setView('home')}>
         <ArrowLeft className="h-5 w-5" />
       </Button>
 
@@ -112,7 +112,7 @@ export default function LoginView() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 -m-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -159,7 +159,7 @@ export default function LoginView() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs border-primary/60 text-primary"
+                className="text-xs border-primary/60 text-primary h-9 min-w-[44px]"
                 onClick={() => fillDemo('admin')}
               >
                 Vyplniť
@@ -173,7 +173,7 @@ export default function LoginView() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs border-primary/60 text-primary"
+                className="text-xs border-primary/60 text-primary h-9 min-w-[44px]"
                 onClick={() => fillDemo('customer')}
               >
                 Vyplniť
@@ -187,7 +187,7 @@ export default function LoginView() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs border-primary/60 text-primary"
+                className="text-xs border-primary/60 text-primary h-9 min-w-[44px]"
                 onClick={() => fillDemo('rider')}
               >
                 Vyplniť

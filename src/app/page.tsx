@@ -213,7 +213,7 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur-md">
-      <div className={`mx-auto px-4 h-14 flex items-center justify-between ${inAdmin ? 'max-w-full' : 'max-w-6xl'}`}>
+      <div className={`mx-auto px-3 sm:px-4 h-14 flex items-center justify-between ${inAdmin ? 'max-w-full' : 'max-w-6xl'}`}>
         {/* Logo */}
         <div className="flex items-center gap-2">
           {inAdmin ? (
@@ -309,17 +309,17 @@ function Header() {
         )}
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           {!inAdmin && (
             <Button
               variant={currentView === 'cart' ? 'secondary' : 'ghost'}
-              size="sm"
-              className={`relative ${currentView === 'cart' ? 'bg-primary/10 text-primary' : ''}`}
+              size="icon"
+              className={`relative h-10 w-10 ${currentView === 'cart' ? 'bg-primary/10 text-primary' : ''}`}
               onClick={() => setView('cart')}
             >
               <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
-                <Badge className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary text-primary-foreground text-xs border-0">
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary text-primary-foreground text-xs border-0">
                   {cartCount}
                 </Badge>
               )}
@@ -329,21 +329,20 @@ function Header() {
           {user ? (
             <Button
               variant={currentView === 'profile' ? 'secondary' : 'ghost'}
-              size="sm"
-              className={currentView === 'profile' ? 'bg-primary/10 text-primary' : ''}
+              size="icon"
+              className={`h-10 w-10 ${currentView === 'profile' ? 'bg-primary/10 text-primary' : ''}`}
               onClick={() => setView('profile')}
             >
-              <User className="h-4 w-4 mr-1.5" />
-              <span className="hidden sm:inline max-w-24 truncate">{user.name.split(' ')[0]}</span>
+              <User className="h-5 w-5" />
             </Button>
           ) : (
             !inAdmin && (
               <Button
                 size="sm"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground h-9 px-3"
                 onClick={() => setView('login')}
               >
-                <LogIn className="h-4 w-4 mr-1.5" />
+                <LogIn className="h-4 w-4 sm:mr-1.5" />
                 <span className="hidden sm:inline">Prihlásiť</span>
               </Button>
             )
@@ -414,7 +413,7 @@ function MobileMenu() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
+        <Button variant="ghost" size="icon" className="md:hidden h-10 w-10">
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
@@ -496,34 +495,34 @@ function Footer() {
   const { setView } = useAppStore()
 
   return (
-    <footer className="border-t bg-gray-50 mt-auto">
+    <footer className="border-t bg-gray-100 mt-auto">
       <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="col-span-2 sm:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg" />
               <span className="text-xl font-bold text-primary">Fraštačan</span>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-600">
               Lokálne doručenie pre Hlohovec, Šulekovo, Leopoldov a Červeník. Jedlo, káva, kvety aj nákup z okolia.
             </p>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-3">Navigácia</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <h4 className="font-semibold mb-3 text-gray-900">Navigácia</h4>
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <button className="hover:text-primary transition-colors" onClick={() => setView('home')}>
+                <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('home')}>
                   Prevádzky
                 </button>
               </li>
               <li>
-                <button className="hover:text-primary transition-colors" onClick={() => setView('orders')}>
+                <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('orders')}>
                   Moje objednávky
                 </button>
               </li>
               <li>
-                <button className="hover:text-primary transition-colors" onClick={() => setView('profile')}>
+                <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('profile')}>
                   Profil
                 </button>
               </li>
@@ -531,8 +530,8 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-3">Kontakt</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <h4 className="font-semibold mb-3 text-gray-900">Kontakt</h4>
+            <ul className="space-y-2.5 text-sm text-gray-600">
               <li>
                 <button className="hover:text-primary transition-colors" onClick={() => setView('contact')}>
                   Kontaktujte nás
@@ -543,9 +542,9 @@ function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-semibold mb-3">Otváracie hodiny</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+          <div className="col-span-2 sm:col-span-1">
+            <h4 className="font-semibold mb-3 text-gray-900">Otváracie hodiny</h4>
+            <ul className="space-y-2.5 text-sm text-gray-600">
               <li>Po - Pi: 10:00 - 22:00</li>
               <li>So: 11:00 - 23:00</li>
               <li>Ne: 11:00 - 21:00</li>
@@ -554,20 +553,20 @@ function Footer() {
         </div>
 
         <div className="border-t mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-500">
             &copy; {new Date().getFullYear()} Fraštačan. Všetky práva vyhradené.
           </p>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap justify-center sm:justify-end">
-            <button className="hover:text-primary transition-colors" onClick={() => setView('terms')}>
+          <div className="flex items-center gap-3 sm:gap-4 text-sm flex-wrap justify-center sm:justify-end">
+            <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('terms')}>
               Obchodné podmienky
             </button>
-            <button className="hover:text-primary transition-colors" onClick={() => setView('privacy')}>
+            <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('privacy')}>
               Ochrana súkromia
             </button>
-            <button className="hover:text-primary transition-colors" onClick={() => setView('contact')}>
+            <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('contact')}>
               Kontakt
             </button>
-            <button className="hover:text-primary transition-colors" onClick={() => setView('complaints')}>
+            <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('complaints')}>
               Reklamačný poriadok
             </button>
           </div>

@@ -148,7 +148,7 @@ export default function OrderDetailView() {
   return (
     <div className="view-transition max-w-4xl mx-auto px-4 py-6">
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => setView('orders')}>
+        <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setView('orders')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>

@@ -79,6 +79,7 @@ export default function CartView() {
         <Button
           variant="ghost"
           size="icon"
+          className="h-10 w-10"
           onClick={() => setView('home')}
         >
           <ArrowLeft className="h-5 w-5" />
