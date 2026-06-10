@@ -11,7 +11,7 @@ import { useAppStore } from '@/lib/store'
 import { toast } from 'sonner'
 
 export default function LoginView() {
-  const { setView, setUser } = useAppStore()
+  const { setView, setUser, setAuthToken } = useAppStore()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -34,6 +34,7 @@ export default function LoginView() {
       const data = await res.json()
       if (res.ok) {
         setUser(data.user)
+        setAuthToken(data.token)
         toast.success(`Vitajte, ${data.user.name}!`)
         // Redirect based on role
         if (data.user.role === 'rider') {

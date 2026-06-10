@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/lib/store'
-import { formatPrice, formatDate, statusConfig } from '@/lib/utils-shared'
+import { formatPrice, formatDate, statusConfig, authFetch } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import RiderBottomNav from '@/components/rider-bottom-nav'
 
@@ -87,8 +87,11 @@ export default function RiderOrdersView() {
     if (showRefresh) setRefreshing(true)
     try {
       const statusParam = activeTab === 'all' ? '' : `?status=${activeTab}`
-      const res = await fetch(`/api/rider/my-orders${statusParam}`)
-      if (!res.ok) throw new Error('Chyba pri načítaní objednávok')
+      const res = await authFetch(`/api/rider/my-orders${statusParam}`)
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.error || 'Chyba pri načítaní objednávok')
+      }
       const data = await res.json()
       setOrders(data.orders || [])
       setError(null)
@@ -107,7 +110,7 @@ export default function RiderOrdersView() {
   async function deliverOrder(orderId: string) {
     setDeliveringOrderId(orderId)
     try {
-      const res = await fetch('/api/rider/deliver-order', {
+      const res = await authFetch('/api/rider/deliver-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId }),

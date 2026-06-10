@@ -16,7 +16,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
-import { formatPrice, formatDateShort } from '@/lib/utils-shared'
+import { formatPrice, formatDateShort, authFetch } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import RiderBottomNav from '@/components/rider-bottom-nav'
 
@@ -52,8 +52,11 @@ export default function RiderEarningsView() {
   const fetchData = useCallback(async (showRefresh = false) => {
     if (showRefresh) setRefreshing(true)
     try {
-      const res = await fetch('/api/rider/earnings')
-      if (!res.ok) throw new Error('Chyba pri načítaní zárobkov')
+      const res = await authFetch('/api/rider/earnings')
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.error || 'Chyba pri načítaní zárobkov')
+      }
       const earningsData = await res.json()
       setData(earningsData)
       setError(null)

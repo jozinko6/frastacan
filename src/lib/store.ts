@@ -136,7 +136,10 @@ export type View =
 interface AppState {
   // Auth
   user: User | null
+  authToken: string | null
   setUser: (user: User | null) => void
+  setAuthToken: (token: string | null) => void
+  logout: () => void
 
   // Navigation
   currentView: View
@@ -173,7 +176,10 @@ interface AppState {
 export const useAppStore = create<AppState>((set, get) => ({
   // Auth
   user: null,
+  authToken: null,
   setUser: (user) => set({ user }),
+  setAuthToken: (token) => set({ authToken: token }),
+  logout: () => set({ user: null, authToken: null }),
 
   // Navigation
   currentView: 'home',

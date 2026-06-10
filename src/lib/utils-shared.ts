@@ -1,5 +1,37 @@
 // Shared utilities used across multiple views
 
+/**
+ * Authenticated fetch helper - adds Authorization header with Bearer token
+ * from Zustand store. Falls back to cookie-only auth if token not available.
+ */
+export function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  // Try to get the token from the store
+  // We import lazily to avoid circular deps
+  let token: string | null = null
+  try {
+    // Access the store directly (not via hook, since this is not a React component)
+    const { useAppStore } = require('@/lib/store')
+    token = useAppStore.getState().authToken
+  } catch {
+    // Store not available, cookie auth will be used
+  }
+
+  const headers = new Headers(options.headers || {})
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`)
+  }
+  // Ensure Content-Type is set for POST/PATCH with body
+  if (options.body && !headers.has('Content-Type') && typeof options.body === 'string') {
+    headers.set('Content-Type', 'application/json')
+  }
+
+  return fetch(url, {
+    ...options,
+    headers,
+    credentials: 'same-origin', // Always include cookies as fallback
+  })
+}
+
 export function formatPrice(price: number): string {
   return price.toFixed(2).replace('.', ',') + ' €'
 }

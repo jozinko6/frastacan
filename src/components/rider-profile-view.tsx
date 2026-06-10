@@ -27,7 +27,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/lib/store'
-import { formatPrice } from '@/lib/utils-shared'
+import { formatPrice, authFetch } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import RiderBottomNav from '@/components/rider-bottom-nav'
 
@@ -63,7 +63,7 @@ const vehicleOptions: { key: string; label: string; icon: typeof Bike }[] = [
 ]
 
 export default function RiderProfileView() {
-  const { user, setView, setUser } = useAppStore()
+  const { user, setView, logout } = useAppStore()
   const [profile, setProfile] = useState<RiderProfile | null>(null)
   const [riderUser, setRiderUser] = useState<RiderUser | null>(null)
   const [isAvailable, setIsAvailable] = useState(false)
@@ -74,8 +74,11 @@ export default function RiderProfileView() {
 
   const fetchProfile = useCallback(async () => {
     try {
-      const res = await fetch('/api/rider')
-      if (!res.ok) throw new Error('Chyba pri načítaní profilu')
+      const res = await authFetch('/api/rider')
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.error || 'Chyba pri načítaní profilu')
+      }
       const data = await res.json()
       setProfile(data.profile)
       setRiderUser(data.user)
@@ -94,7 +97,7 @@ export default function RiderProfileView() {
 
   async function toggleAvailability() {
     try {
-      const res = await fetch('/api/rider', {
+      const res = await authFetch('/api/rider', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isAvailable: !isAvailable }),
@@ -113,7 +116,7 @@ export default function RiderProfileView() {
   async function changeVehicleType(vehicleType: string) {
     setChangingVehicle(true)
     try {
-      const res = await fetch('/api/rider', {
+      const res = await authFetch('/api/rider', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ vehicleType }),
@@ -140,7 +143,7 @@ export default function RiderProfileView() {
     } catch {
       // ignore
     }
-    setUser(null)
+    logout()
     setView('home')
     toast.info('Boli ste odhlásení')
   }

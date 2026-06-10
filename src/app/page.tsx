@@ -184,7 +184,7 @@ function MobileAdminNav() {
 }
 
 function Header() {
-  const { user, cart, currentView, setView, setUser } = useAppStore()
+  const { user, cart, currentView, setView, setUser, setAuthToken } = useAppStore()
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
   const inAdmin = isAdminView(currentView)
 
@@ -192,11 +192,16 @@ function Header() {
   useEffect(() => {
     async function checkAuth() {
       try {
-        const res = await fetch('/api/auth/me')
+        // Try to get user from cookie-based auth
+        const res = await fetch('/api/auth/me', { credentials: 'same-origin' })
         if (res.ok) {
           const data = await res.json()
           if (data.user) {
             setUser(data.user)
+            // Store the fresh token for authFetch to use
+            if (data.token) {
+              setAuthToken(data.token)
+            }
           }
         }
       } catch {
@@ -352,7 +357,7 @@ function Header() {
 }
 
 function MobileMenu() {
-  const { user, currentView, setView, setUser } = useAppStore()
+  const { user, currentView, setView, logout } = useAppStore()
   const [open, setOpen] = useState(false)
   const inAdmin = isAdminView(currentView)
 
@@ -365,7 +370,7 @@ function MobileMenu() {
     try {
       await fetch('/api/auth/logout', { method: 'POST' })
     } catch {}
-    setUser(null)
+    logout()
     setView('home')
     setOpen(false)
     toast.info('Boli ste odhlásení')

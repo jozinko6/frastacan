@@ -22,7 +22,7 @@ interface Address {
 }
 
 export default function ProfileView() {
-  const { user, setUser, setView } = useAppStore()
+  const { user, setView, logout } = useAppStore()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddAddress, setShowAddAddress] = useState(false)
@@ -88,7 +88,7 @@ export default function ProfileView() {
   }
 
   function handleLogout() {
-    setUser(null)
+    logout()
     setView('home')
     toast.info('Boli ste odhlásení')
   }

@@ -29,7 +29,7 @@ import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
-import { formatPrice } from '@/lib/utils-shared'
+import { formatPrice, authFetch } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import RiderBottomNav from '@/components/rider-bottom-nav'
 
@@ -128,12 +128,15 @@ export default function RiderDashboardView() {
     if (showRefresh) setRefreshing(true)
     try {
       const [profileRes, availableRes, activeRes] = await Promise.all([
-        fetch('/api/rider'),
-        fetch('/api/rider/available-orders'),
-        fetch('/api/rider/my-orders'),
+        authFetch('/api/rider'),
+        authFetch('/api/rider/available-orders'),
+        authFetch('/api/rider/my-orders'),
       ])
 
-      if (!profileRes.ok) throw new Error('Chyba pri načítaní profilu')
+      if (!profileRes.ok) {
+        const errData = await profileRes.json().catch(() => ({}))
+        throw new Error(errData.error || 'Chyba pri načítaní profilu')
+      }
 
       const profileData = await profileRes.json()
       setProfile(profileData.profile)
@@ -173,7 +176,7 @@ export default function RiderDashboardView() {
 
   async function toggleAvailability() {
     try {
-      const res = await fetch('/api/rider', {
+      const res = await authFetch('/api/rider', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isAvailable: !isAvailable }),
@@ -192,7 +195,7 @@ export default function RiderDashboardView() {
   async function acceptOrder(orderId: string) {
     setAcceptingOrderId(orderId)
     try {
-      const res = await fetch('/api/rider/accept-order', {
+      const res = await authFetch('/api/rider/accept-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId }),
@@ -214,7 +217,7 @@ export default function RiderDashboardView() {
   async function deliverOrder(orderId: string) {
     setDeliveringOrderId(orderId)
     try {
-      const res = await fetch('/api/rider/deliver-order', {
+      const res = await authFetch('/api/rider/deliver-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId }),

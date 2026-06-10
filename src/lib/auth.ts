@@ -55,7 +55,18 @@ export function verifyToken(token: string): { userId: string; ts: number } | nul
 }
 
 export async function getUserFromRequest(request: NextRequest) {
-  const token = request.cookies.get('frastacan_token')?.value
+  // Try Authorization header first, then fall back to cookie
+  let token: string | null = null
+
+  const authHeader = request.headers.get('authorization')
+  if (authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7)
+  }
+
+  if (!token) {
+    token = request.cookies.get('frastacan_token')?.value || null
+  }
+
   if (!token) return null
 
   const decoded = verifyToken(token)
