@@ -53,3 +53,20 @@ Stage Summary:
 - Auth state properly rehydrated on page refresh via /api/auth/me (which returns fresh token)
 - Error messages are more descriptive, showing actual API error details
 - All logout handlers consistently clear both user and authToken from Zustand store
+---
+Task ID: 2
+Agent: Main Agent
+Task: Fix UI bugs reported by user (mobile view) - hidden prevádzky / categories overflowing right, missing "Fraštačan" text in header
+
+Work Log:
+- Analyzed user screenshot showing category chips (Všetky, Pizza, Reštaurácie, Burgery, Kebab, Droguérie partially cut) overflowing right edge on mobile
+- Identified two issues in src/app/page.tsx and src/components/home-view.tsx
+- Fix 1 (src/app/page.tsx line 238): Removed `hidden xs:inline sm:inline` from header logo span so "Fraštačan" text is always visible next to the logo, even on phones < 400px wide. Changed text size to `text-base sm:text-xl` so it fits comfortably on small screens.
+- Fix 2 (src/components/home-view.tsx lines 134, 154): Replaced `overflow-x-auto scrollbar-hide -mx-4 px-4` with `flex-wrap` on both category rows so all category chips wrap to the next line instead of overflowing right edge of screen. No more horizontal scrolling for categories.
+- Verified no new TypeScript errors introduced (errors exist in unrelated files like admin/users route, orders route, examples/ — all pre-existing)
+- Committed as `24748f4` and pushed to GitHub main branch
+
+Stage Summary:
+- "Fraštačan" text now appears in the header on all viewport sizes next to the logo
+- Category chips on home view now wrap to multiple lines on small screens, eliminating horizontal overflow
+- Push confirmed: 824e79b..24748f4 main -> main
