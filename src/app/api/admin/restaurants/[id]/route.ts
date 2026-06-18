@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { validateInput, adminRestaurantPatchSchema } from '@/lib/validations'
 
 export async function PATCH(
   request: NextRequest,
@@ -16,30 +17,22 @@ export async function PATCH(
     }
 
     const { id } = await params
-    const body = await request.json()
-    const { isActive, isAvailable } = body
 
-    // At least one field must be provided
-    if (isActive === undefined && isAvailable === undefined) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Je potrebné zadať aspoň jedno pole: isActive alebo isAvailable' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
-    // Validate types
-    if (isActive !== undefined && typeof isActive !== 'boolean') {
-      return NextResponse.json(
-        { error: 'isActive musí byť boolean hodnota' },
-        { status: 400 }
-      )
+    const validation = validateInput(adminRestaurantPatchSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
-    if (isAvailable !== undefined && typeof isAvailable !== 'boolean') {
-      return NextResponse.json(
-        { error: 'isAvailable musí byť boolean hodnota' },
-        { status: 400 }
-      )
-    }
+    const { isActive, isAvailable } = validation.value
 
     // Check restaurant exists
     const existing = await db.restaurant.findUnique({ where: { id } })

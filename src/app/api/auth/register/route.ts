@@ -1,30 +1,78 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { hashPassword, generateToken } from '@/lib/auth'
+import { hashPassword, generateToken, AUTH_COOKIE_OPTIONS } from '@/lib/auth'
+import { registerSchema, validateInput } from '@/lib/validations'
+
+// In-memory per-IP rate limiter for registrations. Lower cap than login
+// because registration is a less-frequent operation. 5 per hour per IP.
+const REGISTER_WINDOW_MS = 60 * 60 * 1000
+const REGISTER_MAX_ATTEMPTS = 5
+const registerAttempts = new Map<string, { count: number; firstAt: number }>()
+
+function rateLimit(ip: string): { ok: boolean; retryAfterMs: number } {
+  const now = Date.now()
+  const entry = registerAttempts.get(ip)
+  if (!entry || now - entry.firstAt > REGISTER_WINDOW_MS) {
+    registerAttempts.set(ip, { count: 1, firstAt: now })
+    return { ok: true, retryAfterMs: 0 }
+  }
+  entry.count += 1
+  if (entry.count > REGISTER_MAX_ATTEMPTS) {
+    return { ok: false, retryAfterMs: REGISTER_WINDOW_MS - (now - entry.firstAt) }
+  }
+  return { ok: true, retryAfterMs: 0 }
+}
+
+function getClientIp(request: NextRequest): string {
+  const xff = request.headers.get('x-forwarded-for')
+  if (xff) return xff.split(',')[0].trim()
+  return request.headers.get('x-real-ip') || 'unknown'
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { email, name, password, phone } = body
-
-    if (!email || !name || !password) {
+    // Rate limit
+    const ip = getClientIp(request)
+    const rl = rateLimit(ip)
+    if (!rl.ok) {
       return NextResponse.json(
-        { error: 'Email, meno a heslo sú povinné' },
+        { error: 'Príliš veľa pokusov o registráciu. Skúste to neskôr.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil(rl.retryAfterMs / 1000)) } }
+      )
+    }
+
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json(
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
+    const validation = validateInput(registerSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json(
+        { error: validation.error },
+        { status: 400 }
+      )
+    }
+    const { email, name, password, phone } = validation.value
+
     // Check if user already exists
     const existingUser = await db.user.findUnique({ where: { email } })
     if (existingUser) {
+      // Use a non-enumerable message: an attacker shouldn't be able to
+      // list which emails are already registered.
       return NextResponse.json(
-        { error: 'Používateľ s týmto emailom už existuje' },
+        { error: 'Registrácia zlyhala. Skúste iný email.' },
         { status: 409 }
       )
     }
 
-    // Create user
-    const hashedPassword = hashPassword(password)
+    // Create user with bcrypt-hashed password
+    const hashedPassword = await hashPassword(password)
     const user = await db.user.create({
       data: {
         email,
@@ -53,15 +101,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
 
-    // Set cookie
-    response.cookies.set('frastacan_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    })
-
+    response.cookies.set('frastacan_token', token, AUTH_COOKIE_OPTIONS)
     return response
   } catch (error) {
     console.error('Register error:', error)

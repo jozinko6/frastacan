@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { validateInput, createReviewSchema } from '@/lib/validations'
 
+/**
+ * POST /api/reviews
+ *
+ * Creates a review for an order. Authorisation rules:
+ *   - Caller must be authenticated.
+ *   - Order must belong to the caller (order.customerId === user.id).
+ *   - Order must be in 'delivered' state.
+ *   - Order must not have been reviewed yet (1 review per order).
+ *   - The `restaurantId` in the body must match `order.restaurantId`
+ *     to prevent a customer from creating a review attached to a
+ *     different restaurant than the one they actually ordered from.
+ */
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request)
@@ -9,26 +22,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Neprihlásený' }, { status: 401 })
     }
 
-    const body = await request.json()
-    const { rating, comment, orderId, restaurantId } = body
-
-    if (!rating || !orderId || !restaurantId) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Hodnotenie, objednávka a reštaurácia sú povinné' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
-    if (rating < 1 || rating > 5) {
-      return NextResponse.json(
-        { error: 'Hodnotenie musí byť medzi 1 a 5' },
-        { status: 400 }
-      )
+    const validation = validateInput(createReviewSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
+    const { rating, comment, orderId, restaurantId } = validation.value
 
     // Check if order exists and belongs to user
     const order = await db.order.findUnique({
       where: { id: orderId },
+      select: { id: true, customerId: true, restaurantId: true, status: true },
     })
     if (!order) {
       return NextResponse.json(
@@ -48,6 +61,15 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+    // The restaurantId in the body must match the order's restaurantId.
+    // This prevents a malicious client from boosting a different
+    // restaurant's rating by sending a different restaurantId.
+    if (order.restaurantId !== restaurantId) {
+      return NextResponse.json(
+        { error: 'Reštaurácia v požiadavke nezodpovedá objednávke' },
+        { status: 400 }
+      )
+    }
 
     // Check if already reviewed
     const existingReview = await db.review.findUnique({
@@ -64,7 +86,7 @@ export async function POST(request: NextRequest) {
     const review = await db.review.create({
       data: {
         rating,
-        comment: comment || null,
+        comment: comment ?? null,
         orderId,
         customerId: user.id,
         restaurantId,

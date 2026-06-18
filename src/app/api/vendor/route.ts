@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { validateInput, vendorPatchSchema } from '@/lib/validations'
 
 // GET /api/vendor - Get current vendor's restaurant info and stats
 export async function GET(request: NextRequest) {
@@ -110,51 +111,44 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const {
-      name,
-      description,
-      phone,
-      email,
-      address,
-      city,
-      openingHours,
-      deliveryType,
-      cuisine,
-      minimumOrder,
-      deliveryFee,
-      isAvailable,
-    } = body
-
-    // Build update data
-    const updateData: Record<string, unknown> = {}
-    if (typeof name === 'string') updateData.name = name
-    if (typeof description === 'string') updateData.description = description
-    if (typeof phone === 'string') updateData.phone = phone || null
-    if (typeof email === 'string') updateData.email = email || null
-    if (typeof address === 'string') updateData.address = address
-    if (typeof city === 'string') updateData.city = city
-    if (typeof openingHours === 'string') updateData.openingHours = openingHours || null
-    if (typeof deliveryType === 'string') updateData.deliveryType = deliveryType
-    if (typeof cuisine === 'string') updateData.cuisine = cuisine
-    if (typeof minimumOrder === 'number') updateData.minimumOrder = minimumOrder
-    if (typeof deliveryFee === 'number') updateData.deliveryFee = deliveryFee
-    if (typeof isAvailable === 'boolean') updateData.isAvailable = isAvailable
-
-    if (Object.keys(updateData).length === 0) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Žiadne údaje na aktualizáciu' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
+    const validation = validateInput(vendorPatchSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
+    }
+    const v = validation.value
+
+    // Build update data — Zod schema already validated types and bounds
+    // for each field, so we can copy them straight in.
+    const updateData: Record<string, unknown> = {}
+    if (v.name !== undefined) updateData.name = v.name
+    if (v.description !== undefined) updateData.description = v.description
+    if (v.phone !== undefined) updateData.phone = v.phone || null
+    if (v.email !== undefined) updateData.email = v.email || null
+    if (v.address !== undefined) updateData.address = v.address
+    if (v.city !== undefined) updateData.city = v.city
+    if (v.openingHours !== undefined) updateData.openingHours = v.openingHours || null
+    if (v.deliveryType !== undefined) updateData.deliveryType = v.deliveryType
+    if (v.cuisine !== undefined) updateData.cuisine = v.cuisine
+    if (v.minimumOrder !== undefined) updateData.minimumOrder = v.minimumOrder
+    if (v.deliveryFee !== undefined) updateData.deliveryFee = v.deliveryFee
+    if (v.isAvailable !== undefined) updateData.isAvailable = v.isAvailable
+
     // Update slug if name changed - ensure uniqueness
-    if (name && name !== restaurant.name) {
-      let baseSlug = name
+    if (v.name && v.name !== restaurant.name) {
+      let baseSlug = v.name
         .toLowerCase()
         .replace(/[^a-z0-9áäčďéíĺľňóôŕšťúýž]+/g, '-')
         .replace(/^-|-$/g, '')
-      // Append a short suffix to avoid collisions with existing slugs
       const existing = await db.restaurant.findFirst({
         where: { slug: baseSlug, NOT: { id: restaurant.id } },
         select: { slug: true },

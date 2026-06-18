@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { validateInput, vendorCategoryCreateSchema } from '@/lib/validations'
 
 // GET /api/vendor/categories - Get categories for the restaurant
 export async function GET(request: NextRequest) {
@@ -69,17 +70,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { name, icon, sortOrder } = body
-
-    if (!name || !name.trim()) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Názov kategórie je povinný' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
-    // Get the max sortOrder for this restaurant's categories
+    const validation = validateInput(vendorCategoryCreateSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
+    }
+    const { name, icon, sortOrder } = validation.value
+
+    // Get the max sortOrder for this restaurant's categories if not provided
     const maxSortResult = await db.category.aggregate({
       where: { restaurantId: restaurant.id },
       _max: { sortOrder: true },
@@ -88,8 +95,8 @@ export async function POST(request: NextRequest) {
 
     const category = await db.category.create({
       data: {
-        name: name.trim(),
-        icon: icon?.trim() || null,
+        name,
+        icon: icon ?? null,
         sortOrder: nextSortOrder,
         restaurantId: restaurant.id,
       },

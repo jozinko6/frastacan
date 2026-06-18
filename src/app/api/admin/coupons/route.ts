@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { validateInput, createCouponSchema, updateCouponSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,22 +37,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { code, discount, minOrder, maxDiscount, expiresAt } = body
-
-    if (!code || discount === undefined) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Kód a zľava sú povinné' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
-    if (discount < 0 || discount > 100) {
-      return NextResponse.json(
-        { error: 'Zľava musí byť medzi 0 a 100 percentami' },
-        { status: 400 }
-      )
+    const validation = validateInput(createCouponSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
+    const { code, discount, minOrder, maxDiscount, expiresAt } = validation.value
 
     // Check unique code
     const existing = await db.coupon.findUnique({ where: { code: code.toUpperCase() } })
@@ -65,9 +65,9 @@ export async function POST(request: NextRequest) {
     const coupon = await db.coupon.create({
       data: {
         code: code.toUpperCase(),
-        discount: parseFloat(discount),
-        minOrder: minOrder ? parseFloat(minOrder) : 0,
-        maxDiscount: maxDiscount ? parseFloat(maxDiscount) : null,
+        discount,
+        minOrder: minOrder ?? 0,
+        maxDiscount: maxDiscount ?? null,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         isActive: true,
       },
@@ -93,22 +93,21 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { couponId, isActive } = body
-
-    if (!couponId) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Chýba couponId' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
-    if (typeof isActive !== 'boolean') {
-      return NextResponse.json(
-        { error: 'isActive musí byť boolean hodnota' },
-        { status: 400 }
-      )
+    const validation = validateInput(updateCouponSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
+    const { couponId, isActive } = validation.value
 
     const existing = await db.coupon.findUnique({ where: { id: couponId } })
     if (!existing) {

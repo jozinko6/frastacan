@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
 
+/**
+ * GET /api/favorites
+ *
+ * Lists the authenticated user's favourite restaurants.
+ *
+ * SECURITY: Previous implementation accepted `?userId=...` and used it
+ * directly — IDOR. We now always use the authenticated user's id and
+ * ignore the query param.
+ */
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request)
@@ -9,11 +18,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Neprihlásený' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId') || user.id
-
     const favorites = await db.favorite.findMany({
-      where: { userId },
+      where: { userId: user.id },
       include: {
         restaurant: {
           select: {
@@ -46,6 +52,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * POST /api/favorites
+ *
+ * Toggles a restaurant in the authenticated user's favourites.
+ *
+ * SECURITY: Previous implementation accepted `userId` in the body and
+ * used it — IDOR. We now always use the authenticated user's id.
+ */
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request)
@@ -53,10 +67,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Neprihlásený' }, { status: 401 })
     }
 
-    const body = await request.json()
-    const { userId, restaurantId } = body
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json(
+        { error: 'Neplatný JSON v tele požiadavky' },
+        { status: 400 }
+      )
+    }
 
-    if (!restaurantId) {
+    if (typeof body !== 'object' || body === null) {
+      return NextResponse.json({ error: 'Neplatné údaje' }, { status: 400 })
+    }
+    const { restaurantId } = body as { restaurantId?: unknown }
+    if (typeof restaurantId !== 'string' || restaurantId.length === 0) {
       return NextResponse.json(
         { error: 'restaurantId je povinné' },
         { status: 400 }
@@ -66,6 +91,7 @@ export async function POST(request: NextRequest) {
     // Verify restaurant exists
     const restaurant = await db.restaurant.findUnique({
       where: { id: restaurantId },
+      select: { id: true },
     })
     if (!restaurant) {
       return NextResponse.json(
@@ -74,7 +100,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const targetUserId = userId || user.id
+    // Always use the authenticated user's id — ignore any userId field
+    // the client tried to send.
+    const targetUserId = user.id
 
     // Check if already favorited
     const existing = await db.favorite.findUnique({
@@ -95,24 +123,24 @@ export async function POST(request: NextRequest) {
         { favorited: false, message: 'Odstránené z obľúbených' },
         { status: 200 }
       )
-    } else {
-      // Add to favorites
-      const favorite = await db.favorite.create({
-        data: {
-          userId: targetUserId,
-          restaurantId,
-        },
-        include: {
-          restaurant: {
-            select: { id: true, name: true, logo: true },
-          },
-        },
-      })
-      return NextResponse.json(
-        { favorited: true, favorite, message: 'Pridané do obľúbených' },
-        { status: 201 }
-      )
     }
+
+    // Add to favorites
+    const favorite = await db.favorite.create({
+      data: {
+        userId: targetUserId,
+        restaurantId,
+      },
+      include: {
+        restaurant: {
+          select: { id: true, name: true, logo: true },
+        },
+      },
+    })
+    return NextResponse.json(
+      { favorited: true, favorite, message: 'Pridané do obľúbených' },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('Toggle favorite error:', error)
     return NextResponse.json(

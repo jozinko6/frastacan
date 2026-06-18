@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
-import { Prisma } from '@prisma/client'
+import { validateInput, adminUserPatchSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)))
     const skip = (page - 1) * limit
 
-    const where: Prisma.UserWhereInput = {}
+    const where: Record<string, unknown> = {}
     if (role && role !== 'all') {
       where.role = role
     }
@@ -86,24 +86,23 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { userId, isActive } = body
-
-    if (!userId) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Chýba userId' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
-    if (typeof isActive !== 'boolean') {
-      return NextResponse.json(
-        { error: 'isActive musí byť boolean hodnota' },
-        { status: 400 }
-      )
+    const validation = validateInput(adminUserPatchSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
+    const { userId, isActive } = validation.value
 
-    // Prevent self-deactivation
+    // Prevent self-deactivation — would lock the admin out of the panel.
     if (userId === user.id && !isActive) {
       return NextResponse.json(
         { error: 'Nemôžete deaktivovať vlastný účet' },

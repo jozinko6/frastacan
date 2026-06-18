@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { validateInput, riderPatchSchema } from '@/lib/validations'
 
 // GET /api/rider - Get rider profile and stats
 export async function GET(request: NextRequest) {
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
     const activeOrdersCount = await db.order.count({
       where: {
         riderId: user.id,
-        status: { in: ['delivering'] },
+        status: { in: ['picking_up', 'delivering'] },
       },
     })
 
@@ -92,8 +93,21 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { isAvailable, currentLat, currentLng, vehicleType } = body
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json(
+        { error: 'Neplatný JSON v tele požiadavky' },
+        { status: 400 }
+      )
+    }
+
+    const validation = validateInput(riderPatchSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
+    }
+    const { isAvailable, currentLat, currentLng, vehicleType } = validation.value
 
     // Ensure rider profile exists
     let riderProfile = await db.riderProfile.findUnique({
@@ -106,27 +120,12 @@ export async function PATCH(request: NextRequest) {
       })
     }
 
-    // Build update data
+    // Build update data — Zod already validated types and bounds.
     const updateData: Record<string, unknown> = {}
-    if (typeof isAvailable === 'boolean') {
-      updateData.isAvailable = isAvailable
-    }
-    if (typeof currentLat === 'number') {
-      updateData.currentLat = currentLat
-    }
-    if (typeof currentLng === 'number') {
-      updateData.currentLng = currentLng
-    }
-    if (typeof vehicleType === 'string' && ['bicycle', 'scooter', 'car', 'foot'].includes(vehicleType)) {
-      updateData.vehicleType = vehicleType
-    }
-
-    if (Object.keys(updateData).length === 0) {
-      return NextResponse.json(
-        { error: 'Žiadne údaje na aktualizáciu' },
-        { status: 400 }
-      )
-    }
+    if (isAvailable !== undefined) updateData.isAvailable = isAvailable
+    if (currentLat !== undefined) updateData.currentLat = currentLat
+    if (currentLng !== undefined) updateData.currentLng = currentLng
+    if (vehicleType !== undefined) updateData.vehicleType = vehicleType
 
     const updatedProfile = await db.riderProfile.update({
       where: { userId: user.id },

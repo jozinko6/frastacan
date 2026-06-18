@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import {
+  validateInput,
+  vendorMenuCreateSchema,
+  vendorMenuPatchSchema,
+} from '@/lib/validations'
 
 // GET /api/vendor/menu - Get all categories and food items for the restaurant
 export async function GET(request: NextRequest) {
@@ -74,19 +79,27 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { name, description, price, discountPrice, isAvailable, isPopular, categoryId } = body
-
-    if (!name || !price || !categoryId) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Názov, cena a kategória sú povinné' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
-    // Verify the category belongs to this restaurant
+    const validation = validateInput(vendorMenuCreateSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
+    }
+    const { name, description, price, discountPrice, isAvailable, isPopular, categoryId } = validation.value
+
+    // Verify the category belongs to this restaurant (prevents vendor
+    // from creating items under another vendor's category).
     const category = await db.category.findUnique({
       where: { id: categoryId },
+      select: { id: true, restaurantId: true },
     })
     if (!category || category.restaurantId !== restaurant.id) {
       return NextResponse.json(
@@ -95,14 +108,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Defensive: discountPrice must be strictly lower than price.
+    if (discountPrice !== null && discountPrice !== undefined && discountPrice >= price) {
+      return NextResponse.json(
+        { error: 'Akciová cena musí byť nižšia ako bežná cena' },
+        { status: 400 }
+      )
+    }
+
     const foodItem = await db.foodItem.create({
       data: {
-        name: name.trim(),
-        description: description?.trim() || null,
-        price: parseFloat(price),
-        discountPrice: discountPrice ? parseFloat(discountPrice) : null,
-        isAvailable: typeof isAvailable === 'boolean' ? isAvailable : true,
-        isPopular: typeof isPopular === 'boolean' ? isPopular : false,
+        name,
+        description: description ?? null,
+        price,
+        discountPrice: discountPrice ?? null,
+        isAvailable: isAvailable ?? true,
+        isPopular: isPopular ?? false,
         categoryId,
         restaurantId: restaurant.id,
       },
@@ -144,19 +165,35 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { id, name, description, price, discountPrice, isAvailable, isPopular, categoryId } = body
-
-    if (!id) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'ID položky je povinné' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
 
+    const validation = validateInput(vendorMenuPatchSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
+    }
+    const {
+      id,
+      name,
+      description,
+      price,
+      discountPrice,
+      isAvailable,
+      isPopular,
+      categoryId,
+    } = validation.value
+
     // Verify the food item belongs to this restaurant
     const existingItem = await db.foodItem.findUnique({
       where: { id },
+      select: { id: true, restaurantId: true, categoryId: true, price: true },
     })
     if (!existingItem || existingItem.restaurantId !== restaurant.id) {
       return NextResponse.json(
@@ -169,6 +206,7 @@ export async function PATCH(request: NextRequest) {
     if (categoryId && categoryId !== existingItem.categoryId) {
       const category = await db.category.findUnique({
         where: { id: categoryId },
+        select: { id: true, restaurantId: true },
       })
       if (!category || category.restaurantId !== restaurant.id) {
         return NextResponse.json(
@@ -178,15 +216,25 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
+    // Defensive: discountPrice must be strictly lower than the
+    // (new or existing) price.
+    const effectivePrice = price ?? existingItem.price
+    if (discountPrice !== undefined && discountPrice !== null && discountPrice >= effectivePrice) {
+      return NextResponse.json(
+        { error: 'Akciová cena musí byť nižšia ako bežná cena' },
+        { status: 400 }
+      )
+    }
+
     // Build update data
     const updateData: Record<string, unknown> = {}
-    if (typeof name === 'string') updateData.name = name.trim()
-    if (typeof description === 'string') updateData.description = description.trim() || null
-    if (typeof price === 'number' || typeof price === 'string') updateData.price = parseFloat(String(price))
-    if (discountPrice !== undefined) updateData.discountPrice = discountPrice ? parseFloat(String(discountPrice)) : null
-    if (typeof isAvailable === 'boolean') updateData.isAvailable = isAvailable
-    if (typeof isPopular === 'boolean') updateData.isPopular = isPopular
-    if (typeof categoryId === 'string') updateData.categoryId = categoryId
+    if (name !== undefined) updateData.name = name
+    if (description !== undefined) updateData.description = description || null
+    if (price !== undefined) updateData.price = price
+    if (discountPrice !== undefined) updateData.discountPrice = discountPrice ?? null
+    if (isAvailable !== undefined) updateData.isAvailable = isAvailable
+    if (isPopular !== undefined) updateData.isPopular = isPopular
+    if (categoryId !== undefined) updateData.categoryId = categoryId
 
     const foodItem = await db.foodItem.update({
       where: { id },
@@ -229,10 +277,17 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { id } = body
-
-    if (!id) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json(
+        { error: 'Neplatný JSON v tele požiadavky' },
+        { status: 400 }
+      )
+    }
+    const { id } = body as { id?: unknown }
+    if (typeof id !== 'string' || id.length === 0) {
       return NextResponse.json(
         { error: 'ID položky je povinné' },
         { status: 400 }
@@ -242,6 +297,7 @@ export async function DELETE(request: NextRequest) {
     // Verify the food item belongs to this restaurant
     const existingItem = await db.foodItem.findUnique({
       where: { id },
+      select: { id: true, restaurantId: true },
     })
     if (!existingItem || existingItem.restaurantId !== restaurant.id) {
       return NextResponse.json(

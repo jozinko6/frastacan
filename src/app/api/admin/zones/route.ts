@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { validateInput, adminZonePatchSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,15 +42,31 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { zoneId, name, type, baseFee, minimumOrder, estimatedMin, estimatedMax, radiusKm, isActive } = body
-
-    if (!zoneId) {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Chýba zoneId' },
+        { error: 'Neplatný JSON v tele požiadavky' },
         { status: 400 }
       )
     }
+
+    const validation = validateInput(adminZonePatchSchema, body)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
+    }
+    const {
+      zoneId,
+      name,
+      type,
+      baseFee,
+      minimumOrder,
+      estimatedMin,
+      estimatedMax,
+      radiusKm,
+      isActive,
+    } = validation.value
 
     const existing = await db.deliveryZone.findUnique({ where: { id: zoneId } })
     if (!existing) {
@@ -62,11 +79,11 @@ export async function PATCH(request: NextRequest) {
     const updateData: Record<string, unknown> = {}
     if (name !== undefined) updateData.name = name
     if (type !== undefined) updateData.type = type
-    if (baseFee !== undefined) updateData.baseFee = parseFloat(baseFee)
-    if (minimumOrder !== undefined) updateData.minimumOrder = parseFloat(minimumOrder)
-    if (estimatedMin !== undefined) updateData.estimatedMin = parseInt(estimatedMin)
-    if (estimatedMax !== undefined) updateData.estimatedMax = parseInt(estimatedMax)
-    if (radiusKm !== undefined) updateData.radiusKm = parseFloat(radiusKm)
+    if (baseFee !== undefined) updateData.baseFee = baseFee
+    if (minimumOrder !== undefined) updateData.minimumOrder = minimumOrder
+    if (estimatedMin !== undefined) updateData.estimatedMin = estimatedMin
+    if (estimatedMax !== undefined) updateData.estimatedMax = estimatedMax
+    if (radiusKm !== undefined) updateData.radiusKm = radiusKm
     if (isActive !== undefined) updateData.isActive = isActive
 
     const zone = await db.deliveryZone.update({

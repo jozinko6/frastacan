@@ -1,7 +1,26 @@
 import { PrismaClient } from '@prisma/client'
-import { createHash } from 'crypto'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
+
+/**
+ * Hashes a password with bcrypt (cost factor 12) for the seed script.
+ *
+ * Uses bcrypt.hashSync so existing call sites that do
+ *   `password: hashPassword('admin123')`
+ * keep working unchanged. The runtime auth code (src/lib/auth.ts) uses
+ * the async `bcrypt.hash` variant for the live API — both produce
+ * `$2a$`-prefixed hashes that are interchangeable.
+ *
+ * Cost factor 12 ≈ ~250ms per hash on a typical laptop. The seed file
+ * only runs on `bun run db:seed`, so the extra cost is fine and
+ * significantly raises the bar against offline brute force if the
+ * SQLite file ever leaks.
+ */
+const BCRYPT_COST = 12
+function hashPassword(password: string): string {
+  return bcrypt.hashSync(password, BCRYPT_COST)
+}
 
 async function main() {
   console.log('🌱 Seeding database...')
@@ -778,12 +797,6 @@ async function main() {
     orders: await prisma.order.count(),
     coupons: await prisma.coupon.count(),
   })
-}
-
-function hashPassword(password: string): string {
-  // Must match the salt used in src/lib/auth.ts
-  const salt = 'frastacan-salt'
-  return createHash('sha256').update(salt + password + salt).digest('hex')
 }
 
 main()
