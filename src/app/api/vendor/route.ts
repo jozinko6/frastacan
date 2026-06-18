@@ -148,13 +148,21 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    // Update slug if name changed
+    // Update slug if name changed - ensure uniqueness
     if (name && name !== restaurant.name) {
-      const slug = name
+      let baseSlug = name
         .toLowerCase()
         .replace(/[^a-z0-9áäčďéíĺľňóôŕšťúýž]+/g, '-')
         .replace(/^-|-$/g, '')
-      updateData.slug = slug
+      // Append a short suffix to avoid collisions with existing slugs
+      const existing = await db.restaurant.findFirst({
+        where: { slug: baseSlug, NOT: { id: restaurant.id } },
+        select: { slug: true },
+      })
+      if (existing) {
+        baseSlug = `${baseSlug}-${restaurant.id.slice(-4)}`
+      }
+      updateData.slug = baseSlug
     }
 
     const updatedRestaurant = await db.restaurant.update({
