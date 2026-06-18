@@ -235,7 +235,7 @@ function Header() {
               onClick={() => setView('home')}
             >
               <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg shrink-0" />
-              <span className="text-lg sm:text-xl font-bold text-primary hidden xs:inline sm:inline truncate">Fraštačan</span>
+              <span className="text-base sm:text-xl font-bold text-primary truncate">Fraštačan</span>
             </button>
           )}
         </div>

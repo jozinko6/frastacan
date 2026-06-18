@@ -131,7 +131,7 @@ export default function HomeView() {
           <h2 className="text-xl sm:text-2xl font-bold mb-4">
             Čo si chceš nechať doručiť?
           </h2>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant={selectedCuisine === null ? 'default' : 'outline'}
               className={`shrink-0 rounded-full px-4 py-2 h-9 ${selectedCuisine === null ? 'bg-primary hover:bg-primary/90 text-white' : 'border-primary/30 text-primary font-medium'}`}
@@ -151,7 +151,7 @@ export default function HomeView() {
             ))}
           </div>
           {/* Extended cuisine filters (cuisine types) */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 mt-2 scrollbar-hide -mx-4 px-4">
+          <div className="flex flex-wrap items-center gap-2 mt-2">
             {cuisineOptions.slice(8).map((c) => (
               <Button
                 key={c.name}
