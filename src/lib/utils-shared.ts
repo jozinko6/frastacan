@@ -36,6 +36,8 @@ export function authFetch(url: string, options: RequestInit = {}): Promise<Respo
  * Auth fetch wrapper that automatically logs out and redirects to login on 401.
  * Use this in views that require authentication — prevents the "stale session" issue
  * where the user sees a confusing error message instead of being sent to login.
+ *
+ * Also shows a toast on 403 (insufficient role) so the user gets clear feedback.
  */
 export async function authFetchOrLogout(url: string, options: RequestInit = {}): Promise<Response> {
   const res = await authFetch(url, options)
@@ -44,6 +46,10 @@ export async function authFetchOrLogout(url: string, options: RequestInit = {}):
       const { logout, setView } = useAppStore.getState()
       logout()
       setView('login')
+      // Lazy import to avoid circular deps
+      import('sonner').then(({ toast }) => {
+        toast.error('Vaša relácia vypršala. Prihláste sa znova.')
+      })
     } catch {
       // ignore
     }
