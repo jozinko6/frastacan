@@ -45,7 +45,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useAppStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
-import { formatPrice } from '@/lib/utils-shared'
+import { formatPrice, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import VendorBottomNav from '@/components/vendor-bottom-nav'
 
@@ -110,7 +110,7 @@ export default function VendorMenuView() {
   const fetchData = useCallback(async (showRefresh = false) => {
     if (showRefresh) setRefreshing(true)
     try {
-      const res = await fetch('/api/vendor/menu')
+      const res = await authFetchOrLogout('/api/vendor/menu')
       if (!res.ok) throw new Error('Chyba pri načítaní menu')
       const data = await res.json()
       setCategories(data.categories || [])
@@ -144,7 +144,7 @@ export default function VendorMenuView() {
   async function toggleItemAvailability(item: FoodItem) {
     setTogglingId(item.id)
     try {
-      const res = await fetch('/api/vendor/menu', {
+      const res = await authFetchOrLogout('/api/vendor/menu', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -183,7 +183,7 @@ export default function VendorMenuView() {
         categoryId: form.categoryId,
       }
 
-      const res = await fetch('/api/vendor/menu', {
+      const res = await authFetchOrLogout('/api/vendor/menu', {
         method: showEditItem ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(showEditItem ? { ...body, id: editId } : body),
@@ -211,7 +211,7 @@ export default function VendorMenuView() {
     if (!deleteItemId) return
     setSaving(true)
     try {
-      const res = await fetch('/api/vendor/menu', {
+      const res = await authFetchOrLogout('/api/vendor/menu', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: deleteItemId }),
@@ -237,7 +237,7 @@ export default function VendorMenuView() {
     }
     setSaving(true)
     try {
-      const res = await fetch('/api/vendor/categories', {
+      const res = await authFetchOrLogout('/api/vendor/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newCategoryName.trim() }),

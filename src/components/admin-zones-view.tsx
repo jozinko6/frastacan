@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAppStore } from '@/lib/store'
-import { formatPrice } from '@/lib/utils-shared'
+import { formatPrice, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 const zoneTypeLabels: Record<string, string> = {
@@ -59,7 +59,7 @@ export default function AdminZonesView() {
   const fetchZones = useCallback(async () => {
     try {
       setRefreshing(true)
-      const res = await fetch('/api/admin/zones')
+      const res = await authFetchOrLogout('/api/admin/zones')
       if (res.ok) {
         const data = await res.json()
         setZones(data.zones)
@@ -83,7 +83,7 @@ export default function AdminZonesView() {
   async function toggleActive(zoneId: string, currentActive: boolean) {
     try {
       setTogglingId(zoneId)
-      const res = await fetch('/api/admin/zones', {
+      const res = await authFetchOrLogout('/api/admin/zones', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ zoneId, isActive: !currentActive }),
@@ -126,7 +126,7 @@ export default function AdminZonesView() {
   async function saveEditing() {
     if (!editingId) return
     try {
-      const res = await fetch('/api/admin/zones', {
+      const res = await authFetchOrLogout('/api/admin/zones', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ zoneId: editingId, ...editForm }),

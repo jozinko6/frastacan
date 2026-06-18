@@ -25,7 +25,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useAppStore } from '@/lib/store'
-import { formatPrice, formatDate } from '@/lib/utils-shared'
+import { formatPrice, formatDate, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 interface Coupon {
@@ -58,7 +58,7 @@ export default function AdminCouponsView() {
   const fetchCoupons = useCallback(async () => {
     try {
       setRefreshing(true)
-      const res = await fetch('/api/admin/coupons')
+      const res = await authFetchOrLogout('/api/admin/coupons')
       if (res.ok) {
         const data = await res.json()
         setCoupons(data.coupons)
@@ -82,7 +82,7 @@ export default function AdminCouponsView() {
   async function toggleActive(couponId: string, currentActive: boolean) {
     try {
       setTogglingId(couponId)
-      const res = await fetch('/api/admin/coupons', {
+      const res = await authFetchOrLogout('/api/admin/coupons', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ couponId, isActive: !currentActive }),
@@ -114,7 +114,7 @@ export default function AdminCouponsView() {
 
     try {
       setCreating(true)
-      const res = await fetch('/api/admin/coupons', {
+      const res = await authFetchOrLogout('/api/admin/coupons', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

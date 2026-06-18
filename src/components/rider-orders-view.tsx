@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/lib/store'
-import { formatPrice, formatDate, statusConfig, authFetch } from '@/lib/utils-shared'
+import { formatPrice, formatDate, statusConfig, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import RiderBottomNav from '@/components/rider-bottom-nav'
 
@@ -87,7 +87,7 @@ export default function RiderOrdersView() {
     if (showRefresh) setRefreshing(true)
     try {
       const statusParam = activeTab === 'all' ? '' : `?status=${activeTab}`
-      const res = await authFetch(`/api/rider/my-orders${statusParam}`)
+      const res = await authFetchOrLogout(`/api/rider/my-orders${statusParam}`)
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}))
         throw new Error(errData.error || 'Chyba pri načítaní objednávok')
@@ -110,7 +110,7 @@ export default function RiderOrdersView() {
   async function deliverOrder(orderId: string) {
     setDeliveringOrderId(orderId)
     try {
-      const res = await authFetch('/api/rider/deliver-order', {
+      const res = await authFetchOrLogout('/api/rider/deliver-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId }),

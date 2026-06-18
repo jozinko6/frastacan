@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { useAppStore } from '@/lib/store'
-import { formatDate } from '@/lib/utils-shared'
+import { formatDate, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 const roleLabels: Record<string, string> = {
@@ -76,7 +76,7 @@ export default function AdminUsersView() {
       if (roleFilter && roleFilter !== 'all') params.set('role', roleFilter)
       if (searchQuery) params.set('search', searchQuery)
       if (page) params.set('page', String(page))
-      const res = await fetch(`/api/admin/users?${params.toString()}`)
+      const res = await authFetchOrLogout(`/api/admin/users?${params.toString()}`)
       if (res.ok) {
         const data = await res.json()
         setUsers(data.users)
@@ -101,7 +101,7 @@ export default function AdminUsersView() {
   async function toggleActive(userId: string, currentActive: boolean) {
     try {
       setTogglingId(userId)
-      const res = await fetch('/api/admin/users', {
+      const res = await authFetchOrLogout('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, isActive: !currentActive }),

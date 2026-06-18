@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAppStore } from '@/lib/store'
-import { formatPrice, deliveryZones } from '@/lib/utils-shared'
+import { formatPrice, deliveryZones, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 const validCities = deliveryZones.map((z) => z.name)
@@ -101,7 +101,7 @@ export default function CheckoutView() {
 
     try {
       setSubmitting(true)
-      const res = await fetch('/api/orders', {
+      const res = await authFetchOrLogout('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

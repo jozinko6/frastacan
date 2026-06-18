@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore, type Order } from '@/lib/store'
+import { authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 function formatPrice(price: number) {
@@ -62,7 +63,7 @@ export default function OrderDetailView() {
   async function fetchOrder() {
     try {
       setLoading(true)
-      const res = await fetch(`/api/orders?userId=${user!.id}`)
+      const res = await authFetchOrLogout('/api/orders')
       if (res.ok) {
         const data = await res.json()
         const found = data.orders.find((o: Order) => o.id === selectedOrderId)
@@ -91,7 +92,7 @@ export default function OrderDetailView() {
 
     try {
       setSubmittingReview(true)
-      const res = await fetch('/api/reviews', {
+      const res = await authFetchOrLogout('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

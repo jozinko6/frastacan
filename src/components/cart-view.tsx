@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { useAppStore } from '@/lib/store'
+import { authFetchOrLogout } from '@/lib/utils-shared'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -31,7 +32,7 @@ export default function CartView() {
     if (!couponCode.trim()) return
     try {
       setCouponValidating(true)
-      const res = await fetch('/api/coupons/validate', {
+      const res = await authFetchOrLogout('/api/coupons/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: couponCode, subtotal }),

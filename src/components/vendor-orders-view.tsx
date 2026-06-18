@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
-import { formatPrice, formatDate, statusConfig } from '@/lib/utils-shared'
+import { formatPrice, formatDate, statusConfig, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import VendorBottomNav from '@/components/vendor-bottom-nav'
 
@@ -72,7 +72,7 @@ export default function VendorOrdersView() {
   const fetchOrders = useCallback(async (showRefresh = false) => {
     if (showRefresh) setRefreshing(true)
     try {
-      const res = await fetch('/api/vendor/orders')
+      const res = await authFetchOrLogout('/api/vendor/orders')
       if (!res.ok) throw new Error('Chyba pri načítaní objednávok')
       const data = await res.json()
       setOrders(data.orders || [])
@@ -98,7 +98,7 @@ export default function VendorOrdersView() {
   async function updateOrderStatus(orderId: string, newStatus: string) {
     setActionLoading(orderId)
     try {
-      const res = await fetch(`/api/orders/${orderId}/status`, {
+      const res = await authFetchOrLogout(`/api/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),

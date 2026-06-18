@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore, type Order } from '@/lib/store'
+import { authFetchOrLogout } from '@/lib/utils-shared'
 
 function formatPrice(price: number) {
   return price.toFixed(2).replace('.', ',') + ' €'
@@ -48,7 +49,7 @@ export default function OrdersView() {
   async function fetchOrders() {
     try {
       setLoading(true)
-      const res = await fetch(`/api/orders?userId=${user!.id}`)
+      const res = await authFetchOrLogout('/api/orders')
       if (res.ok) {
         const data = await res.json()
         setOrders(data.orders)

@@ -23,7 +23,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore } from '@/lib/store'
-import { formatPrice } from '@/lib/utils-shared'
+import { formatPrice, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import VendorBottomNav from '@/components/vendor-bottom-nav'
 
@@ -81,7 +81,7 @@ export default function VendorSettingsView() {
 
   const fetchRestaurant = useCallback(async () => {
     try {
-      const res = await fetch('/api/vendor')
+      const res = await authFetchOrLogout('/api/vendor')
       if (!res.ok) throw new Error('Chyba pri načítaní prevádzky')
       const data = await res.json()
       setRestaurant(data.restaurant)
@@ -118,7 +118,7 @@ export default function VendorSettingsView() {
 
     setSaving(true)
     try {
-      const res = await fetch('/api/vendor', {
+      const res = await authFetchOrLogout('/api/vendor', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -20,7 +20,7 @@ import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
-import { formatPrice, formatDate, statusConfig } from '@/lib/utils-shared'
+import { formatPrice, formatDate, statusConfig, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import VendorBottomNav from '@/components/vendor-bottom-nav'
 
@@ -82,8 +82,8 @@ export default function VendorDashboardView() {
     if (showRefresh) setRefreshing(true)
     try {
       const [vendorRes, ordersRes] = await Promise.all([
-        fetch('/api/vendor'),
-        fetch('/api/vendor/orders'),
+        authFetchOrLogout('/api/vendor'),
+        authFetchOrLogout('/api/vendor/orders'),
       ])
 
       if (!vendorRes.ok) throw new Error('Chyba pri načítaní prevádzky')
@@ -124,7 +124,7 @@ export default function VendorDashboardView() {
 
   async function toggleAvailability() {
     try {
-      const res = await fetch('/api/vendor', {
+      const res = await authFetchOrLogout('/api/vendor', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isAvailable: !isAvailable }),

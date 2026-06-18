@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore } from '@/lib/store'
-import { formatPrice, formatDate, statusConfig } from '@/lib/utils-shared'
+import { formatPrice, formatDate, statusConfig, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 interface AdminStats {
@@ -53,7 +53,7 @@ export default function AdminDashboardView() {
   const fetchStats = useCallback(async () => {
     try {
       setRefreshing(true)
-      const res = await fetch('/api/admin/stats')
+      const res = await authFetchOrLogout('/api/admin/stats')
       if (res.ok) {
         const data = await res.json()
         setStats(data.stats)

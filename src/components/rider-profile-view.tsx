@@ -27,7 +27,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/lib/store'
-import { formatPrice, authFetch } from '@/lib/utils-shared'
+import { formatPrice, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 import RiderBottomNav from '@/components/rider-bottom-nav'
 
@@ -74,7 +74,7 @@ export default function RiderProfileView() {
 
   const fetchProfile = useCallback(async () => {
     try {
-      const res = await authFetch('/api/rider')
+      const res = await authFetchOrLogout('/api/rider')
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}))
         throw new Error(errData.error || 'Chyba pri načítaní profilu')
@@ -97,7 +97,7 @@ export default function RiderProfileView() {
 
   async function toggleAvailability() {
     try {
-      const res = await authFetch('/api/rider', {
+      const res = await authFetchOrLogout('/api/rider', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isAvailable: !isAvailable }),
@@ -116,7 +116,7 @@ export default function RiderProfileView() {
   async function changeVehicleType(vehicleType: string) {
     setChangingVehicle(true)
     try {
-      const res = await authFetch('/api/rider', {
+      const res = await authFetchOrLogout('/api/rider', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ vehicleType }),

@@ -1,16 +1,16 @@
 // Shared utilities used across multiple views
+import { useAppStore } from '@/lib/store'
 
 /**
  * Authenticated fetch helper - adds Authorization header with Bearer token
  * from Zustand store. Falls back to cookie-only auth if token not available.
+ *
+ * Always includes credentials: 'same-origin' so cookies are sent as a fallback.
  */
 export function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  // Try to get the token from the store
-  // We import lazily to avoid circular deps
+  // Try to get the token from the store directly (works outside React too)
   let token: string | null = null
   try {
-    // Access the store directly (not via hook, since this is not a React component)
-    const { useAppStore } = require('@/lib/store')
     token = useAppStore.getState().authToken
   } catch {
     // Store not available, cookie auth will be used
@@ -30,6 +30,25 @@ export function authFetch(url: string, options: RequestInit = {}): Promise<Respo
     headers,
     credentials: 'same-origin', // Always include cookies as fallback
   })
+}
+
+/**
+ * Auth fetch wrapper that automatically logs out and redirects to login on 401.
+ * Use this in views that require authentication — prevents the "stale session" issue
+ * where the user sees a confusing error message instead of being sent to login.
+ */
+export async function authFetchOrLogout(url: string, options: RequestInit = {}): Promise<Response> {
+  const res = await authFetch(url, options)
+  if (res.status === 401) {
+    try {
+      const { logout, setView } = useAppStore.getState()
+      logout()
+      setView('login')
+    } catch {
+      // ignore
+    }
+  }
+  return res
 }
 
 export function formatPrice(price: number): string {

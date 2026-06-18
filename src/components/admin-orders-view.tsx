@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAppStore } from '@/lib/store'
-import { formatPrice, formatDate, statusConfig, nextStatuses, paymentStatusConfig } from '@/lib/utils-shared'
+import { formatPrice, formatDate, statusConfig, nextStatuses, paymentStatusConfig, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 const validStatuses = ['pending', 'confirmed', 'preparing', 'ready', 'delivering', 'delivered', 'cancelled']
@@ -56,7 +56,7 @@ export default function AdminOrdersView() {
       const params = new URLSearchParams()
       if (statusFilter) params.set('status', statusFilter)
       if (page) params.set('page', String(page))
-      const res = await fetch(`/api/admin/orders?${params.toString()}`)
+      const res = await authFetchOrLogout(`/api/admin/orders?${params.toString()}`)
       if (res.ok) {
         const data = await res.json()
         setOrders(data.orders)
@@ -91,7 +91,7 @@ export default function AdminOrdersView() {
 
     try {
       setUpdatingId(orderId)
-      const res = await fetch(`/api/orders/${orderId}/status`, {
+      const res = await authFetchOrLogout(`/api/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),

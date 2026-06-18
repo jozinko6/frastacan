@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore } from '@/lib/store'
-import { formatPrice, cuisineOptions } from '@/lib/utils-shared'
+import { formatPrice, cuisineOptions, authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 interface AdminRestaurant {
@@ -47,7 +47,7 @@ export default function AdminRestaurantsView() {
   const fetchRestaurants = useCallback(async () => {
     try {
       setRefreshing(true)
-      const res = await fetch('/api/admin/restaurants')
+      const res = await authFetchOrLogout('/api/admin/restaurants')
       if (res.ok) {
         const data = await res.json()
         setRestaurants(data.restaurants)
@@ -71,7 +71,7 @@ export default function AdminRestaurantsView() {
   async function toggleField(id: string, field: 'isActive' | 'isAvailable', value: boolean) {
     try {
       setTogglingId(id)
-      const res = await fetch(`/api/admin/restaurants/${id}`, {
+      const res = await authFetchOrLogout(`/api/admin/restaurants/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [field]: value }),

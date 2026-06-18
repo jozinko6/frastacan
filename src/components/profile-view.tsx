@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useAppStore } from '@/lib/store'
+import { authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 interface Address {
@@ -41,7 +42,7 @@ export default function ProfileView() {
   async function fetchAddresses() {
     try {
       setLoading(true)
-      const res = await fetch(`/api/addresses?userId=${user!.id}`)
+      const res = await authFetchOrLogout('/api/addresses')
       if (res.ok) {
         const data = await res.json()
         setAddresses(data.addresses)
@@ -60,7 +61,7 @@ export default function ProfileView() {
     }
     try {
       setAddingAddress(true)
-      const res = await fetch('/api/addresses', {
+      const res = await authFetchOrLogout('/api/addresses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

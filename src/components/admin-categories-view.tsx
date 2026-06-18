@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore } from '@/lib/store'
+import { authFetchOrLogout } from '@/lib/utils-shared'
 import { toast } from 'sonner'
 
 interface CategoryItem {
@@ -32,7 +33,7 @@ export default function AdminCategoriesView() {
   const fetchCategories = useCallback(async () => {
     try {
       setRefreshing(true)
-      const res = await fetch('/api/admin/categories')
+      const res = await authFetchOrLogout('/api/admin/categories')
       if (res.ok) {
         const data = await res.json()
         setCategories(data.categories)
