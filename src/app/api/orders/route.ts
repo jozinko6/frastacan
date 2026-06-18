@@ -44,12 +44,33 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate subtotal from food items
-    const foodItemIds = items.map((item: { foodItemId: string }) => item.foodItemId)
+    // Validate items array shape defensively: server is source of truth.
+    if (!Array.isArray(items)) {
+      return NextResponse.json(
+        { error: 'Položky objednávky musia byť pole' },
+        { status: 400 }
+      )
+    }
+    const foodItemIds = items
+      .map((item: unknown): string | null => {
+        if (typeof item !== 'object' || item === null) return null
+        const v = (item as { foodItemId?: unknown }).foodItemId
+        return typeof v === 'string' ? v : null
+      })
+      .filter((id): id is string => typeof id === 'string')
+
+    if (foodItemIds.length === 0) {
+      return NextResponse.json(
+        { error: 'Objednávka musí obsahovať aspoň jednu platnú položku' },
+        { status: 400 }
+      )
+    }
+
     const foodItems = await db.foodItem.findMany({
       where: { id: { in: foodItemIds }, restaurantId },
     })
 
-    if (foodItems.length !== foodItemIds.length) {
+    if (foodItems.length !== new Set(foodItemIds).size) {
       return NextResponse.json(
         { error: 'Niektoré položky neboli nájdené alebo nepatria do tejto reštaurácie' },
         { status: 400 }
@@ -60,9 +81,17 @@ export async function POST(request: NextRequest) {
     const foodItemMap = new Map(foodItems.map((fi) => [fi.id, fi]))
 
     let subtotal = 0
-    const orderItemsData = []
+    // Explicit type so the array doesn't collapse to `never[]` when first
+    // declared empty. Prisma's `OrderItemCreateWithoutOrderInput` is the
+    // shape expected by `items: { create: [...] }` below.
+    const orderItemsData: Array<{
+      quantity: number
+      price: number
+      notes: string | null
+      foodItemId: string
+    }> = []
 
-    for (const item of items) {
+    for (const item of items as Array<{ foodItemId: string; quantity: number; notes?: string | null }>) {
       const foodItem = foodItemMap.get(item.foodItemId)
       if (!foodItem) {
         return NextResponse.json(
@@ -77,14 +106,24 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      // Defensive: quantity must be a positive integer. The client sends
+      // it but we cannot trust it — server is the source of truth.
+      const quantity = Math.max(1, Math.floor(Number(item.quantity) || 0))
+      if (quantity < 1 || quantity > 999) {
+        return NextResponse.json(
+          { error: `Neplatné množstvo pre položku "${foodItem.name}"` },
+          { status: 400 }
+        )
+      }
+
       const price = foodItem.discountPrice ?? foodItem.price
-      const itemTotal = price * item.quantity
+      const itemTotal = price * quantity
       subtotal += itemTotal
 
       orderItemsData.push({
-        quantity: item.quantity,
+        quantity,
         price,
-        notes: item.notes || null,
+        notes: typeof item.notes === 'string' ? item.notes.slice(0, 500) : null,
         foodItemId: item.foodItemId,
       })
     }

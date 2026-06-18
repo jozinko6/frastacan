@@ -16,18 +16,23 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const role = searchParams.get('role')
     const search = searchParams.get('search')
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)))
     const skip = (page - 1) * limit
 
     const where: Prisma.UserWhereInput = {}
     if (role && role !== 'all') {
       where.role = role
     }
+    // SQLite (provider in schema.prisma) does not support
+    // `mode: 'insensitive'` — that's a PostgreSQL-only option. SQLite's
+    // default `LIKE` is already case-insensitive for ASCII, which covers
+    // email/name search here. We feed the raw search term through without
+    // the `mode` flag.
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search } },
+        { email: { contains: search } },
       ]
     }
 
