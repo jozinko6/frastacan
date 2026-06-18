@@ -53,7 +53,7 @@ export default function CartView() {
 
   if (cart.length === 0) {
     return (
-      <div className="view-transition max-w-6xl mx-auto px-4 py-12">
+      <div className="view-transition max-w-6xl mx-auto px-4 py-12 safe-area-x">
         <div className="text-center">
           <div className="text-6xl mb-4">🛒</div>
           <h2 className="text-2xl font-bold mb-2">Váš košík je prázdny</h2>
@@ -73,21 +73,22 @@ export default function CartView() {
   }
 
   return (
-    <div className="view-transition max-w-6xl mx-auto px-4 py-6">
+    <div className="view-transition max-w-6xl mx-auto px-4 py-6 safe-area-x pb-28">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10"
+          className="h-10 w-10 shrink-0 hover:bg-muted/60"
           onClick={() => setView('home')}
+          aria-label="Späť"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Košík</h1>
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold truncate">Košík</h1>
           {cartRestaurantName && (
-            <p className="text-sm text-muted-foreground">{cartRestaurantName}</p>
+            <p className="text-sm text-muted-foreground truncate">{cartRestaurantName}</p>
           )}
         </div>
       </div>
@@ -183,7 +184,7 @@ export default function CartView() {
 
         {/* Order Summary */}
         <div>
-          <Card className="border-0 shadow-sm sticky top-4">
+          <Card className="border-0 shadow-sm lg:sticky lg:top-4">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Zhrnutie objednávky</CardTitle>
             </CardHeader>
@@ -233,7 +234,7 @@ export default function CartView() {
               </div>
 
               <Button
-                className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold"
+                className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold hidden lg:flex"
                 onClick={() => setView('checkout')}
               >
                 Pokračovať k objednávke
@@ -241,6 +242,16 @@ export default function CartView() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Mobile sticky checkout button */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-white/95 backdrop-blur-md border-t mobile-bottom-safe">
+        <Button
+          className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold"
+          onClick={() => setView('checkout')}
+        >
+          Pokračovať k objednávke · {formatPrice(total)}
+        </Button>
       </div>
     </div>
   )

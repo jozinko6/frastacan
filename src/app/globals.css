@@ -41,6 +41,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --breakpoint-xs: 400px;
 }
 
 :root {
@@ -149,5 +150,90 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* === Mobile responsive improvements === */
+
+/* Safe-area utilities for notch / dynamic island devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.safe-area-left {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.safe-area-right {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.safe-area-x {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.safe-area-pt {
+  padding-top: env(safe-area-inset-top, 0px) !important;
+}
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+
+/* Mobile-only: hide scrollbar for horizontal scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile: prevent text size adjust on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Better tap targets on mobile (min 44x44 for Apple HIG) */
+@media (max-width: 640px) {
+  button,
+  [role="button"],
+  a.btn,
+  .btn {
+    min-height: 44px;
+  }
+  /* Compact icon buttons keep 40x40 minimum but no larger */
+  button.size-9,
+  button[class*="h-8 w-8"],
+  button[class*="h-9 w-9"] {
+    min-height: 40px;
+    min-width: 40px;
+  }
+}
+
+/* Prevent layout shift: tap highlight transparent */
+button,
+a,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smaller header on mobile to maximize content space */
+@media (max-width: 640px) {
+  header.sticky {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+}
+
+/* Hide horizontal overflow caused by negative margins */
+body {
+  overflow-x: hidden;
+}
+
+/* Mobile: floating action button safe spacing */
+@media (max-width: 640px) {
+  .mobile-bottom-safe {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
   }
 }

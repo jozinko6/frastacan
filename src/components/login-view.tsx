@@ -68,8 +68,8 @@ export default function LoginView() {
   }
 
   return (
-    <div className="view-transition max-w-md mx-auto px-4 py-8 sm:py-12">
-      <Button variant="ghost" size="icon" className="h-10 w-10 mb-4" onClick={() => setView('home')}>
+    <div className="view-transition max-w-md mx-auto px-4 py-8 sm:py-12 safe-area-x">
+      <Button variant="ghost" size="icon" className="h-10 w-10 mb-4 hover:bg-muted/60" onClick={() => setView('home')} aria-label="Späť">
         <ArrowLeft className="h-5 w-5" />
       </Button>
 

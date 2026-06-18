@@ -83,20 +83,20 @@ export default function HomeView() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-[#B42318] via-[#9a1f16] to-[#7d1a12] text-white">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djZoLTZ2LTZoNnptMC0zMHY2aC02VjRoNnptMCAxMHY2aC02di02aDZ6bTAgMTB2NmgtNnYtNmg2em0tMTAgMHY2aC02di02aDZ6bS0xMCAwdjZoLTZ2LTZoNnptMzAgMHY2aC02di02aDZ6bS0xMCAxMHY2aC02di02aDZ6bTEwIDB2NmgtNnYtNmg2em0tMTAgMTB2NmgtNnYtNmg2em0xMCAwdjZoLTZ2LTZoNnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30" />
-        <div className="relative max-w-6xl mx-auto px-4 py-12 sm:py-20">
+        <div className="relative max-w-6xl mx-auto px-4 py-10 sm:py-20 safe-area-top">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <h1 className="text-3xl sm:text-5xl font-bold mb-3">
+            <h1 className="text-2xl xs:text-3xl sm:text-5xl font-bold mb-3 leading-tight">
               Fraštačan doručí z Hlohovca a okolia
             </h1>
-            <p className="text-lg sm:text-xl mb-8 text-red-100">
+            <p className="text-base sm:text-xl mb-6 sm:mb-8 text-red-100 leading-relaxed">
               Objednaj si jedlo, kávu, kvety alebo nákup z lokálnych prevádzok v Hlohovci, Šulekove, Leopoldove a Červeníku.
             </p>
-            <div className="max-w-xl mx-auto relative mb-6">
+            <div className="max-w-xl mx-auto relative mb-5 sm:mb-6">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-red-400" />
               <Input
                 placeholder="Zadaj adresu alebo vyber oblasť"
@@ -105,17 +105,17 @@ export default function HomeView() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center px-2 sm:px-0">
               <Button
                 size="lg"
-                className="bg-white text-[#B42318] hover:bg-red-50 font-semibold h-12 sm:h-11"
+                className="bg-white text-[#B42318] hover:bg-red-50 font-semibold h-12 sm:h-11 w-full sm:w-auto"
                 onClick={scrollToRestaurants}
               >
                 Objednať teraz
               </Button>
               <Button
                 size="lg"
-                className="border-2 border-white text-white bg-white/20 hover:bg-white/30 hover:text-white font-semibold h-12 sm:h-11"
+                className="border-2 border-white text-white bg-white/20 hover:bg-white/30 hover:text-white font-semibold h-12 sm:h-11 w-full sm:w-auto backdrop-blur-sm"
                 onClick={scrollToRestaurants}
               >
                 Pozrieť prevádzky
@@ -244,7 +244,7 @@ export default function HomeView() {
                         alt={restaurant.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                       <div className="absolute top-3 left-3">
                         <span className="text-2xl">{restaurant.logo}</span>
                       </div>
@@ -260,15 +260,15 @@ export default function HomeView() {
                           {restaurant.zone?.name || restaurant.city}
                         </Badge>
                       )}
-                      <div className="absolute bottom-3 left-3 right-16 text-white">
-                        <h3 className="font-bold text-lg leading-tight">{restaurant.name}</h3>
+                      <div className="absolute bottom-3 left-3 right-20 text-white">
+                        <h3 className="font-bold text-base sm:text-lg leading-tight line-clamp-2">{restaurant.name}</h3>
                       </div>
                     </div>
                     <CardContent className="p-4">
                       <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                         {restaurant.description}
                       </p>
-                      <div className="flex items-center gap-3 text-sm">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm">
                         <div className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                           <span className="font-medium">{restaurant.rating}</span>

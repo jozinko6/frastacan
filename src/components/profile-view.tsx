@@ -95,7 +95,7 @@ export default function ProfileView() {
 
   if (!user) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12 text-center">
+      <div className="max-w-lg mx-auto px-4 py-12 text-center safe-area-x">
         <div className="text-6xl mb-4">🔐</div>
         <h2 className="text-2xl font-bold mb-2">Prihláste sa</h2>
         <p className="text-muted-foreground mb-6">
@@ -109,9 +109,9 @@ export default function ProfileView() {
   }
 
   return (
-    <div className="view-transition max-w-4xl mx-auto px-4 py-6">
+    <div className="view-transition max-w-4xl mx-auto px-4 py-6 safe-area-x">
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setView('home')}>
+        <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0 hover:bg-muted/60" onClick={() => setView('home')} aria-label="Späť">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-2xl font-bold">Môj profil</h1>

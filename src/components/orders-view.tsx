@@ -67,7 +67,7 @@ export default function OrdersView() {
 
   if (!user) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12 text-center">
+      <div className="max-w-lg mx-auto px-4 py-12 text-center safe-area-x">
         <div className="text-6xl mb-4">🔐</div>
         <h2 className="text-2xl font-bold mb-2">Prihláste sa</h2>
         <p className="text-muted-foreground mb-6">
@@ -81,9 +81,9 @@ export default function OrdersView() {
   }
 
   return (
-    <div className="view-transition max-w-4xl mx-auto px-4 py-6">
+    <div className="view-transition max-w-4xl mx-auto px-4 py-6 safe-area-x">
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setView('home')}>
+        <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0 hover:bg-muted/60" onClick={() => setView('home')} aria-label="Späť">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-2xl font-bold">Moje objednávky</h1>
@@ -124,13 +124,13 @@ export default function OrdersView() {
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">{order.orderNumber}</span>
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className="font-semibold text-sm sm:text-base">{order.orderNumber}</span>
                           <Badge className={`${status.bgColor} ${status.color} border-0 text-xs`}>
                             {status.label}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground truncate">
                           {order.restaurant?.name || 'Reštaurácia'}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -138,8 +138,8 @@ export default function OrdersView() {
                           {formatDate(order.createdAt)}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-primary">{formatPrice(order.total)}</p>
+                      <div className="text-right shrink-0">
+                        <p className="font-bold text-primary text-sm sm:text-base">{formatPrice(order.total)}</p>
                         <p className="text-xs text-muted-foreground">
                           {order.items?.length || 0} položiek
                         </p>

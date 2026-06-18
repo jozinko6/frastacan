@@ -157,22 +157,22 @@ function MobileAdminNav() {
   const { currentView, setView } = useAppStore()
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-white/95 backdrop-blur-md">
-      <div className="flex items-center justify-around py-1.5 px-2">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-white/95 backdrop-blur-md safe-area-bottom">
+      <div className="flex items-stretch justify-around overflow-x-auto scrollbar-hide">
         {adminNavItems.map((item) => {
           const isActive = currentView === item.view
           return (
             <button
               key={item.view}
               onClick={() => setView(item.view)}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors ${
+              className={`flex flex-col items-center justify-center gap-0.5 px-2 py-2 transition-colors shrink-0 min-w-[58px] ${
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <item.icon className={`h-4 w-4 ${isActive ? 'text-primary' : ''}`} />
-              <span className={`text-[10px] leading-tight ${isActive ? 'font-semibold text-primary' : ''}`}>
+              <item.icon className={`h-5 w-5 ${isActive ? 'text-primary' : ''}`} />
+              <span className={`text-[10px] leading-tight whitespace-nowrap ${isActive ? 'font-semibold text-primary' : ''}`}>
                 {item.label}
               </span>
             </button>
@@ -212,30 +212,30 @@ function Header() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur-md">
-      <div className={`mx-auto px-3 sm:px-4 h-14 flex items-center justify-between ${inAdmin ? 'max-w-full' : 'max-w-6xl'}`}>
+    <header className="sticky top-0 z-40 w-full border-b bg-white/90 backdrop-blur-md safe-area-top">
+      <div className={`mx-auto px-3 sm:px-4 h-14 flex items-center justify-between gap-2 ${inAdmin ? 'max-w-full' : 'max-w-6xl'}`}>
         {/* Logo */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           {inAdmin ? (
             <>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setView('home')}>
-                <ArrowLeft className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => setView('home')}>
+                <ArrowLeft className="h-5 w-5" />
               </Button>
               <button
-                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0"
                 onClick={() => setView('admin-dashboard')}
               >
-                <img src="/frastacan-logo.png" alt="Fraštačan" className="h-7 w-7 rounded-lg" />
-                <span className="text-lg font-bold text-primary">Admin</span>
+                <img src="/frastacan-logo.png" alt="Fraštačan" className="h-7 w-7 rounded-lg shrink-0" />
+                <span className="text-base sm:text-lg font-bold text-primary truncate">Admin</span>
               </button>
             </>
           ) : (
             <button
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0"
               onClick={() => setView('home')}
             >
-              <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg" />
-              <span className="text-xl font-bold text-primary hidden sm:inline">Fraštačan</span>
+              <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg shrink-0" />
+              <span className="text-lg sm:text-xl font-bold text-primary hidden xs:inline sm:inline truncate">Fraštačan</span>
             </button>
           )}
         </div>
@@ -309,17 +309,18 @@ function Header() {
         )}
 
         {/* Right Actions */}
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {!inAdmin && (
             <Button
               variant={currentView === 'cart' ? 'secondary' : 'ghost'}
               size="icon"
-              className={`relative h-10 w-10 ${currentView === 'cart' ? 'bg-primary/10 text-primary' : ''}`}
+              className={`relative h-10 w-10 shrink-0 ${currentView === 'cart' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/60'}`}
               onClick={() => setView('cart')}
+              aria-label="Košík"
             >
               <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary text-primary-foreground text-xs border-0">
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary text-primary-foreground text-xs border-2 border-background">
                   {cartCount}
                 </Badge>
               )}
@@ -330,8 +331,9 @@ function Header() {
             <Button
               variant={currentView === 'profile' ? 'secondary' : 'ghost'}
               size="icon"
-              className={`h-10 w-10 ${currentView === 'profile' ? 'bg-primary/10 text-primary' : ''}`}
+              className={`h-10 w-10 shrink-0 ${currentView === 'profile' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/60'}`}
               onClick={() => setView('profile')}
+              aria-label="Profil"
             >
               <User className="h-5 w-5" />
             </Button>
@@ -339,7 +341,7 @@ function Header() {
             !inAdmin && (
               <Button
                 size="sm"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground h-9 px-3"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground h-9 px-3 shrink-0"
                 onClick={() => setView('login')}
               >
                 <LogIn className="h-4 w-4 sm:mr-1.5" />
@@ -413,20 +415,20 @@ function MobileMenu() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden h-10 w-10">
+        <Button variant="ghost" size="icon" className="md:hidden h-10 w-10 shrink-0 hover:bg-muted/60" aria-label="Menu">
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-72">
+      <SheetContent side="right" className="w-72 sm:w-80 safe-area-top">
         <div className="flex items-center gap-2 mb-6 mt-2">
-          <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg" />
+          <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg shrink-0" />
           <span className="text-xl font-bold text-primary">Fraštačan</span>
         </div>
 
         {user && (
           <div className="p-3 rounded-lg bg-primary/5 mb-4">
-            <p className="font-medium text-sm">{user.name}</p>
-            <p className="text-xs text-muted-foreground">{user.email}</p>
+            <p className="font-medium text-sm truncate">{user.name}</p>
+            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
         )}
 
@@ -435,12 +437,12 @@ function MobileMenu() {
             <Button
               key={item.view}
               variant={currentView === item.view ? 'secondary' : 'ghost'}
-              className={`w-full justify-start ${
-                currentView === item.view ? 'bg-primary/10 text-primary' : ''
+              className={`w-full justify-start h-11 ${
+                currentView === item.view ? 'bg-primary/10 text-primary' : 'hover:bg-muted/60'
               }`}
               onClick={() => navigate(item.view)}
             >
-              <item.icon className="h-4 w-4 mr-2" />
+              <item.icon className="h-4 w-4 mr-2 shrink-0" />
               {item.label}
             </Button>
           ))}
@@ -448,10 +450,10 @@ function MobileMenu() {
           {inAdmin && (
             <Button
               variant="ghost"
-              className="w-full justify-start text-muted-foreground hover:bg-muted/60"
+              className="w-full justify-start text-muted-foreground hover:bg-muted/60 h-11"
               onClick={() => navigate('home')}
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-4 w-4 mr-2 shrink-0" />
               Späť na stránku
             </Button>
           )}
@@ -460,23 +462,24 @@ function MobileMenu() {
             {user ? (
               <Button
                 variant="ghost"
-                className="w-full justify-start text-destructive hover:text-destructive"
+                className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/5 h-11"
                 onClick={handleLogout}
               >
+                <LogIn className="h-4 w-4 mr-2 rotate-180 shrink-0" />
                 Odhlásiť sa
               </Button>
             ) : (
               !inAdmin && (
                 <>
                   <Button
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-11"
                     onClick={() => navigate('login')}
                   >
                     Prihlásiť sa
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full mt-2 border-primary/40 text-primary hover:bg-primary/5"
+                    className="w-full mt-2 border-primary/40 text-primary hover:bg-primary/5 h-11"
                     onClick={() => navigate('register')}
                   >
                     Zaregistrovať sa
@@ -496,14 +499,14 @@ function Footer() {
 
   return (
     <footer className="border-t bg-gray-100 mt-auto">
-      <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
+      <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12 safe-area-x">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           <div className="col-span-2 sm:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <img src="/frastacan-logo.png" alt="Fraštačan" className="h-8 w-8 rounded-lg" />
-              <span className="text-xl font-bold text-primary">Fraštačan</span>
+              <span className="text-lg sm:text-xl font-bold text-primary">Fraštačan</span>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 leading-relaxed">
               Lokálne doručenie pre Hlohovec, Šulekovo, Leopoldov a Červeník. Jedlo, káva, kvety aj nákup z okolia.
             </p>
           </div>
@@ -512,17 +515,17 @@ function Footer() {
             <h4 className="font-semibold mb-3 text-gray-900">Navigácia</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('home')}>
+                <button className="text-gray-600 hover:text-primary transition-colors min-h-[28px]" onClick={() => setView('home')}>
                   Prevádzky
                 </button>
               </li>
               <li>
-                <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('orders')}>
+                <button className="text-gray-600 hover:text-primary transition-colors min-h-[28px]" onClick={() => setView('orders')}>
                   Moje objednávky
                 </button>
               </li>
               <li>
-                <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('profile')}>
+                <button className="text-gray-600 hover:text-primary transition-colors min-h-[28px]" onClick={() => setView('profile')}>
                   Profil
                 </button>
               </li>
@@ -533,7 +536,7 @@ function Footer() {
             <h4 className="font-semibold mb-3 text-gray-900">Kontakt</h4>
             <ul className="space-y-2.5 text-sm text-gray-600">
               <li>
-                <button className="hover:text-primary transition-colors" onClick={() => setView('contact')}>
+                <button className="hover:text-primary transition-colors min-h-[28px]" onClick={() => setView('contact')}>
                   Kontaktujte nás
                 </button>
               </li>
@@ -553,20 +556,20 @@ function Footer() {
         </div>
 
         <div className="border-t mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 text-center sm:text-left">
             &copy; {new Date().getFullYear()} Fraštačan. Všetky práva vyhradené.
           </p>
           <div className="flex items-center gap-3 sm:gap-4 text-sm flex-wrap justify-center sm:justify-end">
-            <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('terms')}>
+            <button className="text-gray-600 hover:text-primary transition-colors min-h-[28px]" onClick={() => setView('terms')}>
               Obchodné podmienky
             </button>
-            <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('privacy')}>
+            <button className="text-gray-600 hover:text-primary transition-colors min-h-[28px]" onClick={() => setView('privacy')}>
               Ochrana súkromia
             </button>
-            <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('contact')}>
+            <button className="text-gray-600 hover:text-primary transition-colors min-h-[28px]" onClick={() => setView('contact')}>
               Kontakt
             </button>
-            <button className="text-gray-600 hover:text-primary transition-colors" onClick={() => setView('complaints')}>
+            <button className="text-gray-600 hover:text-primary transition-colors min-h-[28px]" onClick={() => setView('complaints')}>
               Reklamačný poriadok
             </button>
           </div>

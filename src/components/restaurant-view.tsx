@@ -108,47 +108,48 @@ export default function RestaurantView() {
   return (
     <div className="view-transition">
       {/* Restaurant Header */}
-      <div className="relative h-52 sm:h-72 overflow-hidden">
+      <div className="relative h-48 xs:h-52 sm:h-72 overflow-hidden">
         <img
           src={restaurant.image}
           alt={restaurant.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-        <div className="absolute top-4 left-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent" />
+        <div className="absolute top-4 left-4 safe-area-left">
           <Button
             variant="secondary"
             size="icon"
-            className="rounded-full bg-white/90 hover:bg-white shadow-md"
+            className="rounded-full bg-white/90 hover:bg-white shadow-md h-10 w-10"
             onClick={() => setView('home')}
+            aria-label="Späť"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
+        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white safe-area-x">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-3xl">{restaurant.logo}</span>
-              <h1 className="text-2xl sm:text-3xl font-bold">{restaurant.name}</h1>
+              <span className="text-2xl sm:text-3xl">{restaurant.logo}</span>
+              <h1 className="text-xl sm:text-3xl font-bold leading-tight">{restaurant.name}</h1>
             </div>
             <p className="text-white/80 text-sm sm:text-base line-clamp-2 mb-3">
               {restaurant.description}
             </p>
-            <div className="flex flex-wrap items-center gap-3 text-sm">
-              <div className="flex items-center gap-1 bg-white/20 rounded-full px-3 py-1">
-                <Star className="h-4 w-4 fill-primary/80 text-primary/80" />
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+              <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2.5 py-1">
+                <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-amber-400 text-amber-400" />
                 <span className="font-medium">{restaurant.rating}</span>
                 <span className="text-white/70">({restaurant.reviewCount})</span>
               </div>
-              <div className="flex items-center gap-1 bg-white/20 rounded-full px-3 py-1">
-                <Clock className="h-4 w-4" />
+              <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2.5 py-1">
+                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>{restaurant.deliveryTime}</span>
               </div>
-              <div className="flex items-center gap-1 bg-white/20 rounded-full px-3 py-1">
-                <MapPin className="h-4 w-4" />
-                <span>{restaurant.address}</span>
+              <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2.5 py-1">
+                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="truncate max-w-[140px] sm:max-w-none">{restaurant.address}</span>
               </div>
-              <Badge variant="secondary" className="bg-primary text-white">
+              <Badge variant="secondary" className="bg-primary text-white text-xs">
                 {restaurant.cuisine}
               </Badge>
             </div>
@@ -163,11 +164,11 @@ export default function RestaurantView() {
             <h2 className="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2">
               🔥 Obľúbené položky
             </h2>
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
               {popularItems.map((item) => {
                 const qty = getQuantity(item.id)
                 return (
-                  <Card key={item.id} className="shrink-0 w-56 border-0 shadow-sm overflow-hidden">
+                  <Card key={item.id} className="shrink-0 w-44 xs:w-52 sm:w-56 border-0 shadow-sm overflow-hidden">
                     {item.image && (
                       <div className="h-28 overflow-hidden bg-primary/5">
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
@@ -358,15 +359,15 @@ export default function RestaurantView() {
         <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed bottom-0 left-0 right-0 z-50 p-4"
+          className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-4 mobile-bottom-safe"
         >
           <div className="max-w-6xl mx-auto">
             <Button
               className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-semibold text-base shadow-xl rounded-xl"
               onClick={() => setView('cart')}
             >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Košík ({cartTotal} položiek) - {formatPrice(cart.reduce((sum, i) => sum + (i.foodItem.discountPrice ?? i.foodItem.price) * i.quantity, 0))}
+              <ShoppingCart className="h-5 w-5 mr-2 shrink-0" />
+              <span className="truncate">Košík ({cartTotal}) - {formatPrice(cart.reduce((sum, i) => sum + (i.foodItem.discountPrice ?? i.foodItem.price) * i.quantity, 0))}</span>
             </Button>
           </div>
         </motion.div>

@@ -141,7 +141,7 @@ export default function CheckoutView() {
 
   if (orderSuccess) {
     return (
-      <div className="view-transition max-w-lg mx-auto px-4 py-12 text-center">
+      <div className="view-transition max-w-lg mx-auto px-4 py-12 text-center safe-area-x">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -158,21 +158,21 @@ export default function CheckoutView() {
         </p>
         <div className="space-y-3">
           <Button
-            className="w-full bg-[#B42318] hover:bg-[#9a1f16] text-white"
+            className="w-full bg-[#B42318] hover:bg-[#9a1f16] text-white h-12"
             onClick={() => setView('order-detail')}
           >
             Zobraziť detail objednávky
           </Button>
           <Button
             variant="outline"
-            className="w-full border-primary/40 text-primary hover:bg-primary/5"
+            className="w-full border-primary/40 text-primary hover:bg-primary/5 h-12"
             onClick={() => setView('orders')}
           >
             Moje objednávky
           </Button>
           <Button
             variant="ghost"
-            className="w-full text-muted-foreground hover:text-foreground hover:bg-muted/60"
+            className="w-full text-muted-foreground hover:text-foreground hover:bg-muted/60 h-12"
             onClick={() => setView('home')}
           >
             Pokračovať v nákupe
@@ -184,7 +184,7 @@ export default function CheckoutView() {
 
   if (cart.length === 0) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12 text-center">
+      <div className="max-w-lg mx-auto px-4 py-12 text-center safe-area-x">
         <p className="text-lg text-muted-foreground">Váš košík je prázdny</p>
         <Button className="mt-4 bg-[#B42318] hover:bg-[#9a1f16] text-white" onClick={() => setView('home')}>
           Objednať si jedlo
@@ -194,10 +194,10 @@ export default function CheckoutView() {
   }
 
   return (
-    <div className="view-transition max-w-6xl mx-auto px-4 py-6">
+    <div className="view-transition max-w-6xl mx-auto px-4 py-6 safe-area-x pb-28 lg:pb-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setView('cart')}>
+        <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0 hover:bg-muted/60" onClick={() => setView('cart')} aria-label="Späť">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-2xl font-bold">Objednávka</h1>
@@ -218,13 +218,13 @@ export default function CheckoutView() {
               <RadioGroup
                 value={deliveryType}
                 onValueChange={setDeliveryType}
-                className="grid grid-cols-2 gap-3"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3"
               >
                 <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${deliveryType === 'delivery' ? 'border-[#B42318] bg-red-50/30' : ''}`}>
                   <RadioGroupItem value="delivery" id="delivery" />
                   <Label htmlFor="delivery" className="flex items-center gap-3 cursor-pointer flex-1">
-                    <Truck className="h-5 w-5 text-[#B42318]" />
-                    <div>
+                    <Truck className="h-5 w-5 text-[#B42318] shrink-0" />
+                    <div className="min-w-0">
                       <p className="font-medium">Doručenie</p>
                       <p className="text-sm text-muted-foreground">Štandardné doručenie</p>
                     </div>
@@ -233,8 +233,8 @@ export default function CheckoutView() {
                 <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${deliveryType === 'pickup' ? 'border-[#B42318] bg-red-50/30' : ''}`}>
                   <RadioGroupItem value="pickup" id="pickup" />
                   <Label htmlFor="pickup" className="flex items-center gap-3 cursor-pointer flex-1">
-                    <Store className="h-5 w-5 text-[#B42318]" />
-                    <div>
+                    <Store className="h-5 w-5 text-[#B42318] shrink-0" />
+                    <div className="min-w-0">
                       <p className="font-medium">Osobný odber</p>
                       <p className="text-sm text-muted-foreground">Vyzdvihnete si sami</p>
                     </div>
@@ -419,13 +419,13 @@ export default function CheckoutView() {
 
         {/* Right: Summary */}
         <div>
-          <Card className="border-0 shadow-sm sticky top-4">
+          <Card className="border-0 shadow-sm lg:sticky lg:top-4">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Zhrnutie</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {cartRestaurantName && (
-                <p className="text-sm font-medium">{cartRestaurantName}</p>
+                <p className="text-sm font-medium truncate">{cartRestaurantName}</p>
               )}
 
               <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
@@ -467,7 +467,7 @@ export default function CheckoutView() {
               </div>
 
               <Button
-                className="w-full bg-[#B42318] hover:bg-[#9a1f16] text-white h-12 text-base font-semibold"
+                className="w-full bg-[#B42318] hover:bg-[#9a1f16] text-white h-12 text-base font-semibold hidden lg:flex"
                 onClick={placeOrder}
                 disabled={submitting || (deliveryType === 'delivery' && (!address.trim() || !city.trim()))}
               >
@@ -495,6 +495,24 @@ export default function CheckoutView() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Mobile sticky checkout button */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-white/95 backdrop-blur-md border-t mobile-bottom-safe">
+        <Button
+          className="w-full bg-[#B42318] hover:bg-[#9a1f16] text-white h-12 text-base font-semibold"
+          onClick={placeOrder}
+          disabled={submitting || (deliveryType === 'delivery' && (!address.trim() || !city.trim()))}
+        >
+          {submitting ? (
+            <>
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              Odosiela sa...
+            </>
+          ) : (
+            <>Objednať · {formatPrice(total)}</>
+          )}
+        </Button>
       </div>
     </div>
   )

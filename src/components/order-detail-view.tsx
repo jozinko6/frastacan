@@ -123,7 +123,7 @@ export default function OrderDetailView() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-4 safe-area-x">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-40 rounded-xl" />
         <Skeleton className="h-60 rounded-xl" />
@@ -133,7 +133,7 @@ export default function OrderDetailView() {
 
   if (!order) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12 text-center">
+      <div className="max-w-lg mx-auto px-4 py-12 text-center safe-area-x">
         <p className="text-lg text-muted-foreground">Objednávka nenájdená</p>
         <Button className="mt-4" onClick={() => setView('orders')}>
           Späť na objednávky
@@ -146,13 +146,13 @@ export default function OrderDetailView() {
   const status = statusConfig[order.status] || statusConfig.pending
 
   return (
-    <div className="view-transition max-w-4xl mx-auto px-4 py-6">
+    <div className="view-transition max-w-4xl mx-auto px-4 py-6 safe-area-x">
       <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setView('orders')}>
+        <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0 hover:bg-muted/60" onClick={() => setView('orders')} aria-label="Späť">
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Objednávka {order.orderNumber}</h1>
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold truncate">Objednávka {order.orderNumber}</h1>
           <p className="text-sm text-muted-foreground">{formatDate(order.createdAt)}</p>
         </div>
       </div>
@@ -174,7 +174,7 @@ export default function OrderDetailView() {
                     const isCompleted = index <= currentStep
                     const isCurrent = index === currentStep
                     return (
-                      <div key={step.key} className="flex flex-col items-center flex-1">
+                      <div key={step.key} className="flex flex-col items-center flex-1 min-w-0">
                         <div className="flex items-center w-full">
                           <div
                             className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full shrink-0 transition-colors ${
@@ -193,7 +193,7 @@ export default function OrderDetailView() {
                             />
                           )}
                         </div>
-                        <span className="text-xs mt-2 text-center hidden sm:block">
+                        <span className="text-[10px] sm:text-xs mt-2 text-center leading-tight">
                           {step.label}
                         </span>
                       </div>
