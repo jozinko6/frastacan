@@ -53,20 +53,55 @@ Stage Summary:
 - Auth state properly rehydrated on page refresh via /api/auth/me (which returns fresh token)
 - Error messages are more descriptive, showing actual API error details
 - All logout handlers consistently clear both user and authToken from Zustand store
+
 ---
-Task ID: 2
+Task ID: 3
 Agent: Main Agent
-Task: Fix UI bugs reported by user (mobile view) - hidden prevádzky / categories overflowing right, missing "Fraštačan" text in header
+Task: FÁZA 1-4 security & order-flow audit on fix/security-and-order-audit branch
 
 Work Log:
-- Analyzed user screenshot showing category chips (Všetky, Pizza, Reštaurácie, Burgery, Kebab, Droguérie partially cut) overflowing right edge on mobile
-- Identified two issues in src/app/page.tsx and src/components/home-view.tsx
-- Fix 1 (src/app/page.tsx line 238): Removed `hidden xs:inline sm:inline` from header logo span so "Fraštačan" text is always visible next to the logo, even on phones < 400px wide. Changed text size to `text-base sm:text-xl` so it fits comfortably on small screens.
-- Fix 2 (src/components/home-view.tsx lines 134, 154): Replaced `overflow-x-auto scrollbar-hide -mx-4 px-4` with `flex-wrap` on both category rows so all category chips wrap to the next line instead of overflowing right edge of screen. No more horizontal scrolling for categories.
-- Verified no new TypeScript errors introduced (errors exist in unrelated files like admin/users route, orders route, examples/ — all pre-existing)
-- Committed as `24748f4` and pushed to GitHub main branch
+- Created branch fix/security-and-order-audit from main
+- FÁZA 1: Ran baseline diagnostics — bun install, prisma generate, lint (clean), tsc (7 errors), build (failed with cp error)
+- Audited 20+ API route files + auth.ts + seed.ts + next.config.ts + tsconfig + .gitignore
+- Identified 20 security/functional issues (weak SHA-256 hashing, hardcoded TOKEN_SECRET, ignoreBuildErrors, .env committed, IDOR in addresses/favorites, missing RBAC on order status, no rate limiting, no Zod validation, etc.)
+
+- FÁZA 2 (commit 09ac282): Build & TS fixes
+  - Removed `typescript.ignoreBuildErrors: true` from next.config.ts (forbidden by policy)
+  - Added `output: "standalone"` to next.config.ts
+  - Replaced Unix-only `cp -r` build script with cross-platform Node postbuild script (scripts/postbuild.mjs)
+  - Excluded examples/ and skills/ (978 workspace scaffolding files) from tsconfig
+  - Fixed SQLite-incompatible `mode: 'insensitive'` in admin/users route
+  - Fixed `orderItemsData` collapsing to `never[]` in orders route
+  - Bounded page/limit params to prevent abuse
+
+- FÁZA 3 (commit a6cc190): Security hardening
+  - Replaced SHA-256 + static salt with bcryptjs (cost 12, per-user salt) in src/lib/auth.ts
+  - verifyPassword() accepts legacy SHA-256 hashes and flags them for transparent rehashing on next login
+  - TOKEN_SECRET now required (>= 32 chars), no insecure fallback; HMAC-SHA256 signed tokens with constant-time signature compare
+  - Login route: rate limit (10/5min/IP), Zod validation, generic error to prevent enumeration
+  - Register route: rate limit (5/hour/IP), password policy (min 8, letter+digit)
+  - Order status PATCH: full RBAC — restaurant callers can only modify own orders + vendor-allowed statuses; rider callers only assigned orders + rider-allowed statuses; server-side state machine prevents illegal transitions
+  - .env removed from git tracking; .env.example added with TOKEN_SECRET docs
+  - prisma/seed.ts: switched to bcrypt.hashSync
+
+- FÁZA 4 (commit a6cc190): Input validation + IDOR + order-flow authority
+  - New src/lib/validations.ts with Zod schemas for every API input
+  - All API routes migrated to validateInput() helper
+  - Defensive bounds: quantity ∈ [1, 99], prices capped at €100 000, string lengths bounded
+  - IDOR fix in /api/addresses: ignored ?userId= query param
+  - IDOR fix in /api/favorites: ignored userId in both GET query and POST body
+  - IDOR fix in /api/orders GET: ?userId= override only for admins; non-admins get 403
+  - /api/orders POST: server recomputes subtotal from FoodItem prices, recomputes discount from couponCode, clamps total ≥ 0; paymentStatus always 'pending' on creation
+  - /api/reviews POST: restaurantId must match order.restaurantId (prevents rating manipulation)
+  - /api/rider/accept-order: race-condition safe with conditional update + 409 on conflict
+  - /api/rider/deliver-order: atomic transaction with conditional updateMany to prevent double-delivery
+  - /api/vendor/menu: discountPrice must be strictly < price (defensive against stale client data)
 
 Stage Summary:
-- "Fraštačan" text now appears in the header on all viewport sizes next to the logo
-- Category chips on home view now wrap to multiple lines on small screens, eliminating horizontal overflow
-- Push confirmed: 824e79b..24748f4 main -> main
+- Branch: fix/security-and-order-audit (HEAD: a6cc190)
+- Pushed to GitHub: https://github.com/jozinko6/frastacan/tree/fix/security-and-order-audit
+- bun run lint: clean (0 errors)
+- bunx tsc --noEmit: clean (0 errors)
+- bun run build: ✓ Compiled successfully, 31/31 static pages, standalone output works
+- Smoke test: invalid login → 401 generic; valid login → 200 + JWT; rate limit activates after 10 failed attempts (429)
+- All 4 phases of the security audit complete; ready for PR review and merge to main
