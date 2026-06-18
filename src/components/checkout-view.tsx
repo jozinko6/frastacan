@@ -153,12 +153,12 @@ export default function CheckoutView() {
         <p className="text-muted-foreground mb-2">
           Vaša objednávka bola úspešne odoslaná.
         </p>
-        <p className="text-lg font-semibold text-[#B42318] mb-6">
+        <p className="text-lg font-semibold text-primary mb-6">
           Číslo objednávky: {orderNumber}
         </p>
         <div className="space-y-3">
           <Button
-            className="w-full bg-[#B42318] hover:bg-[#9a1f16] text-white h-12"
+            className="w-full bg-primary hover:bg-primary/90 text-white h-12"
             onClick={() => setView('order-detail')}
           >
             Zobraziť detail objednávky
@@ -186,7 +186,7 @@ export default function CheckoutView() {
     return (
       <div className="max-w-lg mx-auto px-4 py-12 text-center safe-area-x">
         <p className="text-lg text-muted-foreground">Váš košík je prázdny</p>
-        <Button className="mt-4 bg-[#B42318] hover:bg-[#9a1f16] text-white" onClick={() => setView('home')}>
+        <Button className="mt-4 bg-primary hover:bg-primary/90 text-white" onClick={() => setView('home')}>
           Objednať si jedlo
         </Button>
       </div>
@@ -210,7 +210,7 @@ export default function CheckoutView() {
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Truck className="h-5 w-5 text-[#B42318]" />
+                <Truck className="h-5 w-5 text-primary" />
                 Spôsob prevzatia
               </CardTitle>
             </CardHeader>
@@ -220,20 +220,20 @@ export default function CheckoutView() {
                 onValueChange={setDeliveryType}
                 className="grid grid-cols-1 sm:grid-cols-2 gap-3"
               >
-                <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${deliveryType === 'delivery' ? 'border-[#B42318] bg-red-50/30' : ''}`}>
+                <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${deliveryType === 'delivery' ? 'border-primary bg-red-50/30' : ''}`}>
                   <RadioGroupItem value="delivery" id="delivery" />
                   <Label htmlFor="delivery" className="flex items-center gap-3 cursor-pointer flex-1">
-                    <Truck className="h-5 w-5 text-[#B42318] shrink-0" />
+                    <Truck className="h-5 w-5 text-primary shrink-0" />
                     <div className="min-w-0">
                       <p className="font-medium">Doručenie</p>
                       <p className="text-sm text-muted-foreground">Štandardné doručenie</p>
                     </div>
                   </Label>
                 </div>
-                <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${deliveryType === 'pickup' ? 'border-[#B42318] bg-red-50/30' : ''}`}>
+                <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${deliveryType === 'pickup' ? 'border-primary bg-red-50/30' : ''}`}>
                   <RadioGroupItem value="pickup" id="pickup" />
                   <Label htmlFor="pickup" className="flex items-center gap-3 cursor-pointer flex-1">
-                    <Store className="h-5 w-5 text-[#B42318] shrink-0" />
+                    <Store className="h-5 w-5 text-primary shrink-0" />
                     <div className="min-w-0">
                       <p className="font-medium">Osobný odber</p>
                       <p className="text-sm text-muted-foreground">Vyzdvihnete si sami</p>
@@ -249,7 +249,7 @@ export default function CheckoutView() {
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-[#B42318]" />
+                  <MapPin className="h-5 w-5 text-primary" />
                   Doručovacia adresa
                 </CardTitle>
               </CardHeader>
@@ -265,7 +265,7 @@ export default function CheckoutView() {
                           size="sm"
                           className={
                             address === addr.street
-                              ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white'
+                              ? 'bg-primary hover:bg-primary/90 text-white'
                               : ''
                           }
                           onClick={() => {
@@ -382,7 +382,7 @@ export default function CheckoutView() {
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-[#B42318]" />
+                <CreditCard className="h-5 w-5 text-primary" />
                 Spôsob platby
               </CardTitle>
             </CardHeader>
@@ -392,7 +392,7 @@ export default function CheckoutView() {
                 onValueChange={setPaymentMethod}
                 className="space-y-3"
               >
-                <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${paymentMethod === 'card' ? 'border-[#B42318] bg-red-50/30' : ''}`}>
+                <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${paymentMethod === 'card' ? 'border-primary bg-red-50/30' : ''}`}>
                   <RadioGroupItem value="card" id="card" />
                   <Label htmlFor="card" className="flex items-center gap-3 cursor-pointer flex-1">
                     <CreditCard className="h-5 w-5 text-blue-600" />
@@ -402,7 +402,7 @@ export default function CheckoutView() {
                     </div>
                   </Label>
                 </div>
-                <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${paymentMethod === 'cash' ? 'border-[#B42318] bg-red-50/30' : ''}`}>
+                <div className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer hover:bg-red-50/50 transition-colors ${paymentMethod === 'cash' ? 'border-primary bg-red-50/30' : ''}`}>
                   <RadioGroupItem value="cash" id="cash" />
                   <Label htmlFor="cash" className="flex items-center gap-3 cursor-pointer flex-1">
                     <Banknote className="h-5 w-5 text-green-600" />
@@ -462,12 +462,12 @@ export default function CheckoutView() {
                 <Separator />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Celkom</span>
-                  <span className="text-[#B42318]">{formatPrice(total)}</span>
+                  <span className="text-primary">{formatPrice(total)}</span>
                 </div>
               </div>
 
               <Button
-                className="w-full bg-[#B42318] hover:bg-[#9a1f16] text-white h-12 text-base font-semibold hidden lg:flex"
+                className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold hidden lg:flex"
                 onClick={placeOrder}
                 disabled={submitting || (deliveryType === 'delivery' && (!address.trim() || !city.trim()))}
               >
@@ -485,7 +485,7 @@ export default function CheckoutView() {
                 <p className="text-xs text-center text-muted-foreground">
                   Pre objednanie sa musíte{' '}
                   <button
-                    className="text-[#B42318] underline"
+                    className="text-primary underline"
                     onClick={() => setView('login')}
                   >
                     prihlásiť
@@ -500,7 +500,7 @@ export default function CheckoutView() {
       {/* Mobile sticky checkout button */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-white/95 backdrop-blur-md border-t mobile-bottom-safe">
         <Button
-          className="w-full bg-[#B42318] hover:bg-[#9a1f16] text-white h-12 text-base font-semibold"
+          className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold"
           onClick={placeOrder}
           disabled={submitting || (deliveryType === 'delivery' && (!address.trim() || !city.trim()))}
         >

@@ -36,7 +36,7 @@ export default function PrePrevadzkyView() {
           Vaša žiadosť bola odoslaná. Ozveme sa vám do 24 hodín.
         </p>
         <Button
-          className="bg-[#B42318] hover:bg-[#9a1f16] text-white"
+          className="bg-primary hover:bg-primary/90 text-white"
           onClick={() => setView('home')}
         >
           Späť na domovskú stránku
@@ -57,7 +57,7 @@ export default function PrePrevadzkyView() {
       <div className="space-y-6">
         <div className="bg-amber-50 rounded-2xl p-6">
           <div className="flex items-start gap-4">
-            <Store className="h-10 w-10 text-[#B42318] shrink-0" />
+            <Store className="h-10 w-10 text-primary shrink-0" />
             <div>
               <h2 className="text-lg font-bold mb-2">Prečo Fraštačan?</h2>
               <ul className="space-y-1 text-sm text-muted-foreground">
@@ -135,7 +135,7 @@ export default function PrePrevadzkyView() {
               </div>
             </div>
             <Button
-              className="w-full bg-[#B42318] hover:bg-[#9a1f16] text-white h-12 text-base font-semibold"
+              className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold"
               onClick={handleSubmit}
             >
               Odoslať žiadosť

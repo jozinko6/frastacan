@@ -133,7 +133,7 @@ export default function RiderOrdersView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-[#B42318] px-4 pt-6 pb-4 rounded-b-3xl">
+        <div className="bg-primary px-4 pt-6 pb-4 rounded-b-3xl">
           <Skeleton className="h-7 w-36 bg-white/20 mb-3" />
           <div className="flex gap-2">
             {[1, 2, 3].map((i) => (
@@ -154,7 +154,7 @@ export default function RiderOrdersView() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <div className="bg-[#B42318] px-4 pt-6 pb-4 rounded-b-3xl">
+      <div className="bg-primary px-4 pt-6 pb-4 rounded-b-3xl">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-white text-xl font-bold">Objednávky</h1>
@@ -176,7 +176,7 @@ export default function RiderOrdersView() {
                 className={cn(
                   'px-4 py-2 rounded-full text-sm font-medium transition-all',
                   activeTab === tab.key
-                    ? 'bg-white text-[#B42318] shadow-sm'
+                    ? 'bg-white text-primary shadow-sm'
                     : 'bg-white/15 text-white hover:bg-white/25'
                 )}
               >
@@ -251,7 +251,7 @@ export default function RiderOrdersView() {
                       <Card
                         className={cn(
                           'border-0 shadow-md overflow-hidden',
-                          isDelivering && 'border-l-4 border-l-[#B42318]'
+                          isDelivering && 'border-l-4 border-l-primary'
                         )}
                       >
                         <CardContent className="p-4">
@@ -285,7 +285,7 @@ export default function RiderOrdersView() {
 
                           {/* City/Zone info */}
                           {(order.city || order.restaurant?.city) && (
-                            <div className="flex items-center gap-1 text-xs text-[#B42318] font-medium mb-1">
+                            <div className="flex items-center gap-1 text-xs text-primary font-medium mb-1">
                               <MapPin className="h-3 w-3" />
                               <span>{order.city || order.restaurant?.city}</span>
                             </div>
@@ -317,7 +317,7 @@ export default function RiderOrdersView() {
 
                           {/* Expand toggle */}
                           <button
-                            className="flex items-center gap-1 text-xs text-[#B42318] mt-2"
+                            className="flex items-center gap-1 text-xs text-primary mt-2"
                             onClick={() =>
                               setExpandedOrder(isExpanded ? null : order.id)
                             }

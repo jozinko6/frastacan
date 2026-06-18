@@ -97,7 +97,7 @@ export default function RiderEarningsView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-[#B42318] px-4 pt-6 pb-8 rounded-b-3xl">
+        <div className="bg-primary px-4 pt-6 pb-8 rounded-b-3xl">
           <Skeleton className="h-7 w-28 bg-white/20 mb-4" />
           <div className="grid grid-cols-2 gap-3">
             <Skeleton className="h-24 bg-white/10 rounded-xl" />
@@ -140,7 +140,7 @@ export default function RiderEarningsView() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header with main earnings */}
-      <div className="bg-[#B42318] px-4 pt-6 pb-8 rounded-b-3xl">
+      <div className="bg-primary px-4 pt-6 pb-8 rounded-b-3xl">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-white text-xl font-bold">Zárobky</h1>
@@ -194,12 +194,12 @@ export default function RiderEarningsView() {
           >
             <div>
               <p className="text-xs text-muted-foreground">Dnešné zárobky</p>
-              <p className="text-2xl font-bold text-[#B42318]">
+              <p className="text-2xl font-bold text-primary">
                 {formatPrice(todaysEarnings)}
               </p>
             </div>
-            <div className="w-12 h-12 bg-[#B42318]/10 rounded-full flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-[#B42318]" />
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+              <TrendingUp className="h-6 w-6 text-primary" />
             </div>
           </motion.div>
 
@@ -265,9 +265,9 @@ export default function RiderEarningsView() {
                           className={cn(
                             'w-full max-w-[28px] rounded-t-md transition-colors',
                             isToday
-                              ? 'bg-[#B42318]'
+                              ? 'bg-primary'
                               : earning > 0
-                              ? 'bg-[#B42318]/40'
+                              ? 'bg-primary/40'
                               : 'bg-gray-200'
                           )}
                           style={{ minHeight: earning > 0 ? 4 : 2 }}
@@ -277,7 +277,7 @@ export default function RiderEarningsView() {
                         className={cn(
                           'text-[10px]',
                           isToday
-                            ? 'text-[#B42318] font-bold'
+                            ? 'text-primary font-bold'
                             : 'text-gray-400'
                         )}
                       >
@@ -298,7 +298,7 @@ export default function RiderEarningsView() {
           transition={{ delay: 0.25 }}
         >
           <Button
-            className="w-full bg-[#B42318] hover:bg-[#8B1B12] text-white h-12 text-sm font-semibold gap-2"
+            className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-sm font-semibold gap-2"
             onClick={handleWithdraw}
           >
             <ArrowDownToLine className="h-4 w-4" />

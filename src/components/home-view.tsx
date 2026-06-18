@@ -108,7 +108,7 @@ export default function HomeView() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center px-2 sm:px-0">
               <Button
                 size="lg"
-                className="bg-white text-[#B42318] hover:bg-red-50 font-semibold h-12 sm:h-11 w-full sm:w-auto"
+                className="bg-white text-primary hover:bg-red-50 font-semibold h-12 sm:h-11 w-full sm:w-auto"
                 onClick={scrollToRestaurants}
               >
                 Objednať teraz
@@ -134,7 +134,7 @@ export default function HomeView() {
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
             <Button
               variant={selectedCuisine === null ? 'default' : 'outline'}
-              className={`shrink-0 rounded-full px-4 py-2 h-9 ${selectedCuisine === null ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : 'border-primary/30 text-primary font-medium'}`}
+              className={`shrink-0 rounded-full px-4 py-2 h-9 ${selectedCuisine === null ? 'bg-primary hover:bg-primary/90 text-white' : 'border-primary/30 text-primary font-medium'}`}
               onClick={() => setSelectedCuisine(null)}
             >
               Všetky
@@ -143,7 +143,7 @@ export default function HomeView() {
               <Button
                 key={c.name}
                 variant={selectedCuisine === c.name ? 'default' : 'outline'}
-                className={`shrink-0 rounded-full px-4 py-2 h-9 ${selectedCuisine === c.name ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : 'border-primary/30 text-primary font-medium'}`}
+                className={`shrink-0 rounded-full px-4 py-2 h-9 ${selectedCuisine === c.name ? 'bg-primary hover:bg-primary/90 text-white' : 'border-primary/30 text-primary font-medium'}`}
                 onClick={() => setSelectedCuisine(selectedCuisine === c.name ? null : c.name)}
               >
                 <span className="mr-1">{c.emoji}</span> {c.name}
@@ -157,7 +157,7 @@ export default function HomeView() {
                 key={c.name}
                 variant={selectedCuisine === c.name ? 'default' : 'outline'}
                 size="sm"
-                className={`shrink-0 rounded-full px-3.5 py-1.5 ${selectedCuisine === c.name ? 'bg-[#B42318] hover:bg-[#9a1f16] text-white' : 'border-primary/30 text-primary font-medium'}`}
+                className={`shrink-0 rounded-full px-3.5 py-1.5 ${selectedCuisine === c.name ? 'bg-primary hover:bg-primary/90 text-white' : 'border-primary/30 text-primary font-medium'}`}
                 onClick={() => setSelectedCuisine(selectedCuisine === c.name ? null : c.name)}
               >
                 <span className="mr-1">{c.emoji}</span> {c.name}
@@ -181,7 +181,7 @@ export default function HomeView() {
                 variant="secondary"
                 className="px-4 py-2 text-sm bg-white shadow-sm border border-red-100"
               >
-                <MapPin className="h-3.5 w-3.5 mr-1.5 text-[#B42318]" />
+                <MapPin className="h-3.5 w-3.5 mr-1.5 text-primary" />
                 {zone.name} · od {formatPrice(zone.fee)}
               </Badge>
             ))}
@@ -255,7 +255,7 @@ export default function HomeView() {
                       )}
                       {/* City/Zone badge */}
                       {(restaurant.city || restaurant.zone) && (
-                        <Badge className="absolute bottom-3 right-3 bg-[#B42318] text-white text-xs gap-1">
+                        <Badge className="absolute bottom-3 right-3 bg-primary text-white text-xs gap-1">
                           <MapPin className="h-3 w-3" />
                           {restaurant.zone?.name || restaurant.city}
                         </Badge>
@@ -295,7 +295,7 @@ export default function HomeView() {
         <section className="bg-amber-50 rounded-2xl p-5 sm:p-8">
           <div className="flex flex-col items-center text-center gap-4 sm:flex-row sm:text-left sm:gap-6">
             <div className="flex-shrink-0">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-[#B42318] flex items-center justify-center">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-primary flex items-center justify-center">
                 <Store className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
               </div>
             </div>
@@ -309,7 +309,7 @@ export default function HomeView() {
             </div>
             <Button
               size="lg"
-              className="bg-[#B42318] hover:bg-[#9a1f16] text-white shrink-0 w-full sm:w-auto h-12 font-semibold"
+              className="bg-primary hover:bg-primary/90 text-white shrink-0 w-full sm:w-auto h-12 font-semibold"
               onClick={() => setView('pre-prevadzky')}
             >
               Chcem zapojiť prevádzku
@@ -322,7 +322,7 @@ export default function HomeView() {
         <section className="bg-blue-50 rounded-2xl p-5 sm:p-8">
           <div className="flex flex-col items-center text-center gap-4 sm:flex-row sm:text-left sm:gap-6">
             <div className="flex-shrink-0">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-[#B42318] flex items-center justify-center">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-primary flex items-center justify-center">
                 <Bike className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
               </div>
             </div>
@@ -336,7 +336,7 @@ export default function HomeView() {
             </div>
             <Button
               size="lg"
-              className="bg-[#B42318] hover:bg-[#9a1f16] text-white shrink-0 w-full sm:w-auto h-12 font-semibold"
+              className="bg-primary hover:bg-primary/90 text-white shrink-0 w-full sm:w-auto h-12 font-semibold"
               onClick={() => setView('pre-kurierov')}
             >
               Chcem doručovať

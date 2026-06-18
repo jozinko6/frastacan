@@ -249,7 +249,7 @@ export default function RiderDashboardView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-[#B42318] px-4 pt-6 pb-8 rounded-b-3xl">
+        <div className="bg-primary px-4 pt-6 pb-8 rounded-b-3xl">
           <Skeleton className="h-6 w-40 bg-white/20 mb-4" />
           <Skeleton className="h-12 w-full bg-white/15 rounded-xl" />
         </div>
@@ -296,7 +296,7 @@ export default function RiderDashboardView() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header with greeting and availability toggle */}
-      <div className="bg-[#B42318] px-4 pt-6 pb-8 rounded-b-3xl">
+      <div className="bg-primary px-4 pt-6 pb-8 rounded-b-3xl">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-1">
             <div>
@@ -371,8 +371,8 @@ export default function RiderDashboardView() {
             <Card className="border-0 shadow-md">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 bg-[#B42318]/10 rounded-lg">
-                    <Bike className="h-4 w-4 text-[#B42318]" />
+                  <div className="p-1.5 bg-primary/10 rounded-lg">
+                    <Bike className="h-4 w-4 text-primary" />
                   </div>
                   <span className="text-xs text-muted-foreground">Aktívne doruč.</span>
                 </div>
@@ -415,7 +415,7 @@ export default function RiderDashboardView() {
       {activeOrders.length > 0 && (
         <div className="max-w-lg mx-auto px-4 mt-6">
           <h2 className="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <Bike className="h-4 w-4 text-[#B42318]" />
+            <Bike className="h-4 w-4 text-primary" />
             Aktívne doručenia ({activeOrders.length})
           </h2>
           <div className="space-y-3">
@@ -432,7 +432,7 @@ export default function RiderDashboardView() {
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="border-l-4 border-l-[#B42318] border-0 shadow-md overflow-hidden">
+                    <Card className="border-l-4 border-l-primary border-0 shadow-md overflow-hidden">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
@@ -442,14 +442,14 @@ export default function RiderDashboardView() {
                               <p className="text-xs text-muted-foreground">#{order.orderNumber}</p>
                             </div>
                           </div>
-                          <Badge className="bg-[#B42318]/10 text-[#B42318] hover:bg-[#B42318]/10 text-xs">
+                          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 text-xs">
                             {isPickedUp ? 'Na ceste k zákazníkovi' : 'Čaká na prevzatie'}
                           </Badge>
                         </div>
 
                         {/* City/Zone info */}
                         {(order.city || order.restaurant?.city) && (
-                          <div className="flex items-center gap-1 text-xs text-[#B42318] font-medium mb-1">
+                          <div className="flex items-center gap-1 text-xs text-primary font-medium mb-1">
                             <MapPin className="h-3 w-3" />
                             <span>{order.city || order.restaurant?.city}</span>
                           </div>
@@ -497,7 +497,7 @@ export default function RiderDashboardView() {
 
                         {/* Expandable items */}
                         <button
-                          className="flex items-center gap-1 text-xs text-[#B42318] mb-3"
+                          className="flex items-center gap-1 text-xs text-primary mb-3"
                           onClick={() =>
                             setExpandedOrder(expandedOrder === order.id ? null : order.id)
                           }
@@ -602,10 +602,10 @@ export default function RiderDashboardView() {
       {/* Available Orders Section */}
       <div className="max-w-lg mx-auto px-4 mt-6">
         <h2 className="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
-          <Package className="h-4 w-4 text-[#B42318]" />
+          <Package className="h-4 w-4 text-primary" />
           Nová doručovacia úloha
           {availableOrders.length > 0 && (
-            <Badge className="bg-[#B42318] text-white text-xs ml-1">
+            <Badge className="bg-primary text-white text-xs ml-1">
               {availableOrders.length}
             </Badge>
           )}
@@ -654,7 +654,7 @@ export default function RiderDashboardView() {
 
                       {/* City/Zone info */}
                       {(order.city || order.restaurant?.city) && (
-                        <div className="flex items-center gap-1 text-xs text-[#B42318] font-medium mb-1">
+                        <div className="flex items-center gap-1 text-xs text-primary font-medium mb-1">
                           <MapPin className="h-3 w-3" />
                           <span>{order.city || order.restaurant?.city}</span>
                         </div>
@@ -688,7 +688,7 @@ export default function RiderDashboardView() {
 
                       {/* Expandable items */}
                       <button
-                        className="flex items-center gap-1 text-xs text-[#B42318] mb-3"
+                        className="flex items-center gap-1 text-xs text-primary mb-3"
                         onClick={() =>
                           setExpandedOrder(expandedOrder === order.id ? null : order.id)
                         }
@@ -730,7 +730,7 @@ export default function RiderDashboardView() {
                       </AnimatePresence>
 
                       <Button
-                        className="w-full bg-[#B42318] hover:bg-[#8B1B12] text-white h-11 text-sm font-semibold"
+                        className="w-full bg-primary hover:bg-primary/90 text-white h-11 text-sm font-semibold"
                         onClick={() => acceptOrder(order.id)}
                         disabled={acceptingOrderId === order.id || !isAvailable}
                       >

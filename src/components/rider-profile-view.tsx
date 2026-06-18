@@ -152,7 +152,7 @@ export default function RiderProfileView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-[#B42318] px-4 pt-6 pb-12 rounded-b-3xl">
+        <div className="bg-primary px-4 pt-6 pb-12 rounded-b-3xl">
           <Skeleton className="h-7 w-24 bg-white/20 mb-6" />
           <div className="flex items-center gap-4">
             <Skeleton className="h-16 w-16 bg-white/10 rounded-full" />
@@ -216,7 +216,7 @@ export default function RiderProfileView() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header with profile card */}
-      <div className="bg-[#B42318] px-4 pt-6 pb-12 rounded-b-3xl">
+      <div className="bg-primary px-4 pt-6 pb-12 rounded-b-3xl">
         <div className="max-w-lg mx-auto">
           <h1 className="text-white text-xl font-bold mb-6">Profil</h1>
 
@@ -228,7 +228,7 @@ export default function RiderProfileView() {
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16 border-2 border-white/30">
                 <AvatarImage src={riderUser?.avatar || undefined} />
-                <AvatarFallback className="bg-[#8B1B12] text-white text-lg font-bold">
+                <AvatarFallback className="bg-primary/80 text-white text-lg font-bold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -291,8 +291,8 @@ export default function RiderProfileView() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-[#B42318]/10 rounded-lg">
-                    <VehicleIcon className="h-5 w-5 text-[#B42318]" />
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <VehicleIcon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">Vozidlo</p>
@@ -313,12 +313,12 @@ export default function RiderProfileView() {
                       className={cn(
                         'flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 transition-all text-center',
                         isActive
-                          ? 'border-[#B42318] bg-[#B42318]/5'
+                          ? 'border-primary bg-primary/5'
                           : 'border-gray-200 hover:border-gray-300 bg-white'
                       )}
                     >
-                      <VIcon className={cn('h-5 w-5', isActive ? 'text-[#B42318]' : 'text-gray-400')} />
-                      <span className={cn('text-[11px] font-medium', isActive ? 'text-[#B42318]' : 'text-gray-500')}>
+                      <VIcon className={cn('h-5 w-5', isActive ? 'text-primary' : 'text-gray-400')} />
+                      <span className={cn('text-[11px] font-medium', isActive ? 'text-primary' : 'text-gray-500')}>
                         {v.label}
                       </span>
                     </button>
@@ -391,8 +391,8 @@ export default function RiderProfileView() {
                   </p>
                   <p className="text-xs text-muted-foreground">Celkom zárobky</p>
                 </div>
-                <div className="bg-[#B42318]/5 rounded-lg p-3 text-center">
-                  <Star className="h-5 w-5 text-[#B42318] mx-auto mb-1" />
+                <div className="bg-primary/5 rounded-lg p-3 text-center">
+                  <Star className="h-5 w-5 text-primary mx-auto mb-1" />
                   <p className="font-bold text-lg">{rating.toFixed(1)}</p>
                   <p className="text-xs text-muted-foreground">Hodnotenie</p>
                 </div>
