@@ -16,7 +16,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const restaurant = await db.restaurant.findUnique({
+    // ownerId nie je @unique v schéme (User môže vlastniť viac prevádzok),
+    // preto používame findFirst namiesto findUnique.
+    const restaurant = await db.restaurant.findFirst({
       where: { ownerId: user.id },
     })
 
@@ -99,7 +101,7 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const restaurant = await db.restaurant.findUnique({
+    const restaurant = await db.restaurant.findFirst({
       where: { ownerId: user.id },
     })
 

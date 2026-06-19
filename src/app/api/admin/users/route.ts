@@ -25,9 +25,11 @@ export async function GET(request: NextRequest) {
       where.role = role
     }
     if (search) {
+      // SQLite nepodporuje mode: 'insensitive' (len PostgreSQL).
+      // SQLite LIKE je default case-insensitive pre ASCII, takže contains funguje.
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search } },
+        { email: { contains: search } },
       ]
     }
 

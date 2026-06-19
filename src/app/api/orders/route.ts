@@ -2,6 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
 
+type OrderItemInput = {
+  quantity: number
+  price: number
+  notes: string | null
+  foodItemId: string
+}
+
+type IncomingCartItem = {
+  foodItemId: string
+  quantity: number
+  notes?: string | null
+}
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request)
@@ -44,7 +57,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate subtotal from food items
-    const foodItemIds = items.map((item: { foodItemId: string }) => item.foodItemId)
+    const foodItemIds = items.map((item: IncomingCartItem) => item.foodItemId)
     const foodItems = await db.foodItem.findMany({
       where: { id: { in: foodItemIds }, restaurantId },
     })
@@ -60,9 +73,9 @@ export async function POST(request: NextRequest) {
     const foodItemMap = new Map(foodItems.map((fi) => [fi.id, fi]))
 
     let subtotal = 0
-    const orderItemsData = []
+    const orderItemsData: OrderItemInput[] = []
 
-    for (const item of items) {
+    for (const item of items as IncomingCartItem[]) {
       const foodItem = foodItemMap.get(item.foodItemId)
       if (!foodItem) {
         return NextResponse.json(

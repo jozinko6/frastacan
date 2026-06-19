@@ -8,12 +8,13 @@ import { useAppStore } from '@/lib/store'
  * Always includes credentials: 'same-origin' so cookies are sent as a fallback.
  */
 export function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  // Try to get the token from the store directly (works outside React too)
+  // Access the store directly (not via hook, since this is not a React component).
+  // useAppStore.getState() is safe to call outside React components.
   let token: string | null = null
   try {
     token = useAppStore.getState().authToken
   } catch {
-    // Store not available, cookie auth will be used
+    // Store not available (e.g. during SSR), cookie auth will be used
   }
 
   const headers = new Headers(options.headers || {})

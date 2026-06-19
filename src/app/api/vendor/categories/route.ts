@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const restaurant = await db.restaurant.findUnique({
+    const restaurant = await db.restaurant.findFirst({
       where: { ownerId: user.id },
       select: { id: true },
     })
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const restaurant = await db.restaurant.findUnique({
+    const restaurant = await db.restaurant.findFirst({
       where: { ownerId: user.id },
       select: { id: true },
     })

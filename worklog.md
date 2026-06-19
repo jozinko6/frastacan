@@ -53,3 +53,29 @@ Stage Summary:
 - Auth state properly rehydrated on page refresh via /api/auth/me (which returns fresh token)
 - Error messages are more descriptive, showing actual API error details
 - All logout handlers consistently clear both user and authToken from Zustand store
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Opraviť TypeScript chyby, ESLint chyby, build konfiguráciu a bezpečnostné issues (Rule #3 a #9)
+
+Work Log:
+- Spustil som `bunx tsc --noEmit` a identifikoval reálne TS chyby v src/ (nie v examples/skills)
+- Opravil src/app/api/admin/users/route.ts: odstránil `mode: 'insensitive'` v StringFilter (SQLite nepodporuje, len PostgreSQL)
+- Opravil src/app/api/orders/route.ts: pridal explicitné typy `OrderItemInput[]` a `IncomingCartItem[]` namiesto inference `never[]`
+- Opravil 8 výskytov `findUnique({ where: { ownerId } })` v vendor routes (route.ts, categories/route.ts, menu/route.ts, orders/route.ts) - `ownerId` nie je @unique v schéme, takže sme prešli na `findFirst({ where: { ownerId } })`
+- Pridal `examples/`, `skills/`, `scripts/` do exclude v tsconfig.json (tieto adresáre obsahujú neprepojené example chyby)
+- Opravil ESLint chybu v src/lib/utils-shared.ts: nahradil zakázaný `require('@/lib/store')` za ES module import
+- Odstránil `typescript.ignoreBuildErrors: true` z next.config.ts (Rule #3: neobchádzať chyby)
+- Pridal `output: 'standalone'` do next.config.ts aby `cp -r .next/static .next/standalone/.next/` v build skripte fungoval
+- Bezpečnosť (Rule #9): untracked `.env` a `db/custom.db` z git pomocou `git rm --cached` (súbory ostali lokálne)
+- Aktualizoval .gitignore: pridal `db/*.db`, `db/*.db-journal`, `db/*.db-shm`, `db/*.db-wal` a `!.env.example` výnimku
+- Vytvoril `.env.example` s dokumentovanými premennými (bez reálnych tajomstiev)
+- Verifikoval: `bunx tsc --noEmit` ✅, `bun run lint` ✅, `bun run build` ✅ (TypeScript validation beží, standalone output sa generuje)
+
+Stage Summary:
+- 0 TypeScript chýb v src/ (predtým 8)
+- 0 ESLint chýb (predtým 1)
+- Build prešiel úspešne s `output: 'standalone'` a `ignoreBuildErrors: false`
+- Žiadne secrets v repo (`.env` a `db/*.db` sú untracked, `.env.example` slúži ako dokumentácia)
+- Príprava na bezpečnostný audit pokračuje - základné chyby opravené

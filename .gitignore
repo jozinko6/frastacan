@@ -32,6 +32,13 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# SQLite database files (lokálne dáta - nesmú byť v repo)
+db/*.db
+db/*.db-journal
+db/*.db-shm
+db/*.db-wal
 
 # vercel
 .vercel
